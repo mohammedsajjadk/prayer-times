@@ -12,7 +12,7 @@ body, html {
     justify-content: center;
     align-items: center;
 }
-    /*transform: rotate(45deg); /* Rotate entire page */
+   /* transform: rotate(45deg);*/
 
 /* Wrapper to contain rotated content */
 .wrapper {
@@ -31,16 +31,19 @@ body, html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     height: 100%;
+    gap: 2vh; /* Adds a small gap between elements */
+    padding-bottom: 10vh; /* Ensure space for announcement */
+    box-sizing: border-box;
 }
+
 
 /* Time header at the top */
 .time-display {
-    font-size: 10vw;
+    font-size: 8vw;
     text-align: center;
-    height: 15%;
+    height: auto; /* Allow it to adjust dynamically */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,8 +51,9 @@ body, html {
 
 /* Date below time */
 .current-date {
-    font-size: 2vw;
+    font-size: 2.5vw;
     text-align: center;
+    height: auto; /* Ensure proper spacing */
 }
 
 /* Prayer Times section */
@@ -57,19 +61,21 @@ body, html {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
     width: 80%;
-    gap: 2vw;
-    height: 55%;
+    gap: 1vw;
+    height: auto; /* Let content define the height */
 }
+
 
 .prayer-times div {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     font-size: 1.5vw;
     padding: 1vw;
     border: 0.2vw solid white;
     text-align: center;
+    margin-bottom: 1vh;
 }
 
 /* Announcement bar at the bottom */
@@ -81,14 +87,34 @@ body, html {
     font-size: 1.5vw;
     white-space: nowrap;
     overflow: hidden;
-    position: absolute;
+    position: fixed; /* Fixed instead of absolute */
     bottom: 0;
-    height: 10%;
+    height: 10vh;
     display: flex;
     align-items: center;
     justify-content: center;
     border-top: 0.3vw solid white;
 }
+
+.date-container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%; /* Adjust as needed */
+    font-size: 2.5vw;
+    text-align: center;
+    margin-top: 1vh;
+}
+
+.islamic-date {
+    text-align: left;
+    flex: 1;
+}
+
+.gregorian-date {
+    text-align: right;
+    flex: 1;
+}
+
 
 #announcement-text {
     animation: scroll-announcement 10s linear infinite;

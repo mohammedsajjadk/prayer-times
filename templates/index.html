@@ -13,7 +13,10 @@
 
         <!-- Time and Date Display -->
         <div class="time-display">{{ current_time }}</div>
-        <div class="current-date">{{ current_date }}</div>
+        <div class="date-container">
+            <div class="islamic-date">{{ islamic_date }}</div>
+            <div class="gregorian-date">{{ current_date }}</div>
+        </div>
 
         <!-- Prayer Times Section - Divided into 3 Columns -->
         <div class="prayer-times">
@@ -26,7 +29,7 @@
                 <div>{{ today_prayer_times[8] }}</div>
             </div>
             <div class="prayer">
-                <h2>PRAYER TIMES</h2>
+                <h2></h2>
                 <div>FAJR</div>
                 <div>ZOHR</div>
                 <div>ASAR</div>
@@ -48,6 +51,24 @@
     <div class="announcement">
         <p id="announcement-text">Announcement: Here is a rotating message. Customize this as you like!</p>
     </div>
+
+    <!-- JavaScript to Update Time Every Second -->
+    <script>
+        function updateTime() {
+            let now = new Date();
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            let seconds = now.getSeconds().toString().padStart(2, '0');
+
+            document.querySelector('.time-display').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Update time every second
+        setInterval(updateTime, 1000);
+
+        // Run immediately to prevent 1-second delay
+        updateTime();
+    </script>
 
 </body>
 </html>
