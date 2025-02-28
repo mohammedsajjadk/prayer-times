@@ -1,10 +1,11 @@
-from hijri_converter import convert
-
-from flask import Flask, render_template
 import csv
 from datetime import datetime
 
+from flask import Flask, render_template
+from hijri_converter import convert
+
 app = Flask(__name__)
+
 
 # Load the prayer times from the CSV file
 def load_prayer_times():
@@ -31,6 +32,7 @@ def get_islamic_date():
     formatted_hijri_date = f"{hijri_date.day} {islamic_months[hijri_date.month - 1]} {hijri_date.year}"
     return formatted_hijri_date
 
+
 # Get the current time and date from the prayer times
 @app.route('/')
 def index():
@@ -45,7 +47,9 @@ def index():
     today = datetime.now().day
     today_prayer_times = next((row for row in prayer_times if int(row[0]) == today), None)
 
-    return render_template('index.html', current_time=current_time, current_date=current_date, today_prayer_times=today_prayer_times, islamic_date=islamic_date)
+    return render_template('index.html', current_time=current_time, current_date=current_date,
+                           today_prayer_times=today_prayer_times, islamic_date=islamic_date)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
