@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prayer Times</title>
+    <link href="https://fonts.googleapis.com/css2?family=Digital-7&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -22,30 +23,48 @@
         <div class="prayer-times">
             <div class="beginning">
                 <h2>BEGINNING</h2>
-                <div>{{ today_prayer_times[3] }}</div>
-                <div>{{ today_prayer_times[5] }}</div>
-                <div>{{ today_prayer_times[6] }}</div>
-                <div>{{ today_prayer_times[7] }}</div>
-                <div>{{ today_prayer_times[8] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[3] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[5] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[6] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[7] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[8] }}</div>
+                <div class="prayer-time-value">&nbsp;</div>
             </div>
             <div class="prayer">
-                <h2></h2>
-                <h2></h2>
-                <div>FAJR</div>
-                <div>ZOHR</div>
-                <div>ASAR</div>
-                <div>MAGRIB</div>
-                <div>ISHA</div>
-                <!-- <div>JUMU'AH</div> -->
+                <h2>&nbsp;</h2>
+                <div class="prayer-time-value">
+                    <span class="english">FAJR</span>
+                    <span class="arabic">الفجر</span>
+                </div>
+                <div class="prayer-time-value">
+                    <span class="english">ZOHR</span>
+                    <span class="arabic">الظهر</span>
+                </div>
+                <div class="prayer-time-value">
+                    <span class="english">ASAR</span>
+                    <span class="arabic">العصر</span>
+                </div>
+                <div class="prayer-time-value">
+                    <span class="english">MAGRIB</span>
+                    <span class="arabic">المغرب</span>
+                </div>
+                <div class="prayer-time-value">
+                    <span class="english">ISHA</span>
+                    <span class="arabic">العشاء</span>
+                </div>
+                <div class="prayer-time-value">
+                    <span class="english">JUMU'AH</span>
+                    <span class="arabic">العشاء</span>
+                </div>
             </div>
             <div class="jamaah">
                 <h2>JAMAAH</h2>
-                <div>{{ today_prayer_times[9] }}</div>
-                <div>{{ today_prayer_times[10] }}</div>
-                <div>{{ today_prayer_times[11] }}</div>
-                <div>{{ today_prayer_times[12] }}</div>
-                <div>{{ today_prayer_times[13] }}</div>
-                <!-- <div>13:20</div> -->
+                <div class="prayer-time-value">{{ today_prayer_times[9] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[10] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[11] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[12] }}</div>
+                <div class="prayer-time-value">{{ today_prayer_times[13] }}</div>
+                <div class="prayer-time-value">13:20</div>
             </div>
         </div>
     </div>
