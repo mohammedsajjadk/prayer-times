@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Times</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <!-- Container for the entire page -->
+    <div class="container">
+
+        <!-- Time and Date Display -->
+        <div class="time-display">{{ current_time }}</div>
+        <div class="current-date">{{ current_date }}</div>
+
+        <!-- Prayer Times Section - Divided into 3 Columns -->
+        <div class="prayer-times">
+            <div class="beginning">
+                <h2>BEGINNING</h2>
+                <div>{{ today_prayer_times[3] }}</div>
+                <div>{{ today_prayer_times[5] }}</div>
+                <div>{{ today_prayer_times[6] }}</div>
+                <div>{{ today_prayer_times[7] }}</div>
+                <div>{{ today_prayer_times[8] }}</div>
+            </div>
+            <div class="prayer">
+                <h2>PRAYER TIMES</h2>
+                <div>FAJR</div>
+                <div>ZOHR</div>
+                <div>ASAR</div>
+                <div>MAGRIB</div>
+                <div>ISHA</div>
+            </div>
+            <div class="jamaah">
+                <h2>JAMAAH</h2>
+                <div>{{ today_prayer_times[9] }}</div>
+                <div>{{ today_prayer_times[10] }}</div>
+                <div>{{ today_prayer_times[11] }}</div>
+                <div>{{ today_prayer_times[12] }}</div>
+                <div>{{ today_prayer_times[13] }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Scroll at the bottom -->
+    <div class="announcement">
+        <p id="announcement-text">Announcement: Here is a rotating message. Customize this as you like!</p>
+    </div>
+
+</body>
+</html>
