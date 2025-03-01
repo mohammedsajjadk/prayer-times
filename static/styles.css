@@ -1,9 +1,12 @@
 :root {
-    --bg-color: #1A93C1;       /* Original mosque carpet color */
+    --bg-color: #0099ff;       /* Original mosque carpet color */
     --text-color: #FFFFFF;     /* Pure White */
-    --highlight-color: #13ff02; /* Saffron Gold */
+    --highlight-color: #35ff02; /* Saffron Gold */
     --border-color: #76B5C5;   /* Soft Sky Blue */
+    --announcement-bg-color: #0099ff;
+    --announcement-text-color: #FFFFFF;   
 }
+
 
 
 
@@ -42,7 +45,7 @@ body, html {
 /* Announcement bar at the bottom */
 .announcement {
     width: 98vh; /* Use viewport height for width since it's rotated */
-    background-color: var(--bg-color);
+    background-color: var(--announcement-bg-color);
     padding: 1vh;
     text-align: center;
     font-size: 3.5vw;
@@ -59,10 +62,12 @@ body, html {
     bottom: 25vw; /* Move it to the bottom */
 }
 
+
 #announcement-text {
     animation: scroll-announcement 20s linear infinite;
-    color: var(--text-color); /* Bright color for visibility */
+    color: var(--announcement-text-color); /* Bright color for visibility */
     transform: rotate(180deg); /* Flip the text to be readable */
+    text-shadow: 0 0 10px var(--highlight-color); /* Saffron Gold glow */
 }
 
 /*transform: rotate(90deg);*/
