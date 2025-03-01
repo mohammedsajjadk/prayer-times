@@ -1,3 +1,17 @@
+:root {
+    --bg-color: #1A93C1;       /* Original mosque carpet color */
+    --text-color: #FFFFFF;     /* Pure White */
+    --highlight-color: #13ff02; /* Saffron Gold */
+    --border-color: #76B5C5;   /* Soft Sky Blue */
+}
+
+
+
+.time-main, .prayer-time-value {
+    text-shadow: 0 0 10px var(--highlight-color);
+}
+
+
 @font-face {
     font-family: 'DS-Digital';
     src: url('/static/fonts/ds_digital/DS-DIGI.TTF') format('truetype');
@@ -13,14 +27,42 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: black;
-    color: white;
+    background-color: var(--bg-color);  
+    color: var(--text-color);
     height: 100vh;
     width: 100vw;
     overflow: hidden; /* Prevent scrolling */
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/*#0A192F*/
+
+/* Announcement bar at the bottom */
+.announcement {
+    width: 98vh; /* Use viewport height for width since it's rotated */
+    background-color: var(--bg-color);
+    padding: 1vh;
+    text-align: center;
+    font-size: 3.5vw;
+    white-space: nowrap;
+    overflow: hidden;
+    position: fixed;
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 0.3vw solid var(--border-color);
+    transform: rotate(-90deg);
+    left: 69vw; /* Adjusted to move it properly */
+    bottom: 25vw; /* Move it to the bottom */
+}
+
+#announcement-text {
+    animation: scroll-announcement 20s linear infinite;
+    color: var(--text-color); /* Bright color for visibility */
+    transform: rotate(180deg); /* Flip the text to be readable */
 }
 
 /*transform: rotate(90deg);*/
@@ -47,7 +89,7 @@ body, html {
     align-items: center;
     justify-content: center;
     font-family: 'DS-Digital', monospace;
-    color: #00ff00;
+    color: var(--highlight-color);
 }
 
 /* Large font for hours and minutes */
@@ -109,7 +151,7 @@ body, html {
 .separator {
     width: 80%;
     border: 0;
-    border-top: 2px solid white;
+    border-top: 2px solid var(--border-color);
     margin: 1vh 0;
 }
 
@@ -117,7 +159,7 @@ body, html {
 .prayer-times {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: 100%;
+    width: 102%;
     gap: 0;
     height: auto;
     border-collapse: collapse;
@@ -130,17 +172,21 @@ body, html {
     background-color: transparent;
 }
 
+.jamaah div { 
+    color: var(--highlight-color);
+}
+
 /* Add vertical separators between columns */
 .prayer {
-    border-left: 2px solid white;
-    border-right: 2px solid white;
+    border-left: 2px solid var(--border-color);
+    border-right: 2px solid var(--border-color);
 }
 
 /* Add horizontal separators between rows */
 .beginning div,
 .prayer div,
 .jamaah div {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid var(--border-color);
     padding: 2vh 3vw;
     margin: 0;
 }
@@ -157,7 +203,7 @@ body, html {
 .jamaah h2 {
     padding: 1vh 0;
     margin: 0;
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid var(--border-color);
     font-size: 3vw;
 }
 
@@ -213,7 +259,7 @@ body, html {
 .divider {
     width: 100%;
     height: 2px;
-    background-color: white;
+    background-color: var(--border-color);
     margin-bottom: 4vh;
 }
 
@@ -246,35 +292,11 @@ body, html {
     font-family: 'DS-Digital', monospace;
     font-size: 4vw;
     font-weight: bold;
-    color: #00ff00;
+    color: var(--highlight-color);
 }
 
 
-/* Announcement bar at the bottom */
-.announcement {
-    width: 98vh; /* Use viewport height for width since it's rotated */
-    background-color: rgb(0, 0, 0);
-    padding: 1vh;
-    text-align: center;
-    font-size: 3.5vw;
-    white-space: nowrap;
-    overflow: hidden;
-    position: fixed;
-    height: 10vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-top: 0.3vw solid white;
-    transform: rotate(-90deg);
-    left: 69vw; /* Adjusted to move it properly */
-    bottom: 25vw; /* Move it to the bottom */
-}
 
-#announcement-text {
-    animation: scroll-announcement 20s linear infinite;
-    color: #ffcc00; /* Bright color for visibility */
-    transform: rotate(180deg); /* Flip the text to be readable */
-}
 
 .time-main {
     transition: opacity 0.3s ease-in-out;
