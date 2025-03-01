@@ -43,15 +43,40 @@ body, html {
 
 /* Time header at the top */
 .time-display {
-    font-size: 12vw; /* Slightly smaller to fit AM/PM */
-    text-align: center;
-    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'DS-Digital', monospace;
     color: #00ff00;
 }
+
+/* Large font for hours and minutes */
+.time-main {
+    font-size: 13vw; /* Large font for HH:MM */
+    font-weight: bold;
+}
+
+/* Small stacked section for seconds and AM/PM */
+.time-sub {
+    display: flex;
+    flex-direction: column; /* Stack seconds on top of AM/PM */
+    align-items: center;
+    font-size: 5vw; /* Smaller size */
+    line-height: 1; /* Reduce spacing */
+    margin-left: 1vw; /* Space between HH:MM and side text */
+}
+
+/* Specific styling for seconds */
+.seconds {
+    font-size: 5vw; /* Slightly smaller */
+}
+
+/* AM/PM styling */
+.ampm {
+    font-size: 4vw; /* Keep it small */
+    font-family: Arial, sans-serif;
+}
+
 
 /* Date below time */
 .current-date {
@@ -92,7 +117,7 @@ body, html {
 .prayer-times {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: 104%;
+    width: 100%;
     gap: 0;
     height: auto;
     border-collapse: collapse;
@@ -129,9 +154,8 @@ body, html {
 
 /* Header styling */
 .beginning h2,
-.prayer h2,
 .jamaah h2 {
-    padding: 0vh 0;
+    padding: 1vh 0;
     margin: 0;
     border-bottom: 1px solid white;
     font-size: 3vw;
@@ -146,6 +170,8 @@ body, html {
     padding: 1vw;
     text-align: center;
     margin-bottom: 0.5vh;
+    height: 111vh; /* Set a fixed height */
+    min-height: 14vh; /* Ensures they don’t shrink */
 }
 /*border: 0.2vw solid white;*/
 .prayer-time-value {
@@ -155,7 +181,7 @@ body, html {
 }
 
 .prayer .prayer-time-value{
-    font-size: 3vw; /* Adjust this value to control the font size */
+    font-size: 3vw;
 }
 
 /* Keep regular font for prayer names */
@@ -169,6 +195,11 @@ body, html {
 .jamaah .prayer-time-value {
     font-family: 'DS-Digital', monospace;
 }
+
+.beginning .prayer-time-value {
+    font-size: 6.5vw;
+}
+
 
 /* Important Times Section */
 .important-times {

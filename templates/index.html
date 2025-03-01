@@ -13,7 +13,13 @@
     <div class="container">
 
         <!-- Time and Date Display -->
-        <div class="time-display">{{ current_time }}</div>
+        <div class="time-display">
+            <span class="time-main">06:50</span>
+            <span class="time-sub">
+                <span class="seconds">31</span>
+                <span class="ampm">AM</span>
+            </span>
+        </div>
         <div class="date-container">
             <div class="islamic-date">{{ islamic_date }}</div>
             <div class="gregorian-date">{{ current_date }}</div>
@@ -92,27 +98,31 @@
     </div>
 
     <!-- JavaScript to Update Time Every Second -->
-<script>
-    function updateTime() {
-        let now = new Date();
-        let hours = now.getHours();
-        let minutes = now.getMinutes().toString().padStart(2, '0');
-        let seconds = now.getSeconds().toString().padStart(2, '0');
-        let ampm = hours >= 12 ? 'PM' : 'AM';
-        
-        // Convert to 12-hour format
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        hours = hours.toString().padStart(2, '0');
-
-        document.querySelector('.time-display').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
-    }
-
-    // Update time every second
-    setInterval(updateTime, 1000);
-
-    // Run immediately to prevent 1-second delay
-    updateTime();
-</script>
+    <script>
+        function updateTime() {
+            let now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            let seconds = now.getSeconds().toString().padStart(2, '0');
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+    
+            // Convert to 12-hour format
+            hours = hours % 12 || 12;
+            hours = hours.toString().padStart(2, '0');
+    
+            // Insert time with separate spans
+            document.querySelector('.time-display').innerHTML = `
+                <span class="time-main">${hours}:${minutes}</span>
+                <span class="time-sub">
+                    <span class="seconds">${seconds}</span>
+                    <span class="ampm">${ampm}</span>
+                </span>
+            `;
+        }
+    
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+    
 </body>
 </html>
