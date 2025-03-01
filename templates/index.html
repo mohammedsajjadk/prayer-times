@@ -18,6 +18,7 @@
             <div class="islamic-date">{{ islamic_date }}</div>
             <div class="gregorian-date">{{ current_date }}</div>
         </div>
+        <div class="divider"></div>
 
         <!-- Prayer Times Section - Divided into 3 Columns -->
         <div class="prayer-times">
@@ -69,28 +70,49 @@
         </div>
     </div>
 
-    <!-- Announcement Scroll at the bottom -->
+    <div class="important-times">
+        <div class="divider"></div>
+        <div class="times-container">
+            <div class="time-box">
+                <div class="time-label">SEHRI ENDS</div>
+                <div class="time-value">{{ important_times.sehri_ends }}</div>
+            </div>
+            <div class="time-box">
+                <div class="time-label">SUN RISE</div>
+                <div class="time-value">{{ important_times.sunrise }}</div>
+            </div>
+            <div class="time-box">
+                <div class="time-label">NOON</div>
+                <div class="time-value">{{ important_times.noon }}</div>
+            </div>
+        </div>
+    </div>    <!-- Announcement Scroll at the bottom -->
     <div class="announcement">
         <p id="announcement-text">SILENCE! WE ARE IN HOUSE OF ALLAH. PLEASE SWITCH OFF YOUR MOBILE.</p>
     </div>
 
     <!-- JavaScript to Update Time Every Second -->
-    <script>
-        function updateTime() {
-            let now = new Date();
-            let hours = now.getHours().toString().padStart(2, '0');
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let seconds = now.getSeconds().toString().padStart(2, '0');
+<script>
+    function updateTime() {
+        let now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes().toString().padStart(2, '0');
+        let seconds = now.getSeconds().toString().padStart(2, '0');
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        // Convert to 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours.toString().padStart(2, '0');
 
-            document.querySelector('.time-display').textContent = `${hours}:${minutes}:${seconds}`;
-        }
+        document.querySelector('.time-display').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+    }
 
-        // Update time every second
-        setInterval(updateTime, 1000);
+    // Update time every second
+    setInterval(updateTime, 1000);
 
-        // Run immediately to prevent 1-second delay
-        updateTime();
-    </script>
-
+    // Run immediately to prevent 1-second delay
+    updateTime();
+</script>
 </body>
 </html>

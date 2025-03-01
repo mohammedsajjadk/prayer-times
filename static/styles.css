@@ -1,9 +1,19 @@
+@font-face {
+    font-family: 'DS-Digital';
+    src: url('/static/fonts/ds_digital/DS-DIGI.TTF') format('truetype');
+}
+
+@font-face {
+    font-family: 'DS-Digital';
+    src: url('/static/fonts/ds_digital/DS-DIGIB.TTF') format('truetype');
+    font-weight: bold;
+}
 /* General body and page styles */
 body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: blue;
+    background-color: black;
     color: white;
     height: 100vh;
     width: 100vw;
@@ -19,25 +29,28 @@ body, html {
 .container {
     transform: rotate(90deg);
     transform-origin: center center;
-    width: 69vw;
+    width: 100vh;  /* Changed from 69vw to 100vh since it's rotated */
+    height: 100vw; /* Added height to ensure proper scaling */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start; /* Changed from center to start at the top */
     overflow: hidden;
-    padding-top: 2vh; /* Small padding at the top */
+    /*padding-top: 2vh; /* Small padding at the top */
 }
 
 
 
 /* Time header at the top */
 .time-display {
-    font-size: 8vw;
+    font-size: 12.5vw; /* Slightly smaller to fit AM/PM */
     text-align: center;
     height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: 'DS-Digital', monospace;
+    color: #00ff00;
 }
 
 /* Date below time */
@@ -51,8 +64,8 @@ body, html {
 .date-container {
     display: flex;
     justify-content: space-between;
-    width: 80%;
-    font-size: 2.5vw;
+    width: 100%;
+    font-size: 3.5vw;
     text-align: center;
     margin-top: 1vh;
 }
@@ -78,28 +91,138 @@ body, html {
 /* Prayer Times section */
 .prayer-times {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
-    width: 80%;
-    gap: 1vw;
+    grid-template-columns: repeat(3, 1fr);
+    width: 104%;
+    gap: 0;
     height: auto;
+    border-collapse: collapse;
 }
+
+/* Remove previous background colors */
+.beginning div,
+.prayer div,
+.jamaah div {
+    background-color: transparent;
+}
+
+/* Add vertical separators between columns */
+.prayer {
+    border-left: 2px solid white;
+    border-right: 2px solid white;
+}
+
+/* Add horizontal separators between rows */
+.beginning div,
+.prayer div,
+.jamaah div {
+    border-bottom: 1px solid white;
+    padding: 2vh 3vw;
+    margin: 0;
+}
+
+/* Remove border from last items in each column */
+.beginning div:last-child,
+.prayer div:last-child,
+.jamaah div:last-child {
+    border-bottom: none;
+}
+
+/* Header styling */
+.beginning h2,
+.prayer h2,
+.jamaah h2 {
+    padding: 0vh 0;
+    margin: 0;
+    border-bottom: 1px solid white;
+    font-size: 3vw;
+}
+
 
 .prayer-times div {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 2.0vw;
-    padding: 3vw;
-    border: 0.2vw solid white;
+    padding: 1vw;
     text-align: center;
-    margin-bottom: 1vh;
+    margin-bottom: 0.5vh;
 }
+/*border: 0.2vw solid white;*/
+.prayer-time-value {
+    font-size: 7.3vw; /* Adjust this value to control the font size */
+    font-weight: bold; /* Optional: makes the times appear bolder */
+    font-family: 'DS-Digital', monospace;
+}
+
+.prayer .prayer-time-value{
+    font-size: 3vw; /* Adjust this value to control the font size */
+}
+
+/* Keep regular font for prayer names */
+.prayer .prayer-time-value .english,
+.prayer .prayer-time-value .arabic {
+    font-family: Arial, sans-serif;
+}
+
+/* Seven-segment display for times only */
+.beginning .prayer-time-value,
+.jamaah .prayer-time-value {
+    font-family: 'DS-Digital', monospace;
+}
+
+/* Important Times Section */
+.important-times {
+    width: 103vh;
+    position: fixed;
+    transform: rotate(90deg);
+    left: -17.5vw;
+    bottom: 43vh;
+}
+
+.divider {
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    margin-bottom: 4vh;
+}
+
+.times-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 0 2vh;
+}
+
+.time-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vh;
+}
+
+.time-label {
+    font-size: 2.5vw;
+    font-weight: bold;
+}
+
+.time-value {
+    font-family: 'DS-Digital', monospace;
+    font-size: 4vw;
+    font-weight: bold;
+}
+
+.time-value {
+    font-family: 'DS-Digital', monospace;
+    font-size: 4vw;
+    font-weight: bold;
+    color: #00ff00; /* Add this line for green color */
+}
+
 
 /* Announcement bar at the bottom */
 .announcement {
     width: 98vh; /* Use viewport height for width since it's rotated */
-    background-color: darkblue;
+    background-color: rgb(0, 0, 0);
     padding: 1vh;
     text-align: center;
     font-size: 3.5vw;
