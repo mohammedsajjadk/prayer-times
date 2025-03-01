@@ -175,7 +175,7 @@ body, html {
 }
 /*border: 0.2vw solid white;*/
 .prayer-time-value {
-    font-size: 7.3vw; /* Adjust this value to control the font size */
+    font-size: 7.3vw; 
     font-weight: bold; /* Optional: makes the times appear bolder */
     font-family: 'DS-Digital', monospace;
 }
@@ -246,7 +246,7 @@ body, html {
     font-family: 'DS-Digital', monospace;
     font-size: 4vw;
     font-weight: bold;
-    color: #00ff00; /* Add this line for green color */
+    color: #00ff00;
 }
 
 
