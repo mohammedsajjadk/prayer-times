@@ -30,7 +30,7 @@ body, html {
     transform: rotate(-90deg);
     transform-origin: center center;
     width: 100vh;  /* Changed from 69vw to 100vh since it's rotated */
-    height: 100vw; /* Added height to ensure proper scaling */
+    height: 102vw; /* Added height to ensure proper scaling */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -205,9 +205,9 @@ body, html {
 .important-times {
     width: 103vh;
     position: fixed;
-    transform: rotate(90deg);
-    left: -17.5vw;
-    bottom: 43vh;
+    transform: rotate(-90deg);
+    left: 59.5vw;
+    bottom: 40vh;
 }
 
 .divider {
@@ -265,8 +265,9 @@ body, html {
     align-items: center;
     justify-content: center;
     border-top: 0.3vw solid white;
-    transform: rotate(90deg);
-    left: -25vw; /* Position from left edge */
+    transform: rotate(-90deg);
+    left: 69vw; /* Adjusted to move it properly */
+    bottom: 25vw; /* Move it to the bottom */
 }
 
 #announcement-text {
