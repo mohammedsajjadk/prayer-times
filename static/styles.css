@@ -43,7 +43,7 @@ body, html {
 
 /* Time header at the top */
 .time-display {
-    font-size: 12.5vw; /* Slightly smaller to fit AM/PM */
+    font-size: 12vw; /* Slightly smaller to fit AM/PM */
     text-align: center;
     height: auto;
     display: flex;
