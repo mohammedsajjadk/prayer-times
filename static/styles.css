@@ -27,7 +27,7 @@ body, html {
 
 /* Main content container (Counter-Rotated) */
 .container {
-    transform: rotate(90deg);
+    transform: rotate(-90deg);
     transform-origin: center center;
     width: 100vh;  /* Changed from 69vw to 100vh since it's rotated */
     height: 100vw; /* Added height to ensure proper scaling */
