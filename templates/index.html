@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,8 +10,7 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 
 </head>
-<script> localStorage.clear();  // Clears all stored data
-</script>
+
 <body>
 
     <!-- Container for the entire page -->
@@ -103,30 +103,57 @@
 
     <!-- JavaScript to Update Time Every Second -->
     <script>
-        function updateTime() {
-            let now = new Date();
-            let hours = now.getHours();
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let seconds = now.getSeconds().toString().padStart(2, '0');
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-    
-            // Convert to 12-hour format
-            hours = hours % 12 || 12;
-            hours = hours.toString().padStart(2, '0');
-    
-            // Insert time with separate spans
-            document.querySelector('.time-display').innerHTML = `
-                <span class="time-main">${hours}:${minutes}</span>
-                <span class="time-sub">
-                    <span class="seconds">${seconds}</span>
-                    <span class="ampm">${ampm}</span>
-                </span>
-            `;
-        }
-    
-        setInterval(updateTime, 1000);
-        updateTime();
-    </script>
-    
+      function updateTime() {
+          let now = new Date();
+          let hours = now.getHours();
+          let minutes = now.getMinutes().toString().padStart(2, '0');
+          let seconds = now.getSeconds().toString().padStart(2, '0');
+          let ampm = hours >= 12 ? 'PM' : 'AM';
+  
+          // Convert to 12-hour format
+          hours = hours % 12 || 12;
+          hours = hours.toString().padStart(2, '0');
+  
+          // Insert time with separate spans
+          document.querySelector('.time-display').innerHTML = `
+              <span class="time-main">${hours}:${minutes}</span>
+              <span class="time-sub">
+                  <span class="seconds">${seconds}</span>
+                  <span class="ampm">${ampm}</span>
+              </span>
+          `;
+      }
+  
+      setInterval(updateTime, 1000);
+      updateTime();
+  
+      // Check and refresh the page between 00:00 and 00:30
+      function checkAndRefresh() {
+          let now = new Date();
+          let hours = now.getHours().toString().padStart(2, '0');  // Ensure two-digit format for hours
+          let minutes = now.getMinutes().toString().padStart(2, '0');  // Ensure two-digit format for minutes
+  
+          // Check if the page hasn't been refreshed yet
+          if (!localStorage.getItem('page_refreshed') && (
+              (hours == '00' && minutes >= '00' && minutes < '30'))) {  // Between 00:00 and 00:30
+              location.reload();  // Refresh the page once
+              console.log('refreshed successfully');
+              localStorage.setItem('page_refreshed', 'true');  // Mark that refresh has occurred
+          }
+  
+          // Remove the page_refreshed flag after 00:30 so that it can be refreshed the next day
+          if (hours == '00' && minutes >= '30') {
+              localStorage.removeItem('page_refreshed');
+              console.log('Reset page_refreshed flag after 00:30');
+          }
+      }
+  
+      // Call checkAndRefresh every minute
+      setInterval(checkAndRefresh, 60000);  // 60000 milliseconds = 1 minute
+  
+      // Call it once immediately to check immediately after page load
+      checkAndRefresh();
+  </script>
 </body>
+
 </html>
