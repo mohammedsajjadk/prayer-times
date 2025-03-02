@@ -77,6 +77,11 @@ body, html {
     width: 12vw;
 }
 
+
+.jamaah .prayer-time-value {
+    font-size: 1vw;
+}
+
 /*transform: rotate(90deg);*/
 
 /* Main content container (Counter-Rotated) */
