@@ -105,7 +105,7 @@
     <script>
       function updateTime() {
           let now = new Date();
-          let hours = now.getHours();
+          let hours = now.getUTCHours();
           let minutes = now.getMinutes().toString().padStart(2, '0');
           let seconds = now.getSeconds().toString().padStart(2, '0');
           let ampm = hours >= 12 ? 'PM' : 'AM';
@@ -130,8 +130,8 @@
       // Check and refresh the page between 00:00 and 00:30
       function checkAndRefresh() {
           let now = new Date();
-          let hours = now.getHours().toString().padStart(2, '0');  // Ensure two-digit format for hours
-          let minutes = now.getMinutes().toString().padStart(2, '0');  // Ensure two-digit format for minutes
+          let hours = now.getUTCHours().toString().padStart(2, '0');  // Ensure two-digit format for hours
+          let minutes = now.getUTCMinutes().toString().padStart(2, '0');  // Ensure two-digit format for minutes
   
           // Check if the page hasn't been refreshed yet
           if (!localStorage.getItem('page_refreshed') && (

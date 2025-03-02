@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Flask, render_template
 from hijri_converter import convert
@@ -57,15 +57,15 @@ def index():
     prayer_times = load_prayer_times()
     
     # Get today's prayer times
-    today = datetime.now().day
+    today = datetime.now(timezone.utc).day  # Use UTC day
     today_prayer_times = next((row for row in prayer_times if int(row[0]) == today), None)
 
     # Calculate important times
     important_times = calculate_important_times(today_prayer_times)
 
     return render_template('index.html',
-                         current_time=datetime.now().strftime('%H:%M:%S'),
-                         current_date=datetime.now().strftime('%a, %b %d'),
+                         current_time=datetime.now(timezone.utc).strftime('%H:%M:%S'),
+                         current_date=datetime.now(timezone.utc).strftime('%a, %b %d'),
                          islamic_date=get_islamic_date(),
                          today_prayer_times=today_prayer_times,
                          important_times=important_times)
