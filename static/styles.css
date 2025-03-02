@@ -70,7 +70,7 @@ body, html {
 }
 
 .prayer-times .prayer {
-    width: 12vw;
+    width: 13vw;
 }
 
 .prayer-times .jamaah {
@@ -79,7 +79,7 @@ body, html {
 
 
 .jamaah .prayer-time-value {
-    font-size: 1vw;
+    font-size: 8.5vw;
 }
 
 /*transform: rotate(90deg);*/
@@ -111,7 +111,7 @@ body, html {
 
 /* Large font for hours and minutes */
 .time-main {
-    font-size: 13vw; /* Large font for HH:MM */
+    font-size: 15vw; /* Large font for HH:MM */
     font-weight: bold;
 }
 
@@ -148,10 +148,10 @@ body, html {
 .date-container {
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    font-size: 3.5vw;
+    width: 98%;
+    font-size: 3.0vw;
     text-align: center;
-    margin-top: 1vh;
+    margin-top: -2vh;
 }
 
 .islamic-date {
@@ -195,8 +195,8 @@ body, html {
 
 /* Add vertical separators between columns */
 .prayer {
-    border-left: 2px solid var(--border-color);
-    border-right: 2px solid var(--border-color);
+    border-left: 3px solid var(--border-color);
+    border-right: 3px solid var(--border-color);
 }
 
 /* Add horizontal separators between rows */
@@ -234,7 +234,7 @@ body, html {
     text-align: center;
     margin-bottom: 0.5vh;
     height: 111vh; /* Set a fixed height */
-    min-height: 14vh; /* Ensures they don’t shrink */
+    min-height: 14.5vh; /* Ensures they don’t shrink */
 }
 /*border: 0.2vw solid white;*/
 .prayer-time-value {
