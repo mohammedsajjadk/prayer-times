@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Digital-7&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-
 </head>
 
 <body>
@@ -30,7 +29,7 @@
         </div>
         <div class="divider"></div>
 
-        <!-- Prayer Times Section - Divided into 3 Columns -->
+        <!-- Prayer Times Section -->
         <div class="prayer-times">
             <div class="beginning">
                 <h2>BEGINNING</h2>
@@ -88,7 +87,7 @@
                 <div class="time-value">{{ important_times.sehri_ends }}</div>
             </div>
             <div class="time-box">
-                <div class="time-label">SUN RISE</div>
+                <div class="time-label">SUNRISE</div>
                 <div class="time-value">{{ important_times.sunrise }}</div>
             </div>
             <div class="time-box">
@@ -96,64 +95,52 @@
                 <div class="time-value">{{ important_times.noon }}</div>
             </div>
         </div>
-    </div>    <!-- Announcement Scroll at the bottom -->
+    </div>
+
+    <!-- Announcement Scroll -->
     <div class="announcement">
         <p id="announcement-text">Silence, please. We are in the House of Allah. Kindly turn off your mobile.</p>
     </div>
 
-    <!-- JavaScript to Update Time Every Second -->
+    <!-- JavaScript -->
     <script>
-      function updateTime() {
-          let now = new Date();
-          let hours = now.getUTCHours();
-          let minutes = now.getMinutes().toString().padStart(2, '0');
-          let seconds = now.getSeconds().toString().padStart(2, '0');
-          let ampm = hours >= 12 ? 'PM' : 'AM';
-  
-          // Convert to 12-hour format
-          hours = hours % 12 || 12;
-          hours = hours.toString().padStart(2, '0');
-  
-          // Insert time with separate spans
-          document.querySelector('.time-display').innerHTML = `
-              <span class="time-main">${hours}:${minutes}</span>
-              <span class="time-sub">
-                  <span class="seconds">${seconds}</span>
-                  <span class="ampm">${ampm}</span>
-              </span>
-          `;
-      }
-  
-      setInterval(updateTime, 1000);
-      updateTime();
-  
-      // Check and refresh the page between 00:00 and 00:30
-      function checkAndRefresh() {
-          let now = new Date();
-          let hours = now.getUTCHours().toString().padStart(2, '0');  // Ensure two-digit format for hours
-          let minutes = now.getUTCMinutes().toString().padStart(2, '0');  // Ensure two-digit format for minutes
-  
-          // Check if the page hasn't been refreshed yet
-          if (!localStorage.getItem('page_refreshed') && (
-              (hours == '15' && minutes >= '00' && minutes < '30'))) {  // Between 00:00 and 00:30
-              location.reload();  // Refresh the page once
-              console.log('refreshed successfully');
-              localStorage.setItem('page_refreshed', 'true');  // Mark that refresh has occurred
-          }
-  
-          // Remove the page_refreshed flag after 00:30 so that it can be refreshed the next day
-          if (hours == '00' && minutes >= '30') {
-              localStorage.removeItem('page_refreshed');
-              console.log('Reset page_refreshed flag after 00:30');
-          }
-      }
-  
-      // Call checkAndRefresh every minute
-      setInterval(checkAndRefresh, 60000);  // 60000 milliseconds = 1 minute
-  
-      // Call it once immediately to check immediately after page load
-      checkAndRefresh();
-  </script>
-</body>
+        function updateTime() {
+            let now = new Date();
+            let hours = now.getUTCHours();
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            let seconds = now.getSeconds().toString().padStart(2, '0');
+            let ampm = hours >= 12 ? 'PM' : 'AM';
 
+            hours = hours % 12 || 12;
+            hours = hours.toString().padStart(2, '0');
+
+            document.querySelector('.time-display').innerHTML = `
+                <span class="time-main">${hours}:${minutes}</span>
+                <span class="time-sub">
+                    <span class="seconds">${seconds}</span>
+                    <span class="ampm">${ampm}</span>
+                </span>
+            `;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        function forceMidnightRefresh() {
+            let now = new Date();
+            let hours = now.getUTCHours();
+            let minutes = now.getUTCMinutes();
+            let seconds = now.getUTCSeconds();
+
+            if (hours === 0 && minutes === 0 && seconds === 0) {  
+                console.log("Refreshing page at", hours + ":" + minutes + ":" + seconds);
+                window.location.href = window.location.pathname + "?t=" + new Date().getTime();
+            }
+        }
+
+        setInterval(forceMidnightRefresh, 1000);
+
+    </script>
+
+</body>
 </html>
