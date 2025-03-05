@@ -44,9 +44,9 @@ body, html {
 
 /* Announcement bar at the bottom */
 .announcement {
-    width: 98vh; /* Use viewport height for width since it's rotated */
+    width: 100vh; /* Use viewport height for width since it's rotated */
     background-color: var(--announcement-bg-color);
-    padding: 1vh;
+    padding: 0.3vh;
     text-align: center;
     font-size: 3.5vw;
     white-space: nowrap;
