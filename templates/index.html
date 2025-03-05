@@ -228,8 +228,8 @@
 
       // Check for prohibited prayer times with exact permitted times
       // In the updateAnnouncement function, modify the if-else block:
-      if (currentTime >= sunriseTime && currentTime <= sunriseTime + 90) {
-        const permitTime = addMinutes(sunrise, 90);
+      if (currentTime >= sunriseTime && currentTime <= sunriseTime + 15) {
+        const permitTime = addMinutes(sunrise, 15);
         announcementText = `🌅 ATTENTION: PRAYER NOT PERMITTED until ${permitTime}. This time after sunrise (${sunrise}) is reserved for dhikr and du'a. 🌅`;
         document.getElementById('announcement-text').classList.add('announcement-warning');
       } else if (currentTime >= zawalTime && currentTime < zohrTime) {
