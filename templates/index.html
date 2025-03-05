@@ -227,15 +227,20 @@
       let announcementText = "Silence, please. We are in the House of Allah. Kindly turn off your mobile.";
 
       // Check for prohibited prayer times with exact permitted times
-      if (currentTime >= sunriseTime && currentTime <= sunriseTime + 15) {
-        const permitTime = addMinutes(sunrise, 15);
-        announcementText = `🌅 Prayer is not permitted until ${permitTime}. This time after sunrise is reserved for dhikr and du'a.`;
+      // In the updateAnnouncement function, modify the if-else block:
+      if (currentTime >= sunriseTime && currentTime <= sunriseTime + 90) {
+        const permitTime = addMinutes(sunrise, 90);
+        announcementText = `🌅 ATTENTION: PRAYER NOT PERMITTED until ${permitTime}. This time after sunrise (${sunrise}) is reserved for dhikr and du'a. 🌅`;
+        document.getElementById('announcement-text').classList.add('announcement-warning');
       } else if (currentTime >= zawalTime && currentTime < zohrTime) {
-        announcementText = `🌅 Prayer is not permitted at Zawal time. Please wait for Zohr time to begin at ${zohrBeginning}.`;
+        announcementText = `☀️ ATTENTION: PRAYER NOT PERMITTED at Zawal time (${zawal}). Please wait for Zohr time to begin at ${zohrBeginning}. ☀️`;
+        document.getElementById('announcement-text').classList.add('announcement-warning');
       } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
-        announcementText = `🌅 Prayer is not permitted during sunset. Please wait for Magrib Adhan at ${magribBeginning}.`;
+        announcementText = `🌇 ATTENTION: PRAYER NOT PERMITTED during sunset. Please wait for Magrib Adhan at ${magribBeginning}. 🌇`;
+        document.getElementById('announcement-text').classList.add('announcement-warning');
+      } else {
+        document.getElementById('announcement-text').classList.remove('announcement-warning');
       }
-
       document.getElementById('announcement-text').textContent = announcementText;
     }
 
