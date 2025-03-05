@@ -313,7 +313,54 @@ body, html {
 }
 
 
+/* Remove the following .next-prayer if the team disapproves */
+.next-prayer {
+    /* Option 1: Gradient border effect */
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
+                linear-gradient(45deg, var(--highlight-color), #ffffff) border-box;
+    padding: 0.5vw !important;
+    font-size: 8.5vw !important;
+    position: relative;
+    animation: borderPulse 2s infinite;
+}
 
+/* Or you could use this alternative style */
+/* .next-prayer {
+    background-color: rgba(53, 255, 2, 0.1) !important;
+    border-radius: 10px;
+    padding: 0.5vw !important;
+    box-shadow: 0 0 15px rgba(53, 255, 2, 0.3);
+    font-size: 8.5vw !important;
+    position: relative;
+    animation: glowPulse 2s infinite;
+}
+
+.next-prayer {
+    border-bottom: 2px solid var(--highlight-color) !important;
+    font-size: 8.5vw !important;
+    position: relative;
+    animation: underlinePulse 2s infinite;
+}
+*/
+@keyframes borderPulse {
+    0% { border-color: transparent; }
+    50% { border-color: var(--highlight-color); }
+    100% { border-color: transparent; }
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 15px rgba(53, 255, 2, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(53, 255, 2, 0.5); }
+    100% { box-shadow: 0 0 15px rgba(53, 255, 2, 0.3); }
+}
+
+@keyframes underlinePulse {
+    0% { border-bottom-width: 2px; }
+    50% { border-bottom-width: 4px; }
+    100% { border-bottom-width: 2px; }
+}
 
 .time-main {
     transition: opacity 0.3s ease-in-out;

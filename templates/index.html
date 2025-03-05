@@ -1,146 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prayer Times</title>
-    <link href="https://fonts.googleapis.com/css2?family=Digital-7&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-</head>
-
-<body>
-
-    <!-- Container for the entire page -->
-    <div class="container">
-
-        <!-- Time and Date Display -->
-        <div class="time-display">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Prayer Times</title>
+      <link href="https://fonts.googleapis.com/css2?family=Digital-7&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+      <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+   </head>
+   <body>
+      <!-- Container for the entire page -->
+      <div class="container">
+         <!-- Time and Date Display -->
+         <div class="time-display">
             <span class="time-main">06:50</span>
             <span class="time-sub">
-                <span class="seconds">31</span>
-                <span class="ampm">AM</span>
+            <span class="seconds">31</span>
+            <span class="ampm">AM</span>
             </span>
-        </div>
-        <div class="date-container">
+         </div>
+         <div class="date-container">
             <div class="islamic-date">{{ islamic_date }}</div>
             <div class="gregorian-date">{{ current_date }}</div>
-        </div>
-        <div class="divider"></div>
-
-        <!-- Prayer Times Section -->
-        <div class="prayer-times">
+         </div>
+         <div class="divider"></div>
+         <!-- Prayer Times Section -->
+         <div class="prayer-times">
             <div class="beginning">
-                <h2>BEGINNING</h2>
-                <div class="prayer-time-value">{{ today_prayer_times[3] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[5] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[6] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[7] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[8] }}</div>
-                <div class="prayer-time-value">&nbsp;</div>
+               <h2>BEGINNING</h2>
+               <div class="prayer-time-value">{{ today_prayer_times[3] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[5] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[6] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[7] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[8] }}</div>
+               <div class="prayer-time-value">&nbsp;</div>
             </div>
             <div class="prayer">
-                <h2>&nbsp;</h2>
-                <div class="prayer-time-value">
-                    <span class="english">FAJR</span>
-                    <span class="arabic">الفجر</span>
-                </div>
-                <div class="prayer-time-value">
-                    <span class="english">ZOHR</span>
-                    <span class="arabic">الظهر</span>
-                </div>
-                <div class="prayer-time-value">
-                    <span class="english">ASAR</span>
-                    <span class="arabic">العصر</span>
-                </div>
-                <div class="prayer-time-value">
-                    <span class="english">MAGRIB</span>
-                    <span class="arabic">المغرب</span>
-                </div>
-                <div class="prayer-time-value">
-                    <span class="english">ISHA</span>
-                    <span class="arabic">العشاء</span>
-                </div>
-                <div class="prayer-time-value">
-                    <span class="english">JUMU'AH</span>
-                    <span class="arabic">الجمعة</span>
-                </div>
+               <h2>&nbsp;</h2>
+               <div class="prayer-time-value">
+                  <span class="english">FAJR</span>
+                  <span class="arabic">الفجر</span>
+               </div>
+               <div class="prayer-time-value">
+                  <span class="english">ZOHR</span>
+                  <span class="arabic">الظهر</span>
+               </div>
+               <div class="prayer-time-value">
+                  <span class="english">ASAR</span>
+                  <span class="arabic">العصر</span>
+               </div>
+               <div class="prayer-time-value">
+                  <span class="english">MAGRIB</span>
+                  <span class="arabic">المغرب</span>
+               </div>
+               <div class="prayer-time-value">
+                  <span class="english">ISHA</span>
+                  <span class="arabic">العشاء</span>
+               </div>
+               <div class="prayer-time-value">
+                  <span class="english">JUMU'AH</span>
+                  <span class="arabic">الجمعة</span>
+               </div>
             </div>
             <div class="jamaah">
-                <h2>JAMAAH</h2>
-                <div class="prayer-time-value">{{ today_prayer_times[9] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[10] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[11] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[12] }}</div>
-                <div class="prayer-time-value">{{ today_prayer_times[13] }}</div>
-                <div class="prayer-time-value">13:20</div>
+               <h2>JAMAAH</h2>
+               <div class="prayer-time-value">{{ today_prayer_times[9] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[10] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[11] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[12] }}</div>
+               <div class="prayer-time-value">{{ today_prayer_times[13] }}</div>
+               <div class="prayer-time-value">13:20</div>
             </div>
-        </div>
-    </div>
-
-    <div class="important-times">
-        <div class="divider"></div>
-        <div class="times-container">
+         </div>
+      </div>
+      <div class="important-times">
+         <div class="divider"></div>
+         <div class="times-container">
             <div class="time-box">
-                <div class="time-label">SEHRI ENDS</div>
-                <div class="time-value">{{ important_times.sehri_ends }}</div>
-            </div>
-            <div class="time-box">
-                <div class="time-label">SUNRISE</div>
-                <div class="time-value">{{ important_times.sunrise }}</div>
+               <div class="time-label">SEHRI ENDS</div>
+               <div class="time-value">{{ important_times.sehri_ends }}</div>
             </div>
             <div class="time-box">
-                <div class="time-label">NOON</div>
-                <div class="time-value">{{ important_times.noon }}</div>
+               <div class="time-label">SUNRISE</div>
+               <div class="time-value">{{ important_times.sunrise }}</div>
             </div>
-        </div>
-    </div>
-
-    <!-- Announcement Scroll -->
-    <div class="announcement">
-        <p id="announcement-text">Silence, please. We are in the House of Allah. Kindly turn off your mobile.</p>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        function updateTime() {
-            let now = new Date();
-            let hours = now.getUTCHours();
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let seconds = now.getSeconds().toString().padStart(2, '0');
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-
-            hours = hours % 12 || 12;
-            hours = hours.toString().padStart(2, '0');
-
-            document.querySelector('.time-display').innerHTML = `
-                <span class="time-main">${hours}:${minutes}</span>
-                <span class="time-sub">
-                    <span class="seconds">${seconds}</span>
-                    <span class="ampm">${ampm}</span>
-                </span>
-            `;
-        }
-
-        setInterval(updateTime, 1000);
-        updateTime();
-
-        function forceMidnightRefresh() {
-            let now = new Date();
-            let hours = now.getUTCHours();
-            let minutes = now.getUTCMinutes();
-            let seconds = now.getUTCSeconds();
-
-            if (hours === 0 && minutes === 0 && seconds === 0) {  
-                console.log("Refreshing page at", hours + ":" + minutes + ":" + seconds);
-                window.location.href = window.location.pathname + "?t=" + new Date().getTime();
-            }
-        }
-
-        setInterval(forceMidnightRefresh, 1000);
-
-    </script>
-
-</body>
+            <div class="time-box">
+               <div class="time-label">NOON</div>
+               <div class="time-value">{{ important_times.noon }}</div>
+            </div>
+         </div>
+      </div>
+      <!-- Announcement Scroll -->
+      <div class="announcement">
+         <p id="announcement-text">Silence, please. We are in the House of Allah. Kindly turn off your mobile.</p>
+      </div>
+      <!-- JavaScript -->
+      <script>
+         function updateTime() {
+             let now = new Date();
+             let hours = now.getUTCHours();
+             let minutes = now.getMinutes().toString().padStart(2, '0');
+             let seconds = now.getSeconds().toString().padStart(2, '0');
+             let ampm = hours >= 12 ? 'PM' : 'AM';
+         
+             hours = hours % 12 || 12;
+             hours = hours.toString().padStart(2, '0');
+         
+             document.querySelector('.time-display').innerHTML = `
+                 <span class="time-main">${hours}:${minutes}</span>
+                 <span class="time-sub">
+                     <span class="seconds">${seconds}</span>
+                     <span class="ampm">${ampm}</span>
+                 </span>
+             `;
+         }
+         
+         setInterval(updateTime, 1000);
+         updateTime();
+         
+         function forceMidnightRefresh() {
+             let now = new Date();
+             let hours = now.getUTCHours();
+             let minutes = now.getUTCMinutes();
+             let seconds = now.getUTCSeconds();
+         
+             if (hours === 0 && minutes === 0 && seconds === 0) {  
+                 console.log("Refreshing page at", hours + ":" + minutes + ":" + seconds);
+                 window.location.href = window.location.pathname + "?t=" + new Date().getTime();
+             }
+         }
+         
+         setInterval(forceMidnightRefresh, 1000);
+         
+         
+         // Add this function after the existing updateTime function
+         function updateNextPrayer() {
+         const now = new Date();
+         const currentHour = now.getUTCHours();
+         const currentMinute = now.getUTCMinutes();
+         const currentTime = currentHour * 60 + currentMinute; // Convert to minutes
+         
+         // Get all prayer times from the page
+         const fajrJamaah = document.querySelector('.jamaah .prayer-time-value:nth-child(2)').textContent;
+         const zohrJamaah = document.querySelector('.jamaah .prayer-time-value:nth-child(3)').textContent;
+         const asrJamaah = document.querySelector('.jamaah .prayer-time-value:nth-child(4)').textContent;
+         const magribJamaah = document.querySelector('.jamaah .prayer-time-value:nth-child(5)').textContent;
+         const ishaJamaah = document.querySelector('.jamaah .prayer-time-value:nth-child(6)').textContent;
+         
+         const sunrise = document.querySelector('.time-box:nth-child(2) .time-value').textContent;
+         const asrBeginning = document.querySelector('.beginning .prayer-time-value:nth-child(4)').textContent;
+         const magribBeginning = document.querySelector('.beginning .prayer-time-value:nth-child(5)').textContent;
+         const ishaBeginning = document.querySelector('.beginning .prayer-time-value:nth-child(6)').textContent;
+         const fajrBeginning = document.querySelector('.beginning .prayer-time-value:nth-child(2)').textContent;
+         
+         // Remove existing highlights
+         document.querySelectorAll('.next-prayer').forEach(el => el.classList.remove('next-prayer'));
+         
+         // Convert time strings to minutes for comparison
+         const timeToMinutes = (timeStr) => {
+         const [hours, minutes] = timeStr.split(':').map(Number);
+         return hours * 60 + minutes;
+         };
+         
+         const currentDay = new Date().getDay(); // 5 is Friday
+         const isJumuah = currentDay === 5;
+         
+         if (timeToMinutes(fajrBeginning) <= currentTime && currentTime < timeToMinutes(sunrise)) {
+         document.querySelector('.jamaah .prayer-time-value:nth-child(2)').classList.add('next-prayer'); // Fajr
+         } else if (timeToMinutes(sunrise) <= currentTime && currentTime < timeToMinutes(asrBeginning)) {
+         const zohrElement = document.querySelector('.jamaah .prayer-time-value:nth-child(3)');
+         if (isJumuah) {
+             zohrElement.textContent = '13:20';
+         }
+         zohrElement.classList.add('next-prayer'); // Zohr
+         } else if (timeToMinutes(asrBeginning) <= currentTime && currentTime < timeToMinutes(magribBeginning) - 10) {
+         document.querySelector('.jamaah .prayer-time-value:nth-child(4)').classList.add('next-prayer'); // Asr
+         } else if (timeToMinutes(magribBeginning) - 10 <= currentTime && currentTime < timeToMinutes(ishaBeginning)) {
+         document.querySelector('.jamaah .prayer-time-value:nth-child(5)').classList.add('next-prayer'); // Magrib
+         } else if (timeToMinutes(ishaBeginning) <= currentTime || currentTime < timeToMinutes(fajrBeginning)) {
+         document.querySelector('.jamaah .prayer-time-value:nth-child(6)').classList.add('next-prayer'); // Isha
+         }
+         }
+         
+         // Update the existing setInterval to include the new function
+         setInterval(() => {
+         updateTime();
+         updateNextPrayer();
+         }, 1000);
+         
+         // Call both functions immediately
+         updateTime();
+         updateNextPrayer();
+      </script>
+   </body>
 </html>
