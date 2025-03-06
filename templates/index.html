@@ -124,17 +124,10 @@
         const minutes = now.getUTCMinutes().toString().padStart(2, "0");
         const seconds = now.getUTCSeconds().toString().padStart(2, "0");
 
-        // Format hours with leading zero
-        hours = hours.toString().padStart(2, "0");
-
-        // Update the display with UTC time
+        // Update the display with UTC time - no padding for hours
         document.querySelector(".time-display").innerHTML = `
-        <span class="time-main">${hours}:${minutes}</span>
-        <span class="time-sub">
-            <span class="seconds">${seconds}</span>
-            <span class="ampm">${ampm}</span>
-        </span>
-    `;
+          <span class="time-main">${hours}:${minutes}:${seconds}</span>
+        `;
       }
 
       // Update time every second

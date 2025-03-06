@@ -1,10 +1,10 @@
 :root {
-    --bg-color: #0099ff;       /* Original mosque carpet color */
-    --text-color: #FFFFFF;     /* Pure White */
-    --highlight-color: #35ff02; /* Saffron Gold */
-    --border-color: #76B5C5;   /* Soft Sky Blue */
-    --announcement-bg-color: #0099ff;
-    --announcement-text-color: #FFFFFF;   
+    --bg-color: #001529;                /* Dark Blue */
+    --text-color: #FFFFFF;              /* Pure White */
+    --highlight-color: #00F0FF;         /* Bright Cyan */
+    --border-color: #0088FF;            /* Brighter Blue for Borders */
+    --announcement-bg-color: #000C17;   /* Darker Blue */
+    --announcement-text-color: #00F0FF;  /* Cyan */
 }
 
 
