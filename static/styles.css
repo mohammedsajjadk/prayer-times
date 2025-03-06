@@ -57,9 +57,8 @@ body, html {
     align-items: center;
     justify-content: center;
     border-top: 0.3vw solid var(--border-color);
-    transform: rotate(-90deg);
-    left: 69vw; /* Adjusted to move it properly */
-    bottom: 25vw; /* Move it to the bottom */
+    left: -0.5vw; /* Adjusted to move it properly */
+    bottom: 1vw; /* Move it to the bottom */
 }
 
 
@@ -102,9 +101,11 @@ body, html {
 
 
 .jamaah .prayer-time-value {
-    font-size: 8.5vw;
+    font-size: 10.5vw;
 }
-
+[data-time] {
+    transition: color 0.3s ease;
+  }
 /*transform: rotate(90deg);*/
 
 /* Main content container (Counter-Rotated) */
@@ -203,6 +204,7 @@ body, html {
     gap: 0;
     height: auto;
     border-collapse: collapse;
+    margin-top: 1vw;
 }
 
 /* Remove previous background colors */
@@ -255,7 +257,6 @@ body, html {
     align-items: center;
     padding: 1vw;
     text-align: center;
-    margin-bottom: 0.5vh;
     height: 111vh; /* Set a fixed height */
     min-height: 14.5vh; /* Ensures they don’t shrink */
 }
@@ -286,21 +287,24 @@ body, html {
     font-size: 6.5vw;
 }
 
+.prayer-time-value.beginning,
+.prayer-time-value.jamaah {
+  position: relative;
+}
 
 /* Important Times Section */
 .important-times {
     width: 103vh;
     position: fixed;
-    transform: rotate(-90deg);
-    left: 59.5vw;
-    bottom: 40vh;
+    left: -1.5vw;
+    bottom: 13vh;
 }
 
 .divider {
     width: 100%;
     height: 2px;
     background-color: var(--border-color);
-    margin-bottom: 4vh;
+    margin-bottom: 2vh;
 }
 
 .times-container {
@@ -335,10 +339,7 @@ body, html {
     color: var(--highlight-color);
 }
 
-
-/* Remove the following .next-prayer if the team disapproves */
-.next-prayer {
-    /* Option 1: Gradient border effect */
+/* .next-prayer {
     border: 2px solid transparent;
     border-radius: 10px;
     background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
@@ -347,7 +348,7 @@ body, html {
     font-size: 8.5vw !important;
     position: relative;
     animation: borderPulse 2s infinite;
-}
+} */
 
 /* Or you could use this alternative style */
 /* .next-prayer {
