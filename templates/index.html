@@ -111,25 +111,37 @@
     <!-- JavaScript -->
     <script>
       function updateTime() {
-        let now = new Date();
-        let hours = now.getUTCHours();
-        let minutes = now.getMinutes().toString().padStart(2, "0");
-        let seconds = now.getSeconds().toString().padStart(2, "0");
-        let ampm = hours >= 12 ? "PM" : "AM";
+        // Force UTC time by using explicit UTC methods
+        const now = new Date();
 
+        // Get UTC hours and ensure 24-hour format
+        let hours = now.getUTCHours();
+        const ampm = hours >= 12 ? "PM" : "AM";
+
+        // Convert to 12-hour format
         hours = hours % 12 || 12;
+
+        // Get UTC minutes and seconds
+        const minutes = now.getUTCMinutes().toString().padStart(2, "0");
+        const seconds = now.getUTCSeconds().toString().padStart(2, "0");
+
+        // Format hours with leading zero
         hours = hours.toString().padStart(2, "0");
 
+        // Update the display with UTC time
         document.querySelector(".time-display").innerHTML = `
-                 <span class="time-main">${hours}:${minutes}</span>
-                 <span class="time-sub">
-                     <span class="seconds">${seconds}</span>
-                     <span class="ampm">${ampm}</span>
-                 </span>
-             `;
+        <span class="time-main">${hours}:${minutes}</span>
+        <span class="time-sub">
+            <span class="seconds">${seconds}</span>
+            <span class="ampm">${ampm}</span>
+        </span>
+    `;
       }
 
+      // Update time every second
       setInterval(updateTime, 1000);
+
+      // Initial update
       updateTime();
 
       function forceMidnightRefresh() {
