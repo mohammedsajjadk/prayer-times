@@ -1,267 +1,193 @@
-function updateTime() {
-  // Force UTC time by using explicit UTC methods
-  const now = new Date();
-
-  // Get UTC hours and ensure 24-hour format
-  let hours = now.getUTCHours();
-  const ampm = hours >= 12 ? "PM" : "AM";
-
-  // Convert to 12-hour format
-  hours = hours % 12 || 12;
-
-  // Get UTC minutes and seconds
-  const minutes = now.getUTCMinutes().toString().padStart(2, "0");
-  const seconds = now.getUTCSeconds().toString().padStart(2, "0");
-
-  // Update the display with UTC time - no padding for hours
-  document.querySelector(".time-display").innerHTML = `
-    <span class="time-main">${hours}:${minutes}:${seconds}</span>
-`;
-}
-
-// Update time every second
-setInterval(updateTime, 1000);
-
-// Initial update
-updateTime();
-
-function forceMidnightRefresh() {
-  let now = new Date();
-  let hours = now.getUTCHours();
-  let minutes = now.getUTCMinutes();
-  let seconds = now.getUTCSeconds();
-
-  // Check if it's midnight
-  if (hours === 0 && minutes === 0 && seconds === 0) {
-    console.log("Starting midnight refresh process...");
-    persistentRefresh();
+// Utility functions
+const timeUtils = {
+    timeToMinutes: (timeStr) => {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      return hours * 60 + minutes;
+    },
+  
+    addMinutes: (timeStr, minutesToAdd) => {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      const totalMinutes = hours * 60 + minutes + minutesToAdd;
+      const newHours = Math.floor(totalMinutes / 60) % 24;
+      const newMinutes = totalMinutes % 60;
+      return `${String(newHours).padStart(2, "0")}:${String(newMinutes).padStart(2, "0")}`;
+    }
+  };
+  
+  // DOM Selectors
+  const selectors = {
+    timeDisplay: ".time-display",
+    prayerTimes: {
+      fajrJamaah: ".jamaah .prayer-time-value:nth-child(2)",
+      zohrJamaah: ".jamaah .prayer-time-value:nth-child(3)",
+      asrJamaah: ".jamaah .prayer-time-value:nth-child(4)",
+      magribJamaah: ".jamaah .prayer-time-value:nth-child(5)",
+      ishaJamaah: ".jamaah .prayer-time-value:nth-child(6)",
+      fajrBeginning: ".beginning .prayer-time-value:nth-child(2)",
+      asrBeginning: ".beginning .prayer-time-value:nth-child(4)",
+      magribBeginning: ".beginning .prayer-time-value:nth-child(5)",
+      ishaBeginning: ".beginning .prayer-time-value:nth-child(6)"
+    },
+    importantTimes: {
+      sunrise: ".time-box:nth-child(2) .time-value",
+      zawal: ".time-box:nth-child(3) .time-value"
+    },
+    announcement: "#announcement-text"
+  };
+  
+  // Time Display Functions
+  function updateTime() {
+    const now = new Date();
+    let hours = now.getUTCHours();
+    hours = hours % 12 || 12;
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
+    const seconds = now.getUTCSeconds().toString().padStart(2, "0");
+  
+    document.querySelector(selectors.timeDisplay).innerHTML = `
+      <span class="time-main">${hours}:${minutes}:${seconds}</span>`;
   }
-}
-
-function persistentRefresh() {
-  const retryInterval = 30000; // 30 seconds between retries
-  const url = window.location.pathname + "?t=" + new Date().getTime();
-
-  function tryRefresh() {
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+  
+  function convertTo12Hour() {
+    document.querySelectorAll(".prayer-time-value.beginning, .prayer-time-value.jamaah")
+      .forEach(el => {
+        const time = el.getAttribute("data-time");
+        if (time?.includes(":")) {
+          const [hours, minutes] = time.split(":").map(Number);
+          if (!isNaN(hours) && !isNaN(minutes)) {
+            const hours12 = hours % 12 || 12;
+            el.textContent = `${hours12}:${minutes.toString().padStart(2, "0")}`;
+          }
         }
-        console.log("Server accessible, refreshing page...");
-        window.location.reload(true);
-      })
-      .catch((error) => {
-        console.log("Refresh failed:", error.message);
-        console.log("Retrying in 30 seconds...");
-        setTimeout(tryRefresh, retryInterval);
       });
   }
-
-  tryRefresh();
-}
-
-// Only check for midnight refresh
-setInterval(forceMidnightRefresh, 1000);
-
-// Add this function after the existing updateTime function
-function updateNextPrayer() {
-  const now = new Date();
-  const currentHour = now.getUTCHours();
-  const currentMinute = now.getUTCMinutes();
-  const currentTime = currentHour * 60 + currentMinute; // Convert to minutes
-
-  // Get all prayer times from the page
-  const fajrJamaah = document.querySelector(
-    ".jamaah .prayer-time-value:nth-child(2)"
-  ).textContent;
-  const zohrJamaah = document.querySelector(
-    ".jamaah .prayer-time-value:nth-child(3)"
-  ).textContent;
-  const asrJamaah = document.querySelector(
-    ".jamaah .prayer-time-value:nth-child(4)"
-  ).textContent;
-  const magribJamaah = document.querySelector(
-    ".jamaah .prayer-time-value:nth-child(5)"
-  ).textContent;
-  const ishaJamaah = document.querySelector(
-    ".jamaah .prayer-time-value:nth-child(6)"
-  ).textContent;
-
-  const sunrise = document.querySelector(
-    ".time-box:nth-child(2) .time-value"
-  ).textContent;
-  const asrBeginning = document.querySelector(
-    ".beginning .prayer-time-value:nth-child(4)"
-  ).textContent;
-  const magribBeginning = document.querySelector(
-    ".beginning .prayer-time-value:nth-child(5)"
-  ).textContent;
-  const ishaBeginning = document.querySelector(
-    ".beginning .prayer-time-value:nth-child(6)"
-  ).textContent;
-  const fajrBeginning = document.querySelector(
-    ".beginning .prayer-time-value:nth-child(2)"
-  ).textContent;
-
-  // Remove existing highlights
-  document
-    .querySelectorAll(".next-prayer")
-    .forEach((el) => el.classList.remove("next-prayer"));
-
-  // Convert time strings to minutes for comparison
-  const timeToMinutes = (timeStr) => {
-    const [hours, minutes] = timeStr.split(":").map(Number);
-    return hours * 60 + minutes;
-  };
-
-  const currentDay = new Date().getDay(); // 5 is Friday
-  const isJumuah = currentDay === 5;
-
-  if (
-    timeToMinutes(fajrBeginning) <= currentTime &&
-    currentTime < timeToMinutes(sunrise)
-  ) {
-    document
-      .querySelector(".jamaah .prayer-time-value:nth-child(2)")
-      .classList.add("next-prayer"); // Fajr
-  } else if (
-    timeToMinutes(sunrise) <= currentTime &&
-    currentTime < timeToMinutes(asrBeginning)
-  ) {
-    const zohrElement = document.querySelector(
-      ".jamaah .prayer-time-value:nth-child(3)"
-    );
-    if (isJumuah) {
-      zohrElement.textContent = "13:20";
+  
+  // Prayer Times Functions
+  function updateNextPrayer() {
+    const now = new Date();
+    const currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+    const isJumuah = now.getDay() === 5;
+  
+    // Clear existing highlights
+    document.querySelectorAll(".next-prayer")
+      .forEach(el => el.classList.remove("next-prayer"));
+  
+    // Get prayer times
+    const times = {
+      fajrBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.fajrBeginning).textContent),
+      sunrise: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.sunrise).textContent),
+      asrBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.asrBeginning).textContent),
+      magribBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.magribBeginning).textContent),
+      ishaBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.ishaBeginning).textContent)
+    };
+  
+    // Determine next prayer
+    if (times.fajrBeginning <= currentTime && currentTime < times.sunrise) {
+      highlightNextPrayer("fajr");
+    } else if (times.sunrise <= currentTime && currentTime < times.asrBeginning) {
+      highlightNextPrayer("zohr", isJumuah);
+    } else if (times.asrBeginning <= currentTime && currentTime < times.magribBeginning - 10) {
+      highlightNextPrayer("asr");
+    } else if (times.magribBeginning - 10 <= currentTime && currentTime < times.ishaBeginning) {
+      highlightNextPrayer("magrib");
+    } else if (times.ishaBeginning <= currentTime || currentTime < times.fajrBeginning) {
+      highlightNextPrayer("isha");
     }
-    zohrElement.classList.add("next-prayer"); // Zohr
-  } else if (
-    timeToMinutes(asrBeginning) <= currentTime &&
-    currentTime < timeToMinutes(magribBeginning) - 10
-  ) {
-    document
-      .querySelector(".jamaah .prayer-time-value:nth-child(4)")
-      .classList.add("next-prayer"); // Asr
-  } else if (
-    timeToMinutes(magribBeginning) - 10 <= currentTime &&
-    currentTime < timeToMinutes(ishaBeginning)
-  ) {
-    document
-      .querySelector(".jamaah .prayer-time-value:nth-child(5)")
-      .classList.add("next-prayer"); // Magrib
-  } else if (
-    timeToMinutes(ishaBeginning) <= currentTime ||
-    currentTime < timeToMinutes(fajrBeginning)
-  ) {
-    document
-      .querySelector(".jamaah .prayer-time-value:nth-child(6)")
-      .classList.add("next-prayer"); // Isha
   }
-}
-
-// Update the existing setInterval to include the new function
-setInterval(() => {
-  updateTime();
-  updateNextPrayer();
-}, 1000);
-
-// Call both functions immediately
-updateTime();
-updateNextPrayer();
-
-function updateAnnouncement() {
-  const now = new Date();
-  const currentHour = now.getUTCHours();
-  const currentMinute = now.getUTCMinutes();
-  const currentTime = currentHour * 60 + currentMinute;
-
-  const sunrise = document.querySelector(
-    ".time-box:nth-child(2) .time-value"
-  ).textContent;
-  const zawal = document.querySelector(
-    ".time-box:nth-child(3) .time-value"
-  ).textContent;
-  const zohrBeginning = document.querySelector(
-    ".beginning .prayer-time-value:nth-child(3)"
-  ).textContent;
-  const magribBeginning = document.querySelector(
-    ".beginning .prayer-time-value:nth-child(5)"
-  ).textContent;
-
-  const timeToMinutes = (timeStr) => {
-    const [hours, minutes] = timeStr.split(":").map(Number);
-    return hours * 60 + minutes;
-  };
-
-  // Function to add minutes to a time and format it
-  const addMinutes = (timeStr, minutesToAdd) => {
-    const [hours, minutes] = timeStr.split(":").map(Number);
-    const totalMinutes = hours * 60 + minutes + minutesToAdd;
-    const newHours = Math.floor(totalMinutes / 60) % 24;
-    const newMinutes = totalMinutes % 60;
-    return `${String(newHours).padStart(2, "0")}:${String(newMinutes).padStart(
-      2,
-      "0"
-    )}`;
-  };
-
-  const sunriseTime = timeToMinutes(sunrise);
-  const zawalTime = timeToMinutes(zawal);
-  const zohrTime = timeToMinutes(zohrBeginning);
-  const magribTime = timeToMinutes(magribBeginning);
-
-  let announcementText =
-    "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.";
-
-  // Check for prohibited prayer times with exact permitted times
-  // In the updateAnnouncement function, modify the if-else block:
-  if (currentTime >= sunriseTime && currentTime <= sunriseTime + 15) {
-    const permitTime = addMinutes(sunrise, 15);
-    announcementText = `🌅 ATTENTION: PRAYER NOT PERMITTED until ${permitTime}. This time after sunrise (${sunrise}) is reserved for dhikr and du'a. 🌅`;
-    document
-      .getElementById("announcement-text")
-      .classList.add("announcement-warning");
-  } else if (currentTime >= zawalTime && currentTime < zohrTime) {
-    announcementText = `☀️ ATTENTION: PRAYER NOT PERMITTED at Zawal time (${zawal}). Please wait for Zohr time to begin at ${zohrBeginning}. ☀️`;
-    document
-      .getElementById("announcement-text")
-      .classList.add("announcement-warning");
-  } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
-    announcementText = `🌇 ATTENTION: PRAYER NOT PERMITTED during sunset. Please wait for Magrib Adhan at ${magribBeginning}. 🌇`;
-    document
-      .getElementById("announcement-text")
-      .classList.add("announcement-warning");
-  } else {
-    document
-      .getElementById("announcement-text")
-      .classList.remove("announcement-warning");
+  
+  function highlightNextPrayer(prayer, isJumuah = false) {
+    const prayerIndex = { fajr: 2, zohr: 3, asr: 4, magrib: 5, isha: 6 };
+    const element = document.querySelector(`.jamaah .prayer-time-value:nth-child(${prayerIndex[prayer]})`);
+    
+    if (prayer === "zohr" && isJumuah) {
+      element.textContent = "13:20";
+    }
+    element.classList.add("next-prayer");
   }
-  document.getElementById("announcement-text").textContent = announcementText;
-}
-
-function convertTo12Hour() {
-  document
-    .querySelectorAll(".prayer-time-value.beginning, .prayer-time-value.jamaah")
-    .forEach((el) => {
-      const time = el.getAttribute("data-time");
-      if (time && time.includes(":")) {
-        const [hours, minutes] = time.split(":").map(Number);
-        if (!isNaN(hours) && !isNaN(minutes)) {
-          const hours12 = hours % 12 || 12;
-          el.textContent = `${hours12}:${minutes.toString().padStart(2, "0")}`;
-        }
-      }
-    });
-}
-
-// Call initially and after any updates
-convertTo12Hour();
-
-// Add to the existing setInterval
-setInterval(() => {
-  updateTime();
-  updateNextPrayer();
-  updateAnnouncement();
-  convertTo12Hour();
-}, 1000);
+  
+  // Announcement Functions
+  function updateAnnouncement() {
+    const now = new Date();
+    const currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+    
+    const times = {
+      sunrise: document.querySelector(selectors.importantTimes.sunrise).textContent,
+      zawal: document.querySelector(selectors.importantTimes.zawal).textContent,
+      zohrBeginning: document.querySelector(selectors.prayerTimes.fajrBeginning).textContent,
+      magribBeginning: document.querySelector(selectors.prayerTimes.magribBeginning).textContent
+    };
+  
+    const announcementElement = document.querySelector(selectors.announcement);
+    let message = "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.";
+    let isWarning = false;
+  
+    const sunriseTime = timeUtils.timeToMinutes(times.sunrise);
+    const zawalTime = timeUtils.timeToMinutes(times.zawal);
+    const zohrTime = timeUtils.timeToMinutes(times.zohrBeginning);
+    const magribTime = timeUtils.timeToMinutes(times.magribBeginning);
+  
+    if (currentTime >= sunriseTime && currentTime <= sunriseTime + 15) {
+      const permitTime = timeUtils.addMinutes(times.sunrise, 15);
+      message = `🌅 ATTENTION: PRAYER NOT PERMITTED until ${permitTime}. This time after sunrise (${times.sunrise}) is reserved for dhikr and du'a. 🌅`;
+      isWarning = true;
+    } else if (currentTime >= zawalTime && currentTime < zohrTime) {
+      message = `☀️ ATTENTION: PRAYER NOT PERMITTED at Zawal time (${times.zawal}). Please wait for Zohr time to begin at ${times.zohrBeginning}. ☀️`;
+      isWarning = true;
+    } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
+      message = `🌇 ATTENTION: PRAYER NOT PERMITTED during sunset. Please wait for Magrib Adhan at ${times.magribBeginning}. 🌇`;
+      isWarning = true;
+    }
+  
+    announcementElement.textContent = message;
+    announcementElement.classList.toggle("announcement-warning", isWarning);
+  }
+  
+  // Page Refresh Functions
+  function forceMidnightRefresh() {
+    const now = new Date();
+    if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
+      console.log("Starting midnight refresh process...");
+      persistentRefresh();
+    }
+  }
+  
+  function persistentRefresh() {
+    const retryInterval = 30000;
+    const url = `${window.location.pathname}?t=${new Date().getTime()}`;
+  
+    function tryRefresh() {
+      fetch(url)
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          console.log("Server accessible, refreshing page...");
+          window.location.reload(true);
+        })
+        .catch(error => {
+          console.log("Refresh failed:", error.message);
+          console.log("Retrying in 30 seconds...");
+          setTimeout(tryRefresh, retryInterval);
+        });
+    }
+  
+    tryRefresh();
+  }
+  
+  // Initialize and set up intervals
+  function initialize() {
+    updateTime();
+    updateNextPrayer();
+    updateAnnouncement();
+    convertTo12Hour();
+  
+    // Set up intervals
+    setInterval(() => {
+      updateTime();
+      updateNextPrayer();
+      updateAnnouncement();
+      convertTo12Hour();
+    }, 1000);
+  
+    setInterval(forceMidnightRefresh, 1000);
+  }
+  
+  // Start the application
+  document.addEventListener('DOMContentLoaded', initialize);
