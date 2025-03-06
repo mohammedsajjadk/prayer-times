@@ -5,14 +5,10 @@
     --border-color: #0088FF;            /* Brighter Blue for Borders */
     --announcement-bg-color: #000C17;   /* Darker Blue */
     --announcement-text-color: #00F0FF;  /* Cyan */
+    --next-prayer-border-color: rgba(0, 240, 255, 0.8); /* Slightly transparent highlight color */
 }
 
 
-
-/* 
-.time-main, .prayer-time-value {
-    text-shadow: 0 0 10px var(--highlight-color);
-} */
 
 
 @font-face {
@@ -92,7 +88,7 @@ body, html {
 }
 
 .prayer-times .prayer {
-    width: 13vw;
+    width: 13.5vw;
 }
 
 .prayer-times .jamaah {
@@ -101,7 +97,7 @@ body, html {
 
 
 .jamaah .prayer-time-value {
-    font-size: 10.5vw;
+    font-size: 10.0vw;
 }
 [data-time] {
     transition: color 0.3s ease;
@@ -131,35 +127,30 @@ body, html {
     justify-content: center;
     font-family: 'DS-Digital', monospace;
     color: var(--highlight-color);
+    margin-bottom: 1vh;
+    position: relative;
 }
 
-/* Large font for hours and minutes */
 .time-main {
-    font-size: 15vw; /* Large font for HH:MM */
+    font-family: 'DS-Digital', monospace;
+    font-size: 14vw;
     font-weight: bold;
+    line-height: 1;
 }
 
-/* Small stacked section for seconds and AM/PM */
 .time-sub {
-    display: flex;
-    flex-direction: column; /* Stack seconds on top of AM/PM */
+    display: inline-flex;
     align-items: center;
-    font-size: 5vw; /* Smaller size */
-    line-height: 1; /* Reduce spacing */
-    margin-left: 1vw; /* Space between HH:MM and side text */
+    margin-left: 0.5vw;
 }
 
-/* Specific styling for seconds */
 .seconds {
-    font-size: 5vw; /* Slightly smaller */
+    font-family: 'DS-Digital', monospace;
+    font-size: 11vw;  /* Smaller than time-main */
+    font-weight: bold;
+    line-height: 1;
+    transform: translateY(1vh); /* Slight adjustment to align with main time */
 }
-
-/* AM/PM styling */
-.ampm {
-    font-size: 4vw; /* Keep it small */
-    font-family: Arial, sans-serif;
-}
-
 
 /* Date below time */
 .current-date {
@@ -339,39 +330,44 @@ body, html {
     color: var(--highlight-color);
 }
 
-/* .next-prayer {
-    border: 2px solid transparent;
-    border-radius: 10px;
-    background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
-                linear-gradient(45deg, var(--highlight-color), #ffffff) border-box;
-    padding: 0.5vw !important;
-    font-size: 8.5vw !important;
-    position: relative;
-    animation: borderPulse 2s infinite;
-} */
-
-/* Or you could use this alternative style */
-/* .next-prayer {
-    background-color: rgba(53, 255, 2, 0.1) !important;
-    border-radius: 10px;
-    padding: 0.5vw !important;
-    box-shadow: 0 0 15px rgba(53, 255, 2, 0.3);
-    font-size: 8.5vw !important;
-    position: relative;
-    animation: glowPulse 2s infinite;
-}
-
 .next-prayer {
-    border-bottom: 2px solid var(--highlight-color) !important;
-    font-size: 8.5vw !important;
+    border: 0.2vw solid transparent;
+    border-radius: 1.5vw;
+    background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
+                linear-gradient(135deg, 
+                    var(--highlight-color) 0%, 
+                    rgba(255, 255, 255, 0.8) 50%,
+                    var(--highlight-color) 100%) border-box;
+    font-size: 10vw !important;
+    padding: 0.5vh 3vw !important; /* Adjusted padding: vertical horizontal */
     position: relative;
-    animation: underlinePulse 2s infinite;
+    animation: borderPulse 3s ease-in-out infinite;
+    line-height: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: -2vh 0;
+    height: 100%;
+    transform: translateY(-1vh);
+    box-shadow: 0 0 1.5vw rgba(0, 240, 255, 0.2),
+                inset 0 0 2vw rgba(0, 240, 255, 0.2);
+    backdrop-filter: blur(0.5vw);
+    transition: all 0.3s ease;
 }
-*/
+
 @keyframes borderPulse {
-    0% { border-color: transparent; }
-    50% { border-color: var(--highlight-color); }
-    100% { border-color: transparent; }
+    0% { 
+        box-shadow: 0 0 1.5vw rgba(0, 240, 255, 0.2),
+                    inset 0 0 2vw rgba(0, 240, 255, 0.2);
+    }
+    50% { 
+        box-shadow: 0 0 2.5vw rgba(0, 240, 255, 0.4),
+                    inset 0 0 3vw rgba(0, 240, 255,0.4);
+    }
+    100% { 
+        box-shadow: 0 0 1.5vw rgba(0, 240, 255, 0.2),
+                    inset 0 0 2vw rgba(0, 240, 255, 0.2);
+    }
 }
 
 @keyframes glowPulse {
@@ -386,9 +382,6 @@ body, html {
     100% { border-bottom-width: 2px; }
 }
 
-.time-main {
-    transition: opacity 0.3s ease-in-out;
-}
 
 @keyframes scroll-announcement {
     from {
@@ -398,3 +391,4 @@ body, html {
         transform: translateX(-100%);
     }
 }
+

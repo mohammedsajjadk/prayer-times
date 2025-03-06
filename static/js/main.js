@@ -44,7 +44,10 @@ const timeUtils = {
     const seconds = now.getUTCSeconds().toString().padStart(2, "0");
   
     document.querySelector(selectors.timeDisplay).innerHTML = `
-      <span class="time-main">${hours}:${minutes}:${seconds}</span>`;
+      <span class="time-main">${hours}:${minutes}</span>
+      <span class="time-sub">
+          <span class="seconds">:${seconds}</span>
+      </span>`;
   }
   
   function convertTo12Hour() {
@@ -65,34 +68,62 @@ const timeUtils = {
   function updateNextPrayer() {
     const now = new Date();
     const currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+    const currentSeconds = now.getUTCSeconds();
     const isJumuah = now.getDay() === 5;
-  
+
     // Clear existing highlights
     document.querySelectorAll(".next-prayer")
-      .forEach(el => el.classList.remove("next-prayer"));
-  
-    // Get prayer times
+        .forEach(el => el.classList.remove("next-prayer"));
+
+    // Get all required times
     const times = {
-      fajrBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.fajrBeginning).textContent),
-      sunrise: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.sunrise).textContent),
-      asrBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.asrBeginning).textContent),
-      magribBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.magribBeginning).textContent),
-      ishaBeginning: timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.ishaBeginning).textContent)
+        fajrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(2)").getAttribute('data-time')),
+        zohrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(3)").getAttribute('data-time')),
+        asrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(4)").getAttribute('data-time')),
+        magribBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(5)").getAttribute('data-time')),
+        ishaBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(6)").getAttribute('data-time')),
+        sunrise: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time')),
+        zawal: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'))
     };
-  
-    // Determine next prayer
-    if (times.fajrBeginning <= currentTime && currentTime < times.sunrise) {
-      highlightNextPrayer("fajr");
-    } else if (times.sunrise <= currentTime && currentTime < times.asrBeginning) {
-      highlightNextPrayer("zohr", isJumuah);
-    } else if (times.asrBeginning <= currentTime && currentTime < times.magribBeginning - 10) {
-      highlightNextPrayer("asr");
-    } else if (times.magribBeginning - 10 <= currentTime && currentTime < times.ishaBeginning) {
-      highlightNextPrayer("magrib");
-    } else if (times.ishaBeginning <= currentTime || currentTime < times.fajrBeginning) {
-      highlightNextPrayer("isha");
+
+    // Find the prayer time that's next
+    let nextPrayer = null;
+    
+    if (currentTime < times.fajrBeginning) {
+        nextPrayer = 'fajr';
+    } else if (currentTime < times.zohrBeginning) {
+        nextPrayer = 'zohr';
+    } else if (currentTime < times.asrBeginning) {
+        nextPrayer = 'asr';
+    } else if (currentTime < times.magribBeginning) {
+        nextPrayer = 'asr';
+    } else if (currentTime < times.ishaBeginning) {
+        nextPrayer = 'magrib';
+    } else {
+        nextPrayer = 'isha';
     }
-  }
+
+    // Check for prohibited times
+    if (
+        (currentTime === times.sunrise && currentSeconds === 0) ||
+        (currentTime < times.sunrise + 15) ||
+        (currentTime >= times.zawal && currentTime < times.zohrBeginning) ||
+        (currentTime >= times.magribBeginning - 10 && currentTime < times.magribBeginning)
+    ) {
+        return; // Exit without highlighting any prayer
+    }
+
+    // Handle Jumuah special case
+    if (isJumuah && currentTime === timeUtils.timeToMinutes("13:20")) {
+        document.querySelector(".jamaah .prayer-time-value:nth-child(7)").classList.add("next-prayer");
+        return;
+    }
+
+    // Highlight the next prayer
+    if (nextPrayer) {
+        highlightNextPrayer(nextPrayer, isJumuah);
+    }
+}
   
   function highlightNextPrayer(prayer, isJumuah = false) {
     const prayerIndex = { fajr: 2, zohr: 3, asr: 4, magrib: 5, isha: 6 };

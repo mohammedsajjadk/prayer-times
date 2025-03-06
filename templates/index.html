@@ -26,8 +26,7 @@
       <div class="time-display">
         <span class="time-main">06:50</span>
         <span class="time-sub">
-          <span class="seconds">31</span>
-          <span class="ampm">AM</span>
+            <span class="seconds">31</span>
         </span>
       </div>
       <div class="date-container">
@@ -92,12 +91,11 @@
         </div>
         <div class="time-box">
           <div class="time-label">SUNRISE</div>
-          <div class="time-value">{{ important_times.sunrise }}</div>
+          <div class="time-value" data-time="{{ important_times.sunrise }}">{{ important_times.sunrise }}</div>
         </div>
         <div class="time-box">
           <div class="time-label">ZAWAL</div>
-          <div class="time-value">{{ important_times.noon }}</div>
-        </div>
+          <div class="time-value" data-time="{{ important_times.noon }}">{{ important_times.noon }}</div>        </div>
       </div>
     </div>
     <!-- Announcement Scroll -->
