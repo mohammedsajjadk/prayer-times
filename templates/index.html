@@ -133,7 +133,9 @@
           asrJamaah: ".jamaah .prayer-time-value:nth-child(4)",
           magribJamaah: ".jamaah .prayer-time-value:nth-child(5)",
           ishaJamaah: ".jamaah .prayer-time-value:nth-child(6)",
+          jumahJamaah: ".jamaah .prayer-time-value:nth-child(7)",
           fajrBeginning: ".beginning .prayer-time-value:nth-child(2)",
+          zohrBeginning: ".beginning .prayer-time-value:nth-child(3)",
           asrBeginning: ".beginning .prayer-time-value:nth-child(4)",
           magribBeginning: ".beginning .prayer-time-value:nth-child(5)",
           ishaBeginning: ".beginning .prayer-time-value:nth-child(6)"
@@ -254,7 +256,7 @@
         const times = {
             sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
             zawal: document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'),
-            zohrBeginning: document.querySelector(selectors.prayerTimes.fajrBeginning).getAttribute('data-time'),
+            zohrBeginning: document.querySelector(selectors.prayerTimes.zohrBeginning).getAttribute('data-time'),
             magribBeginning: document.querySelector(selectors.prayerTimes.magribBeginning).getAttribute('data-time')
         };
 
