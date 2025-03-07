@@ -330,7 +330,7 @@ body, html {
     color: var(--highlight-color);
 }
 
-.next-prayer {
+/* .next-prayer {
     border: 0.2vw solid transparent;
     border-radius: 1.5vw;
     background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
@@ -339,7 +339,7 @@ body, html {
                     rgba(255, 255, 255, 0.8) 50%,
                     var(--highlight-color) 100%) border-box;
     font-size: 10vw !important;
-    padding: 0.5vh 3vw !important; /* Adjusted padding: vertical horizontal */
+    padding: 0.5vh 3vw !important;
     position: relative;
     animation: borderPulse 3s ease-in-out infinite;
     line-height: 0.8;
@@ -353,7 +353,7 @@ body, html {
                 inset 0 0 2vw rgba(0, 240, 255, 0.2);
     backdrop-filter: blur(0.5vw);
     transition: all 0.3s ease;
-}
+} */
 
 @keyframes borderPulse {
     0% { 
