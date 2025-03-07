@@ -4,7 +4,7 @@
     --highlight-color: #00F0FF;         /* Bright Cyan */
     --border-color: #0088FF;            /* Brighter Blue for Borders */
     --announcement-bg-color: #000C17;   /* Darker Blue */
-    --announcement-text-color: #00F0FF;  /* Cyan */
+    --announcement-text-color: #FFFFFF;  /* Cyan */
     --next-prayer-border-color: rgba(0, 240, 255, 0.8); /* Slightly transparent highlight color */
 }
 
