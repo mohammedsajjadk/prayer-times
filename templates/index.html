@@ -107,235 +107,249 @@
       </p>
     </div>
     <!-- JavaScript -->
-    <script>
-      // Utility functions
-      const timeUtils = {
-        timeToMinutes: (timeStr) => {
-          const [hours, minutes] = timeStr.split(":").map(Number);
-          return hours * 60 + minutes;
-        },
-
-        addMinutes: (timeStr, minutesToAdd) => {
-          const [hours, minutes] = timeStr.split(":").map(Number);
-          const totalMinutes = hours * 60 + minutes + minutesToAdd;
-          const newHours = Math.floor(totalMinutes / 60) % 24;
-          const newMinutes = totalMinutes % 60;
-          return `${String(newHours).padStart(2, "0")}:${String(newMinutes).padStart(2, "0")}`;
+      <script>
+        // Utility functions
+        var timeUtils = {
+          timeToMinutes: function(timeStr) {
+            var parts = timeStr.split(":");
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+          },
+      
+          addMinutes: function(timeStr, minutesToAdd) {
+            var parts = timeStr.split(":");
+            var hours = parseInt(parts[0]);
+            var minutes = parseInt(parts[1]);
+            var totalMinutes = hours * 60 + minutes + minutesToAdd;
+            var newHours = Math.floor(totalMinutes / 60) % 24;
+            var newMinutes = totalMinutes % 60;
+            return this.padNumber(newHours, 2) + ":" + this.padNumber(newMinutes, 2);
+          },
+      
+          padNumber: function(num, size) {
+            var s = "000000000" + num;
+            return s.substr(s.length - size);
+          }
+        };
+      
+        // DOM Selectors
+        var selectors = {
+          timeDisplay: ".time-display",
+          prayerTimes: {
+            fajrJamaah: ".jamaah .prayer-time-value:nth-child(2)",
+            zohrJamaah: ".jamaah .prayer-time-value:nth-child(3)",
+            asrJamaah: ".jamaah .prayer-time-value:nth-child(4)",
+            magribJamaah: ".jamaah .prayer-time-value:nth-child(5)",
+            ishaJamaah: ".jamaah .prayer-time-value:nth-child(6)",
+            jumahJamaah: ".jamaah .prayer-time-value:nth-child(7)",
+            fajrBeginning: ".beginning .prayer-time-value:nth-child(2)",
+            zohrBeginning: ".beginning .prayer-time-value:nth-child(3)",
+            asrBeginning: ".beginning .prayer-time-value:nth-child(4)",
+            magribBeginning: ".beginning .prayer-time-value:nth-child(5)",
+            ishaBeginning: ".beginning .prayer-time-value:nth-child(6)"
+          },
+          importantTimes: {
+            sunrise: ".time-box:nth-child(2) .time-value",
+            zawal: ".time-box:nth-child(3) .time-value"
+          },
+          announcement: "#announcement-text"
+        };
+      
+        function updateTime() {
+          var now = new Date();
+          var hours = now.getUTCHours();
+          hours = hours % 12 || 12;
+          var minutes = timeUtils.padNumber(now.getUTCMinutes(), 2);
+          var seconds = timeUtils.padNumber(now.getUTCSeconds(), 2);
+      
+          var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
+                         '<span class="time-sub">' +
+                         '<span class="seconds">:' + seconds + '</span>' +
+                         '</span>';
+          
+          document.querySelector(selectors.timeDisplay).innerHTML = timeHtml;
         }
-      };
-
-      // DOM Selectors
-      const selectors = {
-        timeDisplay: ".time-display",
-        prayerTimes: {
-          fajrJamaah: ".jamaah .prayer-time-value:nth-child(2)",
-          zohrJamaah: ".jamaah .prayer-time-value:nth-child(3)",
-          asrJamaah: ".jamaah .prayer-time-value:nth-child(4)",
-          magribJamaah: ".jamaah .prayer-time-value:nth-child(5)",
-          ishaJamaah: ".jamaah .prayer-time-value:nth-child(6)",
-          jumahJamaah: ".jamaah .prayer-time-value:nth-child(7)",
-          fajrBeginning: ".beginning .prayer-time-value:nth-child(2)",
-          zohrBeginning: ".beginning .prayer-time-value:nth-child(3)",
-          asrBeginning: ".beginning .prayer-time-value:nth-child(4)",
-          magribBeginning: ".beginning .prayer-time-value:nth-child(5)",
-          ishaBeginning: ".beginning .prayer-time-value:nth-child(6)"
-        },
-        importantTimes: {
-          sunrise: ".time-box:nth-child(2) .time-value",
-          zawal: ".time-box:nth-child(3) .time-value"
-        },
-        announcement: "#announcement-text"
-      };
-
-      // Time Display Functions
-      function updateTime() {
-        const now = new Date();
-        let hours = now.getUTCHours();
-        hours = hours % 12 || 12;
-        const minutes = now.getUTCMinutes().toString().padStart(2, "0");
-        const seconds = now.getUTCSeconds().toString().padStart(2, "0");
-
-        document.querySelector(selectors.timeDisplay).innerHTML = `
-      <span class="time-main">${hours}:${minutes}</span>
-      <span class="time-sub">
-          <span class="seconds">:${seconds}</span>
-      </span>`;
-      }
-
-      function convertTo12Hour() {
-        document.querySelectorAll(".prayer-time-value.beginning, .prayer-time-value.jamaah")
-          .forEach(el => {
-            const time = el.getAttribute("data-time");
-            if (time?.includes(":")) {
-              const [hours, minutes] = time.split(":").map(Number);
+      
+        function convertTo12Hour() {
+          var elements = document.querySelectorAll(".prayer-time-value.beginning, .prayer-time-value.jamaah");
+          for (var i = 0; i < elements.length; i++) {
+            var el = elements[i];
+            var time = el.getAttribute("data-time");
+            if (time && time.indexOf(":") !== -1) {
+              var parts = time.split(":");
+              var hours = parseInt(parts[0]);
+              var minutes = parseInt(parts[1]);
               if (!isNaN(hours) && !isNaN(minutes)) {
-                const hours12 = hours % 12 || 12;
-                el.textContent = `${hours12}:${minutes.toString().padStart(2, "0")}`;
+                var hours12 = hours % 12 || 12;
+                el.textContent = hours12 + ":" + timeUtils.padNumber(minutes, 2);
               }
             }
-          });
-      }
-
-      // Prayer Times Functions
-      function updateNextPrayer() {
-        const now = new Date();
-        const currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        const currentSeconds = now.getUTCSeconds();
-        const isJumuah = now.getDay() === 5;
-
-        // Clear existing highlights
-        document.querySelectorAll(".next-prayer")
-            .forEach(el => el.classList.remove("next-prayer"));
-
-        // Get all required times
-        const times = {
+          }
+        }
+      
+        function updateNextPrayer() {
+          var now = new Date();
+          var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+          var isJumuah = now.getDay() === 5;
+      
+          // Clear existing highlights
+          var highlighted = document.querySelectorAll(".next-prayer");
+          for (var i = 0; i < highlighted.length; i++) {
+            highlighted[i].classList.remove("next-prayer");
+          }
+      
+          // Get all required times
+          var times = {
             fajrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(2)").getAttribute('data-time')),
             zohrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(3)").getAttribute('data-time')),
             asrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(4)").getAttribute('data-time')),
             magribBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(5)").getAttribute('data-time')),
             ishaBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(6)").getAttribute('data-time')),
-            fajrJamaah: timeUtils.timeToMinutes(document.querySelector(".jamaah .prayer-time-value:nth-child(2)").getAttribute('data-time')),
-            zohrJamaah: timeUtils.timeToMinutes(document.querySelector(".jamaah .prayer-time-value:nth-child(3)").getAttribute('data-time')),
-            asrJamaah: timeUtils.timeToMinutes(document.querySelector(".jamaah .prayer-time-value:nth-child(4)").getAttribute('data-time')),
-            magribJamaah: timeUtils.timeToMinutes(document.querySelector(".jamaah .prayer-time-value:nth-child(5)").getAttribute('data-time')),
-            ishaJamaah: timeUtils.timeToMinutes(document.querySelector(".jamaah .prayer-time-value:nth-child(6)").getAttribute('data-time')),
             sunrise: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time')),
-            zawal: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time')),
-        };
-
-        // Check for prohibited times first
-        const isProhibitedTime = (
-            // Sunrise time to sunrise + 15 minutes
+            zawal: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'))
+          };
+      
+          // Check for prohibited times
+          var isProhibitedTime = (
             (currentTime >= times.sunrise && currentTime < times.sunrise + 15) ||
-            // Zawal time to zawal + 10 minutes
             (currentTime >= times.zawal && currentTime < times.zawal + 10) ||
-            // 10 minutes before Maghrib to Maghrib beginning
             (currentTime >= times.magribBeginning - 10 && currentTime < times.magribBeginning)
-        );
-
-        if (isProhibitedTime) {
-            return; // Exit without highlighting any prayer
-        }
-
-        // Find the next prayer time
-        let nextPrayer = null;
-
-        if (currentTime >= 0 && currentTime < times.fajrBeginning) {
+          );
+      
+          if (isProhibitedTime) {
+            return;
+          }
+      
+          var nextPrayer = null;
+      
+          if (currentTime >= 0 && currentTime < times.fajrBeginning) {
             nextPrayer = 'isha';
-        } else if (currentTime >= times.fajrBeginning && currentTime < times.sunrise) {
+          } else if (currentTime >= times.fajrBeginning && currentTime < times.sunrise) {
             nextPrayer = 'fajr';
-        } else if (isJumuah && currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
+          } else if (isJumuah && currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
             nextPrayer = 'jumuah';
-        } else if (currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
+          } else if (currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
             nextPrayer = 'zohr';
-        } else if (currentTime >= times.asrBeginning && currentTime < times.magribBeginning - 10) {
+          } else if (currentTime >= times.asrBeginning && currentTime < times.magribBeginning - 10) {
             nextPrayer = 'asr';
-        } else if (currentTime >= times.magribBeginning && currentTime < times.ishaBeginning) {
+          } else if (currentTime >= times.magribBeginning && currentTime < times.ishaBeginning) {
             nextPrayer = 'magrib';
-        } else if(currentTime >= times.ishaBeginning) {
+          } else if (currentTime >= times.ishaBeginning) {
             nextPrayer = 'isha';
-        }
-
-        // Highlight the next prayer
-        if (nextPrayer) {
+          }
+      
+          if (nextPrayer) {
             highlightNextPrayer(nextPrayer, isJumuah);
+          }
         }
-    }
-      function highlightNextPrayer(prayer, isJumuah = false) {
-        const prayerIndex = { fajr: 2, zohr: 3, asr: 4, magrib: 5, isha: 6, jumuah: 7 };
-        const element = document.querySelector(`.jamaah .prayer-time-value:nth-child(${prayerIndex[prayer]})`);
-
-        element.classList.add("next-prayer");
-      }
-
-      // Announcement Functions
-      function updateAnnouncement() {
-        const now = new Date();
-        const currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-
-        const times = {
+      
+        function highlightNextPrayer(prayer, isJumuah) {
+          var prayerIndex = { 
+            fajr: 2, 
+            zohr: 3, 
+            asr: 4, 
+            magrib: 5, 
+            isha: 6, 
+            jumuah: 7 
+          };
+          var element = document.querySelector(".jamaah .prayer-time-value:nth-child(" + prayerIndex[prayer] + ")");
+          if (element) {
+            element.classList.add("next-prayer");
+          }
+        }
+      
+        function updateAnnouncement() {
+          var now = new Date();
+          var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+      
+          var times = {
             sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
             zawal: document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'),
             zohrBeginning: document.querySelector(selectors.prayerTimes.zohrBeginning).getAttribute('data-time'),
             magribBeginning: document.querySelector(selectors.prayerTimes.magribBeginning).getAttribute('data-time')
-        };
-
-        const announcementElement = document.querySelector(selectors.announcement);
-        let message = "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.";
-        let isWarning = false;
-
-        const sunriseTime = timeUtils.timeToMinutes(times.sunrise);
-        const zawalTime = timeUtils.timeToMinutes(times.zawal);
-        const zohrTime = timeUtils.timeToMinutes(times.zohrBeginning);
-        const magribTime = timeUtils.timeToMinutes(times.magribBeginning);
-
-        if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
-            const permitTime = timeUtils.addMinutes(times.sunrise, 15);
-            message = `🌅 ATTENTION: PRAYER NOT PERMITTED until ${permitTime}. This time after sunrise (${times.sunrise}) is reserved for dhikr and du'a. 🌅`;
+          };
+      
+          var announcementElement = document.querySelector(selectors.announcement);
+          var message = "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.";
+          var isWarning = false;
+      
+          var sunriseTime = timeUtils.timeToMinutes(times.sunrise);
+          var zawalTime = timeUtils.timeToMinutes(times.zawal);
+          var zohrTime = timeUtils.timeToMinutes(times.zohrBeginning);
+          var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
+      
+          if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
+            message = "ATTENTION: PRAYER NOT PERMITTED until " + timeUtils.addMinutes(times.sunrise, 15) + 
+                      ". This time after sunrise (" + times.sunrise + ") is reserved for dhikr and du'a.";
             isWarning = true;
-        } else if (currentTime >= zawalTime && currentTime < zawalTime + 10) { 
-            message = `☀️ ATTENTION: PRAYER NOT PERMITTED at Zawal time (${times.zawal}). Please wait for Zohr time to begin at ${times.zohrBeginning}. ☀️`;
+          } else if (currentTime >= zawalTime && currentTime < zawalTime + 10) {
+            message = "ATTENTION: PRAYER NOT PERMITTED at Zawal time (" + times.zawal + 
+                      "). Please wait for Zohr time to begin at " + times.zohrBeginning + ".";
             isWarning = true;
-        } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
-            message = `🌇 ATTENTION: PRAYER NOT PERMITTED during sunset. Please wait for Magrib Adhan at ${times.magribBeginning}. 🌇`;
+          } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
+            message = "ATTENTION: PRAYER NOT PERMITTED during sunset. Please wait for Magrib Adhan at " + 
+                      times.magribBeginning + ".";
             isWarning = true;
+          }
+      
+          announcementElement.textContent = message;
+          if (isWarning) {
+            announcementElement.classList.add("announcement-warning");
+          } else {
+            announcementElement.classList.remove("announcement-warning");
+          }
         }
-
-        announcementElement.textContent = message;
-        announcementElement.classList.toggle("announcement-warning", isWarning);
-    }
-
-      // Page Refresh Functions
-      function forceMidnightRefresh() {
-        const now = new Date();
-        if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
-          console.log("Starting midnight refresh process...");
-          persistentRefresh();
+      
+        function forceMidnightRefresh() {
+          var now = new Date();
+          if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
+            persistentRefresh();
+          }
         }
-      }
-
-      function persistentRefresh() {
-        const retryInterval = 30000;
-        const url = `${window.location.pathname}?t=${new Date().getTime()}`;
-
-        function tryRefresh() {
-          fetch(url)
-            .then(response => {
-              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-              console.log("Server accessible, refreshing page...");
-              window.location.reload(true);
-            })
-            .catch(error => {
-              console.log("Refresh failed:", error.message);
-              console.log("Retrying in 30 seconds...");
-              setTimeout(tryRefresh, retryInterval);
-            });
+      
+        function persistentRefresh() {
+          var retryInterval = 30000;
+          var url = window.location.pathname + "?t=" + new Date().getTime();
+      
+          function tryRefresh() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                  window.location.reload(true);
+                } else {
+                  setTimeout(tryRefresh, retryInterval);
+                }
+              }
+            };
+            xhr.send();
+          }
+      
+          tryRefresh();
         }
-
-        tryRefresh();
-      }
-
-      // Initialize and set up intervals
-      function initialize() {
-        updateTime();
-        updateNextPrayer();
-        updateAnnouncement();
-        convertTo12Hour();
-
-        // Set up intervals
-        setInterval(() => {
+      
+        function initialize() {
           updateTime();
           updateNextPrayer();
           updateAnnouncement();
           convertTo12Hour();
-        }, 1000);
-
-        setInterval(forceMidnightRefresh, 1000);
-      }
-
-      // Start the application
-      document.addEventListener('DOMContentLoaded', initialize);
-    </script>
+      
+          setInterval(function() {
+            updateTime();
+            updateNextPrayer();
+            updateAnnouncement();
+            convertTo12Hour();
+          }, 1000);
+      
+          setInterval(forceMidnightRefresh, 1000);
+        }
+      
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initialize);
+        } else {
+          initialize();
+        }
+      </script>
 </body>
 
 </html>
