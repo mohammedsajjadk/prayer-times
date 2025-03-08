@@ -188,6 +188,11 @@
       
         function updateNextPrayer() {
           var now = new Date();
+          // Testing currentTime. Uncomment following code to test different times.
+          // var hours = 0;
+          // var minutes = 54;
+          // var currentTime = hours * 60 + minutes;
+
           var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
           var isJumuah = now.getDay() === 5;
       
@@ -236,7 +241,7 @@
           } else if (currentTime >= times.ishaBeginning) {
             nextPrayer = 'isha';
           }
-      
+
           if (nextPrayer) {
             highlightNextPrayer(nextPrayer, isJumuah);
           }
@@ -259,6 +264,12 @@
       
         function updateAnnouncement() {
           var now = new Date();
+          
+          // Testing currentTime. Uncomment following code to test different times.
+          // var hours = 0;
+          // var minutes = 54;
+          // var currentTime = hours * 60 + minutes;
+
           var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
       
           var times = {
@@ -278,15 +289,15 @@
           var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
       
           if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
-            message = "ATTENTION: PRAYER NOT PERMITTED until " + timeUtils.addMinutes(times.sunrise, 15) + 
-                      ". This time after sunrise (" + times.sunrise + ") is reserved for dhikr and du'a.";
+            message = "🌅ATTENTION: PRAYER NOT PERMITTED UNTIL " + timeUtils.addMinutes(times.sunrise, 15) + 
+                      ". THIS TIME AFTER SUNRISE (" + times.sunrise + ") IS RESERVERD FOR DHIKR AND DU'A.";
             isWarning = true;
           } else if (currentTime >= zawalTime && currentTime < zawalTime + 10) {
-            message = "ATTENTION: PRAYER NOT PERMITTED at Zawal time (" + times.zawal + 
-                      "). Please wait for Zohr time to begin at " + times.zohrBeginning + ".";
+            message = "☀️ATTENTION: PRAYER NOT PERMITTED AT ZAWAL TIME (" + times.zawal + 
+                      "). PLEASE WAIT FOR ZOHR TIME TO BEGIN AT " + times.zohrBeginning + ".";
             isWarning = true;
           } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
-            message = "ATTENTION: PRAYER NOT PERMITTED during sunset. Please wait for Magrib Adhan at " + 
+            message = "🌇ATTENTION: PRAYER NOT PERMITTED DURING SUNSET. PLEASE WAIT FOR MAGRIB ADHAN AT " + 
                       times.magribBeginning + ".";
             isWarning = true;
           }

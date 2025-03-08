@@ -5,6 +5,7 @@
     --border-color: #0088FF;            /* Brighter Blue for Borders */
     --announcement-bg-color: #000C17;   /* Darker Blue */
     --announcement-text-color: #FFFFFF;  /* Cyan */
+    --announcement-warning: #ff0000;     /* Orange */
     --next-prayer-border-color: rgba(0, 240, 255, 0.8); /* Slightly transparent highlight color */
 }
 
@@ -65,11 +66,12 @@ body, html {
 }
 
 .announcement-warning {
-    color: #FFA500 !important; /* Orange instead of red */
+    color: var(--announcement-warning) !important; /* Orange instead of red */
     font-weight: bold;
     text-shadow: 0 0 10px rgba(255, 165, 0, 0.5); /* Subtle glow effect */
     letter-spacing: 0.1em; /* Slightly spaced letters for better readability */
     animation: warningPulse 2s infinite;
+    font-size: 5vw;
 }
 
 @keyframes warningPulse {
