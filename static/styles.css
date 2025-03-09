@@ -10,8 +10,6 @@
 }
 
 
-
-
 @font-face {
     font-family: 'DS-Digital';
     src: url('/static/fonts/ds_digital/DS-DIGI.TTF') format('truetype');
@@ -394,3 +392,55 @@ body, html {
     }
 }
 
+
+/* Add this after your .date-container styles */
+
+.theme-dropdown {
+    position: relative;
+    display: inline-block;
+    margin: 0 1vw;
+}
+
+.theme-button {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    opacity: 0.3;
+    cursor: pointer;
+    font-size: 2vw;
+    padding: 0.5vh 1vw;
+    transition: opacity 0.3s;
+}
+
+.theme-button:hover {
+    opacity: 1;
+}
+
+.theme-content {
+    display: none;
+    position: absolute;
+    background-color: var(--announcement-bg-color);
+    min-width: 10vw;
+    box-shadow: 0 0.5vh 1vh rgba(0,0,0,0.2);
+    z-index: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5vh;
+}
+
+.theme-content .theme-option {
+    color: var(--text-color);
+    padding: 1vh 1vw;
+    text-decoration: none;
+    display: block;
+    font-size: 1.5vw;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.theme-content .theme-option:hover {
+    background-color: var(--border-color);
+}
+
+.theme-dropdown:hover .theme-content {
+    display: block;
+}

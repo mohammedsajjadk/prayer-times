@@ -22,6 +22,15 @@
     </div>
     <div class="date-container">
       <div class="islamic-date">{{ islamic_date }}</div>
+      <div class="theme-dropdown">
+        <button class="theme-button"></button>
+        <div class="theme-content">
+            <div class="theme-option" data-theme="theme1">Theme 1</div>
+            <div class="theme-option" data-theme="theme2">Theme 2</div>
+            <div class="theme-option" data-theme="theme3">Theme 3</div>
+            <div class="theme-option" data-theme="theme4">Theme 4</div>
+        </div>
+    </div>
       <div class="gregorian-date">{{ current_date }}</div>
     </div>
     <div class="divider"></div>
@@ -360,6 +369,95 @@
         } else {
           initialize();
         }
+
+        // Theme configurations
+        var themes = {
+            theme1: {
+                '--bg-color': '#0099ff',                // Keep original
+                '--text-color': '#FFFFFF',              // Keep original
+                '--highlight-color': '#000000',         // Keep original
+                '--border-color': '#76B5C5',            // Keep original
+                '--announcement-bg-color': '#000C17',    // Changed to darker bg
+                '--announcement-text-color': '#FFFFFF',
+                '--announcement-warning': '#ff0000',     // Keep original
+                '--next-prayer-border-color': 'rgba(0, 0, 0, 0.8)' // Match highlight with transparency
+            },
+            theme2: {
+                '--bg-color': '#001529',                // Keep original
+                '--text-color': '#FFFFFF',              // Keep original
+                '--highlight-color': '#00F0FF',         // Keep original
+                '--border-color': '#0088FF',            // Keep original
+                '--announcement-bg-color': '#000C17',    // Keep original
+                '--announcement-text-color': '#FFFFFF',  // Keep original
+                '--announcement-warning': '#ff0000',     // Keep original
+                '--next-prayer-border-color': 'rgba(0, 240, 255, 0.8)' // Keep original
+            },
+            theme3: {
+                '--bg-color': '#0A192F',                // Keep original
+                '--text-color': '#FFFFFF',              // Keep original
+                '--highlight-color': '#64FFDA',         // Keep original
+                '--border-color': '#226e69',            // Keep original
+                '--announcement-bg-color': '#000C17',    // Changed to darker bg
+                '--announcement-text-color': '#FFFFFF',  // Match highlight color
+                '--announcement-warning': '#ff0000',     // Keep original
+                '--next-prayer-border-color': 'rgba(100, 255, 218, 0.8)' // Match highlight with transparency
+            },
+            theme4: {
+              '--bg-color': '#FFFFFF',                // White background
+              '--text-color': '#00F0FF',             // Cyan text as requested
+              '--highlight-color': '#FF0000',        // Red highlight as requested
+              '--border-color': '#00B4D8',           // Ocean blue borders
+              '--announcement-bg-color': '#F8F9FA',  // Light gray for announcement
+              '--announcement-text-color': '#FF0000', // Red text to match highlight
+              '--announcement-warning': '#FF4444',    // Lighter red for warnings
+              '--next-prayer-border-color': 'rgba(255, 0, 0, 0.8)' // Red with transparency to match highlight
+          }
+        };
+
+        // Get all theme options
+        var themeOptions = document.getElementsByClassName('theme-option');
+
+        // Add click event to each theme option
+        for (var i = 0; i < themeOptions.length; i++) {
+            themeOptions[i].onclick = function() {
+                var themeName = this.getAttribute('data-theme');
+                var selectedTheme = themes[themeName];
+                
+                // Apply the theme
+                applyTheme(selectedTheme);
+                
+                // Save theme preference (optional)
+                try {
+                    localStorage.setItem('selectedTheme', themeName);
+                } catch(e) {
+                    // Local storage not supported or disabled
+                    console.log('Local storage not available');
+                }
+            };
+        }
+
+        // Function to apply theme
+        function applyTheme(theme) {
+            var root = document.documentElement;
+            for (var property in theme) {
+                if (theme.hasOwnProperty(property)) {
+                    root.style.setProperty(property, theme[property]);
+                }
+            }
+        }
+
+        // Load saved theme preference on page load (optional)
+        window.onload = function() {
+            try {
+                var savedTheme = localStorage.getItem('selectedTheme');
+                if (savedTheme && themes[savedTheme]) {
+                    applyTheme(themes[savedTheme]);
+                }
+            } catch(e) {
+                // Local storage not supported or disabled
+                console.log('Local storage not available');
+            }
+        };
       </script>
 </body>
 
