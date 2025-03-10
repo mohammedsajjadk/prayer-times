@@ -47,7 +47,7 @@ body, html {
     white-space: nowrap;
     overflow: hidden;
     position: fixed;
-    height: 10vh;
+    height: 11vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -288,7 +288,7 @@ body, html {
     width: 103vh;
     position: fixed;
     left: -1.5vw;
-    bottom: 13vh;
+    bottom: 14vh;
 }
 
 .divider {

@@ -25,13 +25,13 @@
       <div class="theme-dropdown">
         <button class="theme-button"></button>
         <div class="theme-content">
-            <div class="theme-option" data-theme="theme1">Theme 1</div>
-            <div class="theme-option" data-theme="theme2">Theme 2</div>
-            <div class="theme-option" data-theme="theme3">Theme 3</div>
-            <div class="theme-option" data-theme="theme4">Theme 4</div>
-            <div class="theme-option" data-theme="theme5">Theme 5</div>
+          <div class="theme-option" data-theme="theme1">Theme 1</div>
+          <div class="theme-option" data-theme="theme2">Theme 2</div>
+          <div class="theme-option" data-theme="theme3">Theme 3</div>
+          <div class="theme-option" data-theme="theme4">Theme 4</div>
+          <div class="theme-option" data-theme="theme5">Theme 5</div>
         </div>
-    </div>
+      </div>
       <div class="gregorian-date">{{ current_date }}</div>
     </div>
     <div class="divider"></div>
@@ -117,359 +117,450 @@
       </p>
     </div>
     <!-- JavaScript -->
-      <script>
-        // Utility functions
-        var timeUtils = {
-          timeToMinutes: function(timeStr) {
-            var parts = timeStr.split(":");
-            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-          },
-      
-          addMinutes: function(timeStr, minutesToAdd) {
-            var parts = timeStr.split(":");
+    <script>
+         // Utility functions
+      var timeUtils = {
+        timeToMinutes: function (timeStr) {
+          var parts = timeStr.split(":");
+          return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        },
+
+        addMinutes: function (timeStr, minutesToAdd) {
+          var parts = timeStr.split(":");
+          var hours = parseInt(parts[0]);
+          var minutes = parseInt(parts[1]);
+          var totalMinutes = hours * 60 + minutes + minutesToAdd;
+          var newHours = Math.floor(totalMinutes / 60) % 24;
+          var newMinutes = totalMinutes % 60;
+          return this.padNumber(newHours, 2) + ":" + this.padNumber(newMinutes, 2);
+        },
+
+        padNumber: function (num, size) {
+          var s = "000000000" + num;
+          return s.substr(s.length - size);
+        }
+      };
+
+      // DOM Selectors
+      var selectors = {
+        timeDisplay: ".time-display",
+        prayerTimes: {
+          fajrJamaah: ".jamaah .prayer-time-value:nth-child(2)",
+          zohrJamaah: ".jamaah .prayer-time-value:nth-child(3)",
+          asrJamaah: ".jamaah .prayer-time-value:nth-child(4)",
+          magribJamaah: ".jamaah .prayer-time-value:nth-child(5)",
+          ishaJamaah: ".jamaah .prayer-time-value:nth-child(6)",
+          jumahJamaah: ".jamaah .prayer-time-value:nth-child(7)",
+          fajrBeginning: ".beginning .prayer-time-value:nth-child(2)",
+          zohrBeginning: ".beginning .prayer-time-value:nth-child(3)",
+          asrBeginning: ".beginning .prayer-time-value:nth-child(4)",
+          magribBeginning: ".beginning .prayer-time-value:nth-child(5)",
+          ishaBeginning: ".beginning .prayer-time-value:nth-child(6)"
+        },
+        importantTimes: {
+          sunrise: ".time-box:nth-child(2) .time-value",
+          zawal: ".time-box:nth-child(3) .time-value"
+        },
+        announcement: "#announcement-text"
+      };
+
+      function updateTime() {
+        var now = new Date();
+        var hours = now.getUTCHours();
+        hours = hours % 12 || 12;
+        var minutes = timeUtils.padNumber(now.getUTCMinutes(), 2);
+        var seconds = timeUtils.padNumber(now.getUTCSeconds(), 2);
+
+        var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
+          '<span class="time-sub">' +
+          '<span class="seconds">:' + seconds + '</span>' +
+          '</span>';
+
+        document.querySelector(selectors.timeDisplay).innerHTML = timeHtml;
+      }
+
+      function convertTo12Hour() {
+        var elements = document.querySelectorAll(".prayer-time-value.beginning, .prayer-time-value.jamaah");
+        for (var i = 0; i < elements.length; i++) {
+          var el = elements[i];
+          var time = el.getAttribute("data-time");
+          if (time && time.indexOf(":") !== -1) {
+            var parts = time.split(":");
             var hours = parseInt(parts[0]);
             var minutes = parseInt(parts[1]);
-            var totalMinutes = hours * 60 + minutes + minutesToAdd;
-            var newHours = Math.floor(totalMinutes / 60) % 24;
-            var newMinutes = totalMinutes % 60;
-            return this.padNumber(newHours, 2) + ":" + this.padNumber(newMinutes, 2);
-          },
-      
-          padNumber: function(num, size) {
-            var s = "000000000" + num;
-            return s.substr(s.length - size);
-          }
-        };
-      
-        // DOM Selectors
-        var selectors = {
-          timeDisplay: ".time-display",
-          prayerTimes: {
-            fajrJamaah: ".jamaah .prayer-time-value:nth-child(2)",
-            zohrJamaah: ".jamaah .prayer-time-value:nth-child(3)",
-            asrJamaah: ".jamaah .prayer-time-value:nth-child(4)",
-            magribJamaah: ".jamaah .prayer-time-value:nth-child(5)",
-            ishaJamaah: ".jamaah .prayer-time-value:nth-child(6)",
-            jumahJamaah: ".jamaah .prayer-time-value:nth-child(7)",
-            fajrBeginning: ".beginning .prayer-time-value:nth-child(2)",
-            zohrBeginning: ".beginning .prayer-time-value:nth-child(3)",
-            asrBeginning: ".beginning .prayer-time-value:nth-child(4)",
-            magribBeginning: ".beginning .prayer-time-value:nth-child(5)",
-            ishaBeginning: ".beginning .prayer-time-value:nth-child(6)"
-          },
-          importantTimes: {
-            sunrise: ".time-box:nth-child(2) .time-value",
-            zawal: ".time-box:nth-child(3) .time-value"
-          },
-          announcement: "#announcement-text"
-        };
-      
-        function updateTime() {
-          var now = new Date();
-          var hours = now.getUTCHours();
-          hours = hours % 12 || 12;
-          var minutes = timeUtils.padNumber(now.getUTCMinutes(), 2);
-          var seconds = timeUtils.padNumber(now.getUTCSeconds(), 2);
-      
-          var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
-                         '<span class="time-sub">' +
-                         '<span class="seconds">:' + seconds + '</span>' +
-                         '</span>';
-          
-          document.querySelector(selectors.timeDisplay).innerHTML = timeHtml;
-        }
-      
-        function convertTo12Hour() {
-          var elements = document.querySelectorAll(".prayer-time-value.beginning, .prayer-time-value.jamaah");
-          for (var i = 0; i < elements.length; i++) {
-            var el = elements[i];
-            var time = el.getAttribute("data-time");
-            if (time && time.indexOf(":") !== -1) {
-              var parts = time.split(":");
-              var hours = parseInt(parts[0]);
-              var minutes = parseInt(parts[1]);
-              if (!isNaN(hours) && !isNaN(minutes)) {
-                var hours12 = hours % 12 || 12;
-                el.textContent = hours12 + ":" + timeUtils.padNumber(minutes, 2);
-              }
+            if (!isNaN(hours) && !isNaN(minutes)) {
+              var hours12 = hours % 12 || 12;
+              el.textContent = hours12 + ":" + timeUtils.padNumber(minutes, 2);
             }
           }
         }
-      
-        function updateNextPrayer() {
-          var now = new Date();
-          // Testing currentTime. Uncomment following code to test different times.
-          // var hours = 0;
-          // var minutes = 54;
-          // var currentTime = hours * 60 + minutes;
+      }
 
-          var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-          var isJumuah = now.getDay() === 5;
-      
-          // Clear existing highlights
-          var highlighted = document.querySelectorAll(".next-prayer");
-          for (var i = 0; i < highlighted.length; i++) {
-            highlighted[i].classList.remove("next-prayer");
-          }
-      
-          // Get all required times
-          var times = {
-            fajrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(2)").getAttribute('data-time')),
-            zohrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(3)").getAttribute('data-time')),
-            asrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(4)").getAttribute('data-time')),
-            magribBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(5)").getAttribute('data-time')),
-            ishaBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(6)").getAttribute('data-time')),
-            sunrise: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time')),
-            zawal: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'))
-          };
-      
-          // Check for prohibited times
-          var isProhibitedTime = (
-            (currentTime >= times.sunrise && currentTime < times.sunrise + 15) ||
-            (currentTime >= times.zawal && currentTime < times.zawal + 10) ||
-            (currentTime >= times.magribBeginning - 10 && currentTime < times.magribBeginning)
-          );
-      
-          if (isProhibitedTime) {
-            return;
-          }
-      
-          var nextPrayer = null;
-      
-          if (currentTime >= 0 && currentTime < times.fajrBeginning) {
-            nextPrayer = 'isha';
-          } else if (currentTime >= times.fajrBeginning && currentTime < times.sunrise) {
-            nextPrayer = 'fajr';
-          } else if (isJumuah && currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
-            nextPrayer = 'jumuah';
-          } else if (currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
-            nextPrayer = 'zohr';
-          } else if (currentTime >= times.asrBeginning && currentTime < times.magribBeginning - 10) {
-            nextPrayer = 'asr';
-          } else if (currentTime >= times.magribBeginning && currentTime < times.ishaBeginning) {
-            nextPrayer = 'magrib';
-          } else if (currentTime >= times.ishaBeginning) {
-            nextPrayer = 'isha';
-          }
+      function updateNextPrayer() {
+        var now = new Date();
+        // Testing currentTime. Uncomment following code to test different times.
+        // var hours = 0;
+        // var minutes = 54;
+        // var currentTime = hours * 60 + minutes;
 
-          if (nextPrayer) {
-            highlightNextPrayer(nextPrayer, isJumuah);
-          }
-        }
-      
-        function highlightNextPrayer(prayer, isJumuah) {
-          var prayerIndex = { 
-            fajr: 2, 
-            zohr: 3, 
-            asr: 4, 
-            magrib: 5, 
-            isha: 6, 
-            jumuah: 7 
-          };
-          var element = document.querySelector(".jamaah .prayer-time-value:nth-child(" + prayerIndex[prayer] + ")");
-          if (element) {
-            element.classList.add("next-prayer");
-          }
-        }
-      
-        function updateAnnouncement() {
-          var now = new Date();
-          
-          // Testing currentTime. Uncomment following code to test different times.
-          // var hours = 0;
-          // var minutes = 54;
-          // var currentTime = hours * 60 + minutes;
+        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+        var isJumuah = now.getDay() === 5;
 
-          var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-      
-          var times = {
-            sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
-            zawal: document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'),
-            zohrBeginning: document.querySelector(selectors.prayerTimes.zohrBeginning).getAttribute('data-time'),
-            magribBeginning: document.querySelector(selectors.prayerTimes.magribBeginning).getAttribute('data-time')
-          };
-      
-          var announcementElement = document.querySelector(selectors.announcement);
-          var message = "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.";
-          var isWarning = false;
-      
-          var sunriseTime = timeUtils.timeToMinutes(times.sunrise);
-          var zawalTime = timeUtils.timeToMinutes(times.zawal);
-          var zohrTime = timeUtils.timeToMinutes(times.zohrBeginning);
-          var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
-      
-          if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
-            message = "🌅ATTENTION: PRAYER NOT PERMITTED UNTIL " + timeUtils.addMinutes(times.sunrise, 15) + 
-                      ". THIS TIME AFTER SUNRISE (" + times.sunrise + ") IS RESERVERD FOR DHIKR AND DU'A.";
-            isWarning = true;
-          } else if (currentTime >= zawalTime && currentTime < zawalTime + 10) {
-            message = "☀️ATTENTION: PRAYER NOT PERMITTED AT ZAWAL TIME (" + times.zawal + 
-                      "). PLEASE WAIT FOR ZOHR TIME TO BEGIN AT " + times.zohrBeginning + ".";
-            isWarning = true;
-          } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
-            message = "🌇ATTENTION: PRAYER NOT PERMITTED DURING SUNSET. PLEASE WAIT FOR MAGRIB ADHAN AT " + 
-                      times.magribBeginning + ".";
-            isWarning = true;
+        // Clear existing highlights
+        var highlighted = document.querySelectorAll(".next-prayer");
+        for (var i = 0; i < highlighted.length; i++) {
+          highlighted[i].classList.remove("next-prayer");
+        }
+
+        // Get all required times
+        var times = {
+          fajrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(2)").getAttribute('data-time')),
+          zohrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(3)").getAttribute('data-time')),
+          asrBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(4)").getAttribute('data-time')),
+          magribBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(5)").getAttribute('data-time')),
+          ishaBeginning: timeUtils.timeToMinutes(document.querySelector(".beginning .prayer-time-value:nth-child(6)").getAttribute('data-time')),
+          sunrise: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time')),
+          zawal: timeUtils.timeToMinutes(document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'))
+        };
+
+        // Check for prohibited times
+        var isProhibitedTime = (
+          (currentTime >= times.sunrise && currentTime < times.sunrise + 15) ||
+          (currentTime >= times.zawal && currentTime < times.zawal + 10) ||
+          (currentTime >= times.magribBeginning - 10 && currentTime < times.magribBeginning)
+        );
+
+        if (isProhibitedTime) {
+          return;
+        }
+
+        var nextPrayer = null;
+
+        if (currentTime >= 0 && currentTime < times.fajrBeginning) {
+          nextPrayer = 'isha';
+        } else if (currentTime >= times.fajrBeginning && currentTime < times.sunrise) {
+          nextPrayer = 'fajr';
+        } else if (isJumuah && currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
+          nextPrayer = 'jumuah';
+        } else if (currentTime >= times.zohrBeginning && currentTime < times.asrBeginning) {
+          nextPrayer = 'zohr';
+        } else if (currentTime >= times.asrBeginning && currentTime < times.magribBeginning - 10) {
+          nextPrayer = 'asr';
+        } else if (currentTime >= times.magribBeginning && currentTime < times.ishaBeginning) {
+          nextPrayer = 'magrib';
+        } else if (currentTime >= times.ishaBeginning) {
+          nextPrayer = 'isha';
+        }
+
+        if (nextPrayer) {
+          highlightNextPrayer(nextPrayer, isJumuah);
+        }
+      }
+
+      function highlightNextPrayer(prayer, isJumuah) {
+        var prayerIndex = {
+          fajr: 2,
+          zohr: 3,
+          asr: 4,
+          magrib: 5,
+          isha: 6,
+          jumuah: 7
+        };
+        var element = document.querySelector(".jamaah .prayer-time-value:nth-child(" + prayerIndex[prayer] + ")");
+        if (element) {
+          element.classList.add("next-prayer");
+        }
+      }
+
+      var announcements = {
+        default: "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.",
+
+        friday: function (startTime) {
+          return [
+            "📢 FIQH OF ZAKAAT",
+            "Today after Asr Jamaah (" + startTime + ")",
+            "Join us in Masjid • Live Audio: mixlr.com/tralee-masjid"
+          ].join(" • ");
+        },
+
+        saturday: {
+          asr: function (startTime) {
+            return [
+              "📖 TAFSEER OF THE GLORIOUS QUR'AN",
+              "Today after Asr Jamaah (" + startTime + ")",
+              "SURAH TAHREEM: Join us for beautiful commentary & lessons",
+              "In Masjid • Live Audio: mixlr.com/tralee-masjid"
+            ].join(" • ");
+          },
+          night: function () {
+            return [
+              "🌙 WEEKLY YOUTH NIGHT",
+              "Join us Today after Taraweeh Prayer",
+              "Special Ramadhan Programme with Beautiful Advices",
+              "Refreshments will be served."
+            ].join(" • ");
           }
-      
-          announcementElement.textContent = message;
-          if (isWarning) {
-            announcementElement.classList.add("announcement-warning");
-          } else {
-            announcementElement.classList.remove("announcement-warning");
+        },
+        sunday: function (startTime) {
+          return [
+            "📖 TAFSEER OF THE GLORIOUS QUR'AN",
+            "Today after Asr Jamaah (" + startTime + ")",
+            "Join us in Masjid • Live Audio: mixlr.com/tralee-masjid"
+          ].join(" • ");
+        },
+
+        warnings: {
+          sunrise: function (sunriseTime, endTime) {
+            return "🌅 NO PRAYER UNTIL " + endTime + " • Time Reserved for Morning Dhikr & Du'a after Sunrise (" + sunriseTime + ")";
+          },
+          zawal: function (zawalTime, zohrTime) {
+            return "☀️ NO PRAYER AT ZAWAL TIME (" + zawalTime + ") • Please Wait for Zohr (" + zohrTime + ")";
+          },
+          sunset: function (magribTime) {
+            return "🌇 NO PRAYER DURING SUNSET • Please Wait for Magrib Adhan (" + magribTime + ")";
           }
         }
-      
-        function forceMidnightRefresh() {
-          var now = new Date();
-          if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
-            persistentRefresh();
-          }
+      };
+
+      function showNextMessage(message) {
+        var announcementElement = document.querySelector(selectors.announcement);
+
+        // Set the message
+        announcementElement.textContent = message;
+
+        // Add the scroll animation class
+        announcementElement.classList.add('scroll-announcement');
+        isScrolling = true;
+
+        // Wait for animation to complete
+        setTimeout(function () {
+          announcementElement.classList.remove('scroll-announcement');
+          isScrolling = false;
+
+          // Small delay before next message
+          setTimeout(function () {
+            if (messageQueue.length > 0) {
+              showNextMessage(messageQueue.shift());
+            }
+          }, 3000); // 3 second gap between messages
+        }, 25000); // 25 seconds for scroll animation to complete
+      }
+
+
+      function updateAnnouncement() {
+        var now = new Date();
+
+        // Testing currentTime. Uncomment following code to test different times.
+        // var hours = 0;
+        // var minutes = 54;
+        // var currentTime = hours * 60 + minutes;
+        // var dayOfWeek = 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
+
+        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+        var dayOfWeek = now.getDay(); // 0 is Sunday, 5 is Friday, 6 is Saturday
+
+        var times = {
+          sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
+          zawal: document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'),
+          fajrBeginning: document.querySelector(selectors.prayerTimes.fajrBeginning).getAttribute('data-time'),
+          zohrBeginning: document.querySelector(selectors.prayerTimes.zohrBeginning).getAttribute('data-time'),
+          magribBeginning: document.querySelector(selectors.prayerTimes.magribBeginning).getAttribute('data-time'),
+          asrJamaah: document.querySelector(selectors.prayerTimes.asrJamaah).getAttribute('data-time')
+        };
+
+        var announcementElement = document.querySelector(selectors.announcement);
+        var message = announcements.default;
+        var isWarning = false;
+
+        // Convert times
+        var sunriseTime = timeUtils.timeToMinutes(times.sunrise);
+        var zawalTime = timeUtils.timeToMinutes(times.zawal);
+        var fajrTime = timeUtils.timeToMinutes(times.fajrBeginning);
+        var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
+        var asrJamaahTime = timeUtils.timeToMinutes(times.asrJamaah);
+        var programStartTime = asrJamaahTime + 10; // 10 mins after Asr Jamaah
+
+        // Check for program announcements based on day
+        if (dayOfWeek === 5 && currentTime >= fajrTime && currentTime < programStartTime) {
+          // Friday
+          message = announcements.friday(timeUtils.addMinutes(times.asrJamaah, 10));
+        } else if (dayOfWeek === 6) {
+            // Saturday - two programs
+            if (currentTime >= fajrTime && currentTime < programStartTime) {
+                message = announcements.saturday.asr(timeUtils.addMinutes(times.asrJamaah, 10));
+            } else if (currentTime >= programStartTime && currentTime < 22 * 60) { // Until 10 PM
+                message = announcements.saturday.night();
+            }
+        } else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < programStartTime) {
+          // Sunday
+          message = announcements.sunday(timeUtils.addMinutes(times.asrJamaah, 10));
         }
-      
-        function persistentRefresh() {
-          var retryInterval = 30000;
-          var url = window.location.pathname + "?t=" + new Date().getTime();
-      
-          function tryRefresh() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.onreadystatechange = function() {
-              if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                  window.location.reload(true);
-                } else {
-                  setTimeout(tryRefresh, retryInterval);
-                }
+
+        // Override with warning messages if needed (existing warning logic)
+        if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
+          message = announcements.warnings.sunrise(times.sunrise, timeUtils.addMinutes(times.sunrise, 15));
+          isWarning = true;
+        } else if (currentTime >= zawalTime && currentTime < zawalTime + 10) {
+          message = announcements.warnings.zawal(times.zawal, times.zohrBeginning);
+          isWarning = true;
+        } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
+          message = announcements.warnings.sunset(times.magribBeginning);
+          isWarning = true;
+        }
+
+        announcementElement.textContent = message;
+        announcementElement.classList.toggle("announcement-warning", isWarning);
+      }
+      function forceMidnightRefresh() {
+        var now = new Date();
+        if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
+          persistentRefresh();
+        }
+      }
+
+      function persistentRefresh() {
+        var retryInterval = 30000;
+        var url = window.location.pathname + "?t=" + new Date().getTime();
+
+        function tryRefresh() {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', url, true);
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                window.location.reload(true);
+              } else {
+                setTimeout(tryRefresh, retryInterval);
               }
-            };
-            xhr.send();
-          }
-      
-          tryRefresh();
+            }
+          };
+          xhr.send();
         }
-      
-        function initialize() {
+
+        tryRefresh();
+      }
+
+      function initialize() {
+        updateTime();
+        updateNextPrayer();
+        updateAnnouncement();
+        convertTo12Hour();
+
+        setInterval(function () {
           updateTime();
           updateNextPrayer();
           updateAnnouncement();
           convertTo12Hour();
-      
-          setInterval(function() {
-            updateTime();
-            updateNextPrayer();
-            updateAnnouncement();
-            convertTo12Hour();
-          }, 1000);
-      
-          setInterval(forceMidnightRefresh, 1000);
-        }
-      
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", initialize);
-        } else {
-          initialize();
-        }
+        }, 1000);
 
-        // Theme configurations
-        var themes = {
-            theme1: {
-                '--bg-color': '#0099ff',                // Keep original
-                '--text-color': '#FFFFFF',              // Keep original
-                '--highlight-color': '#000000',         // Keep original
-                '--border-color': '#76B5C5',            // Keep original
-                '--announcement-bg-color': '#000C17',    // Changed to darker bg
-                '--announcement-text-color': '#FFFFFF',
-                '--announcement-warning': '#ff0000',     // Keep original
-                '--next-prayer-border-color': 'rgba(0, 0, 0, 0.8)' // Match highlight with transparency
-            },
-            theme2: {
-                '--bg-color': '#001529',                // Keep original
-                '--text-color': '#FFFFFF',              // Keep original
-                '--highlight-color': '#00F0FF',         // Keep original
-                '--border-color': '#0088FF',            // Keep original
-                '--announcement-bg-color': '#000C17',    // Keep original
-                '--announcement-text-color': '#FFFFFF',  // Keep original
-                '--announcement-warning': '#ff0000',     // Keep original
-                '--next-prayer-border-color': 'rgba(0, 240, 255, 0.8)' // Keep original
-            },
-            theme3: {
-                '--bg-color': '#0A192F',                // Keep original
-                '--text-color': '#FFFFFF',              // Keep original
-                '--highlight-color': '#64FFDA',         // Keep original
-                '--border-color': '#226e69',            // Keep original
-                '--announcement-bg-color': '#000C17',    // Changed to darker bg
-                '--announcement-text-color': '#FFFFFF',  // Match highlight color
-                '--announcement-warning': '#ff0000',     // Keep original
-                '--next-prayer-border-color': 'rgba(100, 255, 218, 0.8)' // Match highlight with transparency
-            },
-            theme4: {
-              '--bg-color': '#FFFFFF',                // White background
-              '--text-color': '#00F0FF',             // Cyan text as requested
-              '--highlight-color': '#FF0000',        // Red highlight as requested
-              '--border-color': '#00B4D8',           // Ocean blue borders
-              '--announcement-bg-color': '#F8F9FA',  // Light gray for announcement
-              '--announcement-text-color': '#00F0FF', // Red text to match highlight
-              '--announcement-warning': '#FF4444',    // Lighter red for warnings
-              '--next-prayer-border-color': 'rgba(255, 0, 0, 0.8)' // Red with transparency to match highlight
-          },
-            theme5: {
-              '--bg-color': '#FFFFFF',                // White background
-              '--text-color': '#13686e',             // Cyan text as requested
-              '--highlight-color': '#FF0000',        // Red highlight as requested
-              '--border-color': '#00B4D8',           // Ocean blue borders
-              '--announcement-bg-color': '#F8F9FA',  // Light gray for announcement
-              '--announcement-text-color': '#13686e', // Red text to match highlight
-              '--announcement-warning': '#FF4444',    // Lighter red for warnings
-              '--next-prayer-border-color': 'rgba(255, 0, 0, 0.8)' // Red with transparency to match highlight
+        setInterval(forceMidnightRefresh, 1000);
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initialize);
+      } else {
+        initialize();
+      }
+
+      // Theme configurations
+      var themes = {
+        theme1: {
+          '--bg-color': '#0099ff',                // Keep original
+          '--text-color': '#FFFFFF',              // Keep original
+          '--highlight-color': '#000000',         // Keep original
+          '--border-color': '#76B5C5',            // Keep original
+          '--announcement-bg-color': '#000C17',    // Changed to darker bg
+          '--announcement-text-color': '#FFFFFF',
+          '--announcement-warning': '#ff0000',     // Keep original
+          '--next-prayer-border-color': 'rgba(0, 0, 0, 0.8)' // Match highlight with transparency
+        },
+        theme2: {
+          '--bg-color': '#001529',                // Keep original
+          '--text-color': '#FFFFFF',              // Keep original
+          '--highlight-color': '#00F0FF',         // Keep original
+          '--border-color': '#0088FF',            // Keep original
+          '--announcement-bg-color': '#000C17',    // Keep original
+          '--announcement-text-color': '#FFFFFF',  // Keep original
+          '--announcement-warning': '#ff0000',     // Keep original
+          '--next-prayer-border-color': 'rgba(0, 240, 255, 0.8)' // Keep original
+        },
+        theme3: {
+          '--bg-color': '#0A192F',                // Keep original
+          '--text-color': '#FFFFFF',              // Keep original
+          '--highlight-color': '#64FFDA',         // Keep original
+          '--border-color': '#226e69',            // Keep original
+          '--announcement-bg-color': '#000C17',    // Changed to darker bg
+          '--announcement-text-color': '#FFFFFF',  // Match highlight color
+          '--announcement-warning': '#ff0000',     // Keep original
+          '--next-prayer-border-color': 'rgba(100, 255, 218, 0.8)' // Match highlight with transparency
+        },
+        theme4: {
+          '--bg-color': '#FFFFFF',                // White background
+          '--text-color': '#00F0FF',             // Cyan text as requested
+          '--highlight-color': '#FF0000',        // Red highlight as requested
+          '--border-color': '#00B4D8',           // Ocean blue borders
+          '--announcement-bg-color': '#F8F9FA',  // Light gray for announcement
+          '--announcement-text-color': '#00F0FF', // Red text to match highlight
+          '--announcement-warning': '#FF4444',    // Lighter red for warnings
+          '--next-prayer-border-color': 'rgba(255, 0, 0, 0.8)' // Red with transparency to match highlight
+        },
+        theme5: {
+          '--bg-color': '#FFFFFF',                // White background
+          '--text-color': '#13686e',             // Cyan text as requested
+          '--highlight-color': '#FF0000',        // Red highlight as requested
+          '--border-color': '#00B4D8',           // Ocean blue borders
+          '--announcement-bg-color': '#F8F9FA',  // Light gray for announcement
+          '--announcement-text-color': '#13686e', // Red text to match highlight
+          '--announcement-warning': '#FF4444',    // Lighter red for warnings
+          '--next-prayer-border-color': 'rgba(255, 0, 0, 0.8)' // Red with transparency to match highlight
+        }
+      };
+
+      // Get all theme options
+      var themeOptions = document.getElementsByClassName('theme-option');
+
+      // Add click event to each theme option
+      for (var i = 0; i < themeOptions.length; i++) {
+        themeOptions[i].onclick = function () {
+          var themeName = this.getAttribute('data-theme');
+          var selectedTheme = themes[themeName];
+
+          // Apply the theme
+          applyTheme(selectedTheme);
+
+          // Save theme preference (optional)
+          try {
+            localStorage.setItem('selectedTheme', themeName);
+          } catch (e) {
+            // Local storage not supported or disabled
+            console.log('Local storage not available');
           }
         };
+      }
 
-        // Get all theme options
-        var themeOptions = document.getElementsByClassName('theme-option');
-
-        // Add click event to each theme option
-        for (var i = 0; i < themeOptions.length; i++) {
-            themeOptions[i].onclick = function() {
-                var themeName = this.getAttribute('data-theme');
-                var selectedTheme = themes[themeName];
-                
-                // Apply the theme
-                applyTheme(selectedTheme);
-                
-                // Save theme preference (optional)
-                try {
-                    localStorage.setItem('selectedTheme', themeName);
-                } catch(e) {
-                    // Local storage not supported or disabled
-                    console.log('Local storage not available');
-                }
-            };
+      // Function to apply theme
+      function applyTheme(theme) {
+        var root = document.documentElement;
+        for (var property in theme) {
+          if (theme.hasOwnProperty(property)) {
+            root.style.setProperty(property, theme[property]);
+          }
         }
+      }
 
-        // Function to apply theme
-        function applyTheme(theme) {
-            var root = document.documentElement;
-            for (var property in theme) {
-                if (theme.hasOwnProperty(property)) {
-                    root.style.setProperty(property, theme[property]);
-                }
-            }
+      // Load saved theme preference on page load (optional)
+      window.onload = function () {
+        try {
+          var savedTheme = localStorage.getItem('selectedTheme');
+          if (savedTheme && themes[savedTheme]) {
+            applyTheme(themes[savedTheme]);
+          }
+        } catch (e) {
+          // Local storage not supported or disabled
+          console.log('Local storage not available');
         }
-
-        // Load saved theme preference on page load (optional)
-        window.onload = function() {
-            try {
-                var savedTheme = localStorage.getItem('selectedTheme');
-                if (savedTheme && themes[savedTheme]) {
-                    applyTheme(themes[savedTheme]);
-                }
-            } catch(e) {
-                // Local storage not supported or disabled
-                console.log('Local storage not available');
-            }
-        };
-      </script>
+      };
+    </script>
 </body>
 
 </html>
