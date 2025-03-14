@@ -118,7 +118,7 @@
     </div>
     <!-- JavaScript -->
     <script>
-         // Utility functions
+      // Utility functions
       var timeUtils = {
         timeToMinutes: function (timeStr) {
           var parts = timeStr.split(":");
@@ -350,6 +350,45 @@
         }, 25000); // 25 seconds for scroll animation to complete
       }
 
+      function updateJumuahTimes() {
+        var now = new Date();
+
+        // Testing
+        // var currentTime = 14 * 60 + 0;
+        // var isFriday = 5 === 5;
+
+        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+        var isFriday = now.getDay() === 5;
+
+        // Check if time is between 14:00 and 15:00
+        var isSecondJumuahTime = currentTime >= 14 * 60 && currentTime < 15 * 60;
+
+        // Get the Jumu'ah time element
+        var jumuahElement = document.querySelector(".jamaah .prayer-time-value:nth-child(7)");
+
+        // Get the Jumu'ah label element
+        var jumuahLabelElement = document.querySelector(".prayer .prayer-time-value:nth-child(7) .english");
+
+        if (isFriday && isSecondJumuahTime) {
+          // Change to second Jumu'ah
+          jumuahElement.textContent = "2:15";
+          jumuahElement.setAttribute("data-time", "14:15");
+
+          // Add "2nd" indicator to the label
+          if (jumuahLabelElement && !jumuahLabelElement.textContent.includes("2nd")) {
+            jumuahLabelElement.textContent = "JUMU'AH (2nd)";
+          }
+        } else {
+          // Reset to first Jumu'ah for all other times
+          jumuahElement.textContent = "1:20";
+          jumuahElement.setAttribute("data-time", "13:20");
+
+          // Remove "2nd" indicator if present
+          if (jumuahLabelElement && jumuahLabelElement.textContent.includes("2nd")) {
+            jumuahLabelElement.textContent = "JUMU'AH";
+          }
+        }
+      }
 
       function updateAnnouncement() {
         var now = new Date();
@@ -387,12 +426,12 @@
           // Friday
           message = announcements.friday(timeUtils.addMinutes(times.asrJamaah, 10));
         } else if (dayOfWeek === 6) {
-            // Saturday - two programs
-            if (currentTime >= fajrTime && currentTime < programStartTime) {
-                message = announcements.saturday.asr(timeUtils.addMinutes(times.asrJamaah, 10));
-            } else if (currentTime >= programStartTime && currentTime < 22 * 60) { // Until 10 PM
-                message = announcements.saturday.night();
-            }
+          // Saturday - two programs
+          if (currentTime >= fajrTime && currentTime < programStartTime) {
+            message = announcements.saturday.asr(timeUtils.addMinutes(times.asrJamaah, 10));
+          } else if (currentTime >= programStartTime && currentTime < 22 * 60) { // Until 10 PM
+            message = announcements.saturday.night();
+          }
         } else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < programStartTime) {
           // Sunday
           message = announcements.sunday(timeUtils.addMinutes(times.asrJamaah, 10));
@@ -447,12 +486,14 @@
         updateNextPrayer();
         updateAnnouncement();
         convertTo12Hour();
+        updateJumuahTimes();
 
         setInterval(function () {
           updateTime();
           updateNextPrayer();
           updateAnnouncement();
           convertTo12Hour();
+          updateJumuahTimes();
         }, 1000);
 
         setInterval(forceMidnightRefresh, 1000);
