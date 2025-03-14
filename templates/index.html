@@ -199,7 +199,7 @@
       function updateNextPrayer() {
         var now = new Date();
         // Testing currentTime. Uncomment following code to test different times.
-        // var currentTime =20 * 60 + 36;
+        // var currentTime =16 * 60 + 47;
         // var isJumuah = 5 === 5; // 0 is Sunday, 5 is Friday
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -354,7 +354,7 @@
         var now = new Date();
 
         // Testing
-        // var currentTime =20 * 60 + 36;
+        // var currentTime =16 * 60 + 47;
         // var isFriday = 5 === 5;
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -363,13 +363,18 @@
         // Check if time is between 14:00 and 15:00
         var isSecondJumuahTime = currentTime >= 14 * 60 && currentTime < 15 * 60;
 
+        // Get the Asr beginning time to check if Jumu'ah is over
+        var asrBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(4)");
+        var asrBeginningTime = asrBeginningEl ? timeUtils.timeToMinutes(asrBeginningEl.getAttribute('data-time')) : 15 * 60;
+        var isAfterAsr = currentTime >= asrBeginningTime;
+
         // Get the Jumu'ah time element
         var jumuahElement = document.querySelector(".jamaah .prayer-time-value:nth-child(7)");
 
         // Get the Jumu'ah label element
         var jumuahLabelElement = document.querySelector(".prayer .prayer-time-value:nth-child(7) .english");
 
-        if (isFriday && isSecondJumuahTime) {
+        if (isFriday && isSecondJumuahTime && !isAfterAsr) {
           // Change to second Jumu'ah
           jumuahElement.textContent = "2:15";
           jumuahElement.setAttribute("data-time", "14:15");
@@ -388,13 +393,18 @@
             jumuahLabelElement.textContent = "JUMU'AH";
           }
         }
+        // Remove highlighting from Jumu'ah after Asr begins on Friday
+        if (isFriday && isAfterAsr) {
+          jumuahElement.classList.remove("jumuah-highlight");
+          jumuahElement.classList.remove("next-prayer");
+        }
       }
 
       function updateAnnouncement() {
         var now = new Date();
 
         // Testing currentTime. Uncomment following code to test different times.
-        // var currentTime =20 * 60 + 36;
+        // var currentTime =16 * 60 + 47;
         // var dayOfWeek = 5; // 0 is Sunday, 5 is Friday, 6 is Saturday
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -458,7 +468,7 @@
         var now = new Date();
         
         // Testing
-        // var currentTime =20 * 60 + 36;
+        // var currentTime =16 * 60 + 47;
         // var isFriday = 5 === 5;
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
