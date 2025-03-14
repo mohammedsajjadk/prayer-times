@@ -199,12 +199,11 @@
       function updateNextPrayer() {
         var now = new Date();
         // Testing currentTime. Uncomment following code to test different times.
-        // var hours = 0;
-        // var minutes = 54;
-        // var currentTime = hours * 60 + minutes;
+        var currentTime = 12 * 60 + 54;
+        var isJumuah = 6 === 5; // 0 is Sunday, 5 is Friday
 
-        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        var isJumuah = now.getDay() === 5;
+        // var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+        // var isJumuah = now.getDay() === 5; // 0 is Sunday, 5 is Friday
 
         // Clear existing highlights
         var highlighted = document.querySelectorAll(".next-prayer");
@@ -277,8 +276,8 @@
 
         friday: function (startTime) {
           return [
-            "📢 FIQH OF ZAKAAT",
-            "Today after Asr Jamaah (" + startTime + ")",
+            "FIQH OF ZAKAAT",
+            "Friday after Asr Jamaah",
             "Join us in Masjid • Live Audio: mixlr.com/tralee-masjid"
           ].join(" • ");
         },
@@ -286,38 +285,38 @@
         saturday: {
           asr: function (startTime) {
             return [
-              "📖 TAFSEER OF THE GLORIOUS QUR'AN",
-              "Today after Asr Jamaah (" + startTime + ")",
+              "TAFSEER OF THE GLORIOUS QUR'AN",
+              "Saturday after Asr Jamaah",
               "SURAH TAHREEM: Join us for beautiful commentary & lessons",
               "In Masjid • Live Audio: mixlr.com/tralee-masjid"
             ].join(" • ");
           },
           night: function () {
             return [
-              "🌙 WEEKLY YOUTH NIGHT",
+              "WEEKLY YOUTH NIGHT • Boys aged 9 plus",
               "Join us Today after Taraweeh Prayer",
-              "Special Ramadhan Programme with Beautiful Advices",
+              "Special Ramadhan Programme",
               "Refreshments will be served."
             ].join(" • ");
           }
         },
         sunday: function (startTime) {
           return [
-            "📖 TAFSEER OF THE GLORIOUS QUR'AN",
-            "Today after Asr Jamaah (" + startTime + ")",
+            "TAFSEER OF THE GLORIOUS QUR'AN",
+            "Sunday after Asr Jamaah",
             "Join us in Masjid • Live Audio: mixlr.com/tralee-masjid"
           ].join(" • ");
         },
 
         warnings: {
           sunrise: function (sunriseTime, endTime) {
-            return "🌅 NO PRAYER UNTIL " + endTime + " • Time Reserved for Morning Dhikr & Du'a after Sunrise (" + sunriseTime + ")";
+            return "NO PRAYER UNTIL " + endTime + " • Time Reserved for Morning Dhikr & Du'a after Sunrise (" + sunriseTime + ")";
           },
           zawal: function (zawalTime, zohrTime) {
-            return "☀️ NO PRAYER AT ZAWAL TIME (" + zawalTime + ") • Please Wait for Zohr (" + zohrTime + ")";
+            return "NO PRAYER AT ZAWAL TIME (" + zawalTime + ") • Please Wait for Zohr (" + zohrTime + ")";
           },
           sunset: function (magribTime) {
-            return "🌇 NO PRAYER DURING SUNSET • Please Wait for Magrib Adhan (" + magribTime + ")";
+            return "NO PRAYER DURING SUNSET • Please Wait for Magrib Adhan (" + magribTime + ")";
           }
         }
       };
@@ -351,13 +350,11 @@
         var now = new Date();
 
         // Testing currentTime. Uncomment following code to test different times.
-        // var hours = 0;
-        // var minutes = 54;
-        // var currentTime = hours * 60 + minutes;
-        // var dayOfWeek = 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
+        var currentTime = 12 * 60 + 54;
+        var dayOfWeek = 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
 
-        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        var dayOfWeek = now.getDay(); // 0 is Sunday, 5 is Friday, 6 is Saturday
+        // var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+        // var dayOfWeek = now.getDay(); // 0 is Sunday, 5 is Friday, 6 is Saturday
 
         var times = {
           sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
