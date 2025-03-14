@@ -200,7 +200,7 @@
         var now = new Date();
         // Testing currentTime. Uncomment following code to test different times.
         // var currentTime = 12 * 60 + 54;
-        // var isJumuah = 6 === 5; // 0 is Sunday, 5 is Friday
+        // var isJumuah = 5 === 5; // 0 is Sunday, 5 is Friday
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
         var isJumuah = now.getDay() === 5; // 0 is Sunday, 5 is Friday
@@ -267,7 +267,12 @@
         };
         var element = document.querySelector(".jamaah .prayer-time-value:nth-child(" + prayerIndex[prayer] + ")");
         if (element) {
-          element.classList.add("next-prayer");
+          // Apply special highlight for Jumu'ah
+          if (prayer === 'jumuah') {
+            element.classList.add("jumuah-highlight");
+          } else {
+            element.classList.add("next-prayer");
+          }
         }
       }
 
@@ -351,7 +356,7 @@
 
         // Testing currentTime. Uncomment following code to test different times.
         // var currentTime = 12 * 60 + 54;
-        // var dayOfWeek = 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
+        // var dayOfWeek = 5; // 0 is Sunday, 5 is Friday, 6 is Saturday
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
         var dayOfWeek = now.getDay(); // 0 is Sunday, 5 is Friday, 6 is Saturday
