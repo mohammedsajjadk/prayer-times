@@ -97,15 +97,15 @@
       <div class="times-container">
         <div class="time-box">
           <div class="time-label">SEHRI ENDS</div>
-          <div class="time-value">{{ important_times.sehri_ends }}</div>
+          <div class="time-value" data-time="{{ important_times.sehri_ends }}" data-tomorrow="{{ tomorrow_important_times.sehri_ends }}">{{ important_times.sehri_ends }}</div>
         </div>
         <div class="time-box">
           <div class="time-label">SUNRISE</div>
-          <div class="time-value" data-time="{{ important_times.sunrise }}">{{ important_times.sunrise }}</div>
+          <div class="time-value" data-time="{{ important_times.sunrise }}" data-tomorrow="{{ tomorrow_important_times.sunrise }}">{{ important_times.sunrise }}</div>
         </div>
         <div class="time-box">
           <div class="time-label">ZAWAL</div>
-          <div class="time-value" data-time="{{ important_times.noon }}">{{ important_times.noon }}</div>
+          <div class="time-value" data-time="{{ important_times.noon }}" data-tomorrow="{{ tomorrow_important_times.noon }}">{{ important_times.noon }}</div>
         </div>
       </div>
     </div>
@@ -464,6 +464,24 @@
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
         var isFriday = now.getDay() === 5;
         
+        // Update sunrise if it's past sunrise + 60 mins
+        var sunriseEl = document.querySelector(".time-box:nth-child(2) .time-value");
+        if (sunriseEl) {
+          var sunriseTime = sunriseEl.getAttribute("data-time");
+          if (sunriseTime) {
+            var sunriseMinutes = timeUtils.timeToMinutes(sunriseTime);
+            var sunriseThreshold = sunriseMinutes + 60;
+            
+            if (currentTime >= sunriseThreshold) {
+              var tomorrowSunrise = sunriseEl.getAttribute("data-tomorrow");
+              if (tomorrowSunrise) {
+                sunriseEl.setAttribute("data-time", tomorrowSunrise);
+                sunriseEl.textContent = formatTimeFor12Hour(tomorrowSunrise);
+              }
+            }
+          }
+        }
+        
         // Define prayer types to update (excluding Jumu'ah)
         var prayers = ['fajr', 'zohr', 'asr', 'magrib', 'isha'];
         
@@ -512,11 +530,36 @@
                 
                 beginningEl.textContent = formatTimeFor12Hour(tomorrowBeginning);
                 jamaahEl.textContent = formatTimeFor12Hour(tomorrowJamaah);
+                
+                // Update Sehri time when Fajr time is updated
+                if (prayer === 'fajr') {
+                  var sehriEl = document.querySelector(".time-box:nth-child(1) .time-value");
+                  if (sehriEl) {
+                    var tomorrowSehri = sehriEl.getAttribute("data-tomorrow");
+                    if (tomorrowSehri) {
+                      sehriEl.setAttribute("data-time", tomorrowSehri);
+                      sehriEl.textContent = formatTimeFor12Hour(tomorrowSehri);
+                    }
+                  }
+                }
+                
+                // Update Zawal time when Zohr time is updated
+                if (prayer === 'zohr') {
+                  var zawalEl = document.querySelector(".time-box:nth-child(3) .time-value");
+                  if (zawalEl) {
+                    var tomorrowZawal = zawalEl.getAttribute("data-tomorrow");
+                    if (tomorrowZawal) {
+                      zawalEl.setAttribute("data-time", tomorrowZawal);
+                      zawalEl.textContent = formatTimeFor12Hour(tomorrowZawal);
+                    }
+                  }
+                }
               }
             }
           }
         });
       }
+
       function formatTimeFor12Hour(timeStr) {
         if (timeStr && timeStr.indexOf(":") !== -1) {
           var parts = timeStr.split(":");

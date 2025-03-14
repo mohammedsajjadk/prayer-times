@@ -64,6 +64,7 @@ def index():
 
     # Calculate important times
     important_times = calculate_important_times(today_prayer_times)
+    tomorrow_important_times = calculate_important_times(tomorrow_prayer_times)
 
     return render_template('index.html',
                          current_time=datetime.now(timezone.utc).strftime('%H:%M:%S'),
@@ -71,7 +72,8 @@ def index():
                          islamic_date=get_islamic_date(),
                          today_prayer_times=today_prayer_times,
                          tomorrow_prayer_times=tomorrow_prayer_times,
-                         important_times=important_times)
+                         important_times=important_times,
+                         tomorrow_important_times=tomorrow_important_times)
 
 
 if __name__ == '__main__':
