@@ -59,6 +59,8 @@ def index():
     # Get today's prayer times
     today = datetime.now(timezone.utc).day  # Use UTC day
     today_prayer_times = next((row for row in prayer_times if int(row[0]) == today), None)
+    tomorrow = (datetime.now(timezone.utc) + timedelta(days=1)).day
+    tomorrow_prayer_times = next((row for row in prayer_times if int(row[0]) == tomorrow), None)
 
     # Calculate important times
     important_times = calculate_important_times(today_prayer_times)
@@ -68,6 +70,7 @@ def index():
                          current_date=datetime.now(timezone.utc).strftime('%a, %b %d'),
                          islamic_date=get_islamic_date(),
                          today_prayer_times=today_prayer_times,
+                         tomorrow_prayer_times=tomorrow_prayer_times,
                          important_times=important_times)
 
 

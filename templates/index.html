@@ -39,15 +39,15 @@
     <div class="prayer-times">
       <div class="beginning">
         <h2>BEGINNING</h2>
-        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[3] }}">{{ today_prayer_times[3] }}
+        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[3] }}" data-tomorrow="{{ tomorrow_prayer_times[3] }}">{{ today_prayer_times[3] }}
         </div>
-        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[5] }}">{{ today_prayer_times[5] }}
+        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[5] }}" data-tomorrow="{{ tomorrow_prayer_times[5] }}">{{ today_prayer_times[5] }}
         </div>
-        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[6] }}">{{ today_prayer_times[6] }}
+        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[6] }}" data-tomorrow="{{ tomorrow_prayer_times[6] }}">{{ today_prayer_times[6] }}
         </div>
-        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[7] }}">{{ today_prayer_times[7] }}
+        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[7] }}" data-tomorrow="{{ tomorrow_prayer_times[7] }}">{{ today_prayer_times[7] }}
         </div>
-        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[8] }}">{{ today_prayer_times[8] }}
+        <div class="prayer-time-value beginning" data-time="{{ today_prayer_times[8] }}" data-tomorrow="{{ tomorrow_prayer_times[8] }}">{{ today_prayer_times[8] }}
         </div>
         <div class="prayer-time-value beginning">&nbsp;</div>
       </div>
@@ -80,14 +80,14 @@
       </div>
       <div class="jamaah">
         <h2>JAMAAH</h2>
-        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[9] }}">{{ today_prayer_times[9] }}</div>
-        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[10] }}">{{ today_prayer_times[10] }}
+        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[9] }}" data-tomorrow="{{ tomorrow_prayer_times[9] }}">{{ today_prayer_times[9] }}</div>
+        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[10] }}" data-tomorrow="{{ tomorrow_prayer_times[10] }}">{{ today_prayer_times[10] }}
         </div>
-        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[11] }}">{{ today_prayer_times[11] }}
+        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[11] }}" data-tomorrow="{{ tomorrow_prayer_times[11] }}">{{ today_prayer_times[11] }}
         </div>
-        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[12] }}">{{ today_prayer_times[12] }}
+        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[12] }}" data-tomorrow="{{ tomorrow_prayer_times[12] }}">{{ today_prayer_times[12] }}
         </div>
-        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[13] }}">{{ today_prayer_times[13] }}
+        <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[13] }}" data-tomorrow="{{ tomorrow_prayer_times[13] }}">{{ today_prayer_times[13] }}
         </div>
         <div class="prayer-time-value jamaah" data-time="13:20">13:20</div>
       </div>
@@ -199,7 +199,7 @@
       function updateNextPrayer() {
         var now = new Date();
         // Testing currentTime. Uncomment following code to test different times.
-        // var currentTime = 12 * 60 + 54;
+        // var currentTime =20 * 60 + 36;
         // var isJumuah = 5 === 5; // 0 is Sunday, 5 is Friday
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -354,7 +354,7 @@
         var now = new Date();
 
         // Testing
-        // var currentTime = 14 * 60 + 0;
+        // var currentTime =20 * 60 + 36;
         // var isFriday = 5 === 5;
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -394,7 +394,7 @@
         var now = new Date();
 
         // Testing currentTime. Uncomment following code to test different times.
-        // var currentTime = 12 * 60 + 54;
+        // var currentTime =20 * 60 + 36;
         // var dayOfWeek = 5; // 0 is Sunday, 5 is Friday, 6 is Saturday
 
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -452,6 +452,85 @@
         announcementElement.textContent = message;
         announcementElement.classList.toggle("announcement-warning", isWarning);
       }
+
+      // Function to update prayer times to next day when appropriate
+      function updateToNextDayTimesIfNeeded() {
+        var now = new Date();
+        
+        // Testing
+        // var currentTime =20 * 60 + 36;
+        // var isFriday = 5 === 5;
+
+        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+        var isFriday = now.getDay() === 5;
+        
+        // Define prayer types to update (excluding Jumu'ah)
+        var prayers = ['fajr', 'zohr', 'asr', 'magrib', 'isha'];
+        
+        // For each prayer time
+        prayers.forEach(function(prayer) {
+          // Get indices based on prayer name
+          var index = prayer === 'fajr' ? 2 :
+                      prayer === 'zohr' ? 3 :
+                      prayer === 'asr' ? 4 :
+                      prayer === 'magrib' ? 5 :
+                      prayer === 'isha' ? 6 : null;
+          
+          if (index) {
+            // Get current beginning and jamaah elements
+            var beginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(" + index + ")");
+            var jamaahEl = document.querySelector(".jamaah .prayer-time-value:nth-child(" + index + ")");
+            
+            // Skip Jumu'ah processing on Fridays for Zohr
+            if (isFriday && prayer === 'zohr') {
+              return;
+            }
+            
+            // Get current jamaah time
+            var jamaahTime = jamaahEl.getAttribute('data-time');
+            
+            // Safety check for elements and attributes
+            if (!beginningEl || !jamaahEl || !jamaahTime) {
+              return;
+            }
+            
+            // Calculate current jamaah minutes + 5 minutes
+            var jamaahMinutes = timeUtils.timeToMinutes(jamaahTime);
+            var thresholdTime = jamaahMinutes + 5;
+            
+            // If current time is past jamaah + 5 minutes, update to tomorrow's times
+            if (currentTime >= thresholdTime) {
+              // Get next day's times from data attributes we'll store
+              var tomorrowBeginning = beginningEl.getAttribute('data-tomorrow');
+              var tomorrowJamaah = jamaahEl.getAttribute('data-tomorrow');
+              
+              // Only update if we have tomorrow's data
+              if (tomorrowBeginning && tomorrowJamaah) {
+                // Update actual elements with tomorrow's times
+                beginningEl.setAttribute('data-time', tomorrowBeginning);
+                jamaahEl.setAttribute('data-time', tomorrowJamaah);
+                
+                beginningEl.textContent = formatTimeFor12Hour(tomorrowBeginning);
+                jamaahEl.textContent = formatTimeFor12Hour(tomorrowJamaah);
+              }
+            }
+          }
+        });
+      }
+      function formatTimeFor12Hour(timeStr) {
+        if (timeStr && timeStr.indexOf(":") !== -1) {
+          var parts = timeStr.split(":");
+          var hours = parseInt(parts[0]);
+          var minutes = parseInt(parts[1]);
+          if (!isNaN(hours) && !isNaN(minutes)) {
+            var hours12 = hours % 12 || 12;
+            return hours12 + ":" + timeUtils.padNumber(minutes, 2);
+          }
+        }
+        return timeStr;
+      }
+
+      
       function forceMidnightRefresh() {
         var now = new Date();
         if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
@@ -487,6 +566,7 @@
         updateAnnouncement();
         convertTo12Hour();
         updateJumuahTimes();
+        updateToNextDayTimesIfNeeded(); 
 
         setInterval(function () {
           updateTime();
@@ -494,6 +574,7 @@
           updateAnnouncement();
           convertTo12Hour();
           updateJumuahTimes();
+          updateToNextDayTimesIfNeeded(); 
         }, 1000);
 
         setInterval(forceMidnightRefresh, 1000);
