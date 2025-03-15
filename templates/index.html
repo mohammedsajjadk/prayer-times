@@ -134,7 +134,7 @@
       // TIME TESTING CONFIGURATION
       var testMode = {
         enabled: false,          // Set to true to enable test mode
-        time: "18:36",           // Format: "HH:MM" (24-hour format)
+        time: "12:46",           // Format: "HH:MM" (24-hour format)
         dayOfWeek: 6,            // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
         
         // Returns current time in minutes since midnight (overrides actual time when enabled)
@@ -619,6 +619,7 @@
 
         announcementElement.textContent = message;
         announcementElement.classList.toggle("announcement-warning", isWarning);
+        document.querySelector(".announcement").classList.toggle("warning-active", isWarning);
       }
 
       // Function to update prayer times to next day when appropriate

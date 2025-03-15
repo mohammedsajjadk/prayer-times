@@ -87,6 +87,25 @@ body, html {
     }
 }
 
+.warning-active {
+    background-color: #ffffff !important; /* Black background */
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.7) !important; /* Red glow */
+    animation: warningBorderPulse 1s infinite alternate !important;
+}
+
+/* Pulsing border animation for warning container */
+@keyframes warningBorderPulse {
+    0% { 
+        border-color: #FF0000; 
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    }
+    100% { 
+        border-color: #FFFF00; 
+        box-shadow: 0 0 30px rgba(255, 255, 0, 0.7);
+    }
+}
+
+
 .prayer-times .prayer {
     width: 13.5vw;
 }
