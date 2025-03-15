@@ -166,22 +166,35 @@
 
       function updateTime() {
         var now = new Date();
+        
+        // Get current time components
         var hours = now.getUTCHours();
-        hours = hours % 12 || 12;
+        hours = hours % 12 || 12; // Convert to 12-hour format
         var minutes = timeUtils.padNumber(now.getUTCMinutes(), 2);
         var seconds = timeUtils.padNumber(now.getUTCSeconds(), 2);
 
-        // Using string concatenation instead of template literals
+        // Create the time HTML
         var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
           '<span class="time-sub">' +
           '<span class="seconds">:' + seconds + '</span>' +
           '</span>';
 
-        // Using traditional method to support older browsers
-        var timeDisplay = document.querySelector(selectors.timeDisplay);
+        // Update the display
+        var timeDisplay = document.querySelector('.time-display');
         if (timeDisplay) {
           timeDisplay.innerHTML = timeHtml;
         }
+        
+        // Calculate milliseconds until next second
+        var millisToNextSecond = 1000 - now.getUTCMilliseconds();
+        
+        // Clear any existing timeout
+        if (window.timeUpdateTimeout) {
+          clearTimeout(window.timeUpdateTimeout);
+        }
+        
+        // Schedule next update precisely at the start of next second
+        window.timeUpdateTimeout = setTimeout(updateTime, millisToNextSecond);
       }
 
       function convertTo12Hour() {
@@ -665,7 +678,6 @@
         updateToNextDayTimesIfNeeded(); 
 
         setInterval(function () {
-          updateTime();
           updateNextPrayer();
           updateAnnouncement();
           convertTo12Hour();
@@ -674,6 +686,14 @@
         }, 1000);
 
         setInterval(forceMidnightRefresh, 1000);
+
+        // Force time sync every minute as a backup measure
+        setInterval(function() {
+          if (window.timeUpdateTimeout) {
+            clearTimeout(window.timeUpdateTimeout);
+          }
+          updateTime();
+        }, 60000);
       }
 
       if (document.readyState === "loading") {
