@@ -118,8 +118,6 @@ body, html {
     /*padding-top: 2vh; /* Small padding at the top */
 }
 
-
-
 /* Time header at the top */
 .time-display {
     display: flex;
@@ -138,18 +136,30 @@ body, html {
     line-height: 1;
 }
 
-.time-sub {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 0.5vw;
-}
-
-.seconds {
+.time-sub::before {
+    content: ":";
     font-family: 'DS-Digital', monospace;
     font-size: 11vw;  /* Smaller than time-main */
     font-weight: bold;
     line-height: 1;
-    transform: translateY(1vh); /* Slight adjustment to align with main time */
+    color: var(--highlight-color);
+    position: relative;
+    top: -0.05em; /* Fine-tune vertical alignment */
+    margin-right: 0.05em;
+}
+
+.time-sub {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.2vw; /* Reduced from 0.5vw for better spacing */
+}
+
+.seconds {
+    font-family: 'DS-Digital', monospace;
+    font-size: 11vw;  /* Same size as the colon */
+    font-weight: bold;
+    line-height: 1;
+    transform: translateY(0.5vh); /* Adjusted for vertical alignment */
 }
 
 /* Date below time */

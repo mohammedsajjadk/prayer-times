@@ -188,9 +188,9 @@
 
         // Create the time HTML
         var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
-          '<span class="time-sub">' +
-          '<span class="seconds">:' + seconds + '</span>' +
-          '</span>';
+        '<span class="time-sub">' +
+        '<span class="seconds">' + seconds + '</span>' +
+        '</span>';
 
         // Update the display
         var timeDisplay = document.querySelector('.time-display');
@@ -735,7 +735,7 @@
           }
           updateTime();
         }, 30000);
-        
+
         // Add a drift detection mechanism that checks if displayed time is accurate
         // and forces an update if it's off by more than 2 seconds
         if (!window.driftCheckInterval) {
@@ -748,7 +748,7 @@
             if (displayedSeconds) {
               var displayText = displayedSeconds.textContent;
               // Extract just the number from the format ":31"
-              var displayedSecondsValue = parseInt(displayText.replace(/\D/g, ''), 10);
+              var displayedSecondsValue = parseInt(displayText, 10);
 
               // If displayed time is off by more than 2 seconds, force update
               if (!isNaN(displayedSecondsValue) &&
