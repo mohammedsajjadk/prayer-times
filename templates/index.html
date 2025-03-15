@@ -136,9 +136,9 @@
         enabled: false,          // Set to true to enable test mode
         time: "12:46",           // Format: "HH:MM" (24-hour format)
         dayOfWeek: 6,            // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
-        
+
         // Returns current time in minutes since midnight (overrides actual time when enabled)
-        getCurrentTimeMinutes: function() {
+        getCurrentTimeMinutes: function () {
           if (this.enabled) {
             const parts = this.time.split(":");
             return parseInt(parts[0]) * 60 + parseInt(parts[1]);
@@ -147,31 +147,31 @@
             return now.getUTCHours() * 60 + now.getUTCMinutes();
           }
         },
-        
+
         // Returns current day of week (overrides actual day when enabled)
-        getCurrentDayOfWeek: function() {
+        getCurrentDayOfWeek: function () {
           return this.enabled ? this.dayOfWeek : new Date().getDay();
         },
-        
+
         // Gets a mock Date object for testing (limited functionality)
-        getMockDate: function() {
+        getMockDate: function () {
           if (!this.enabled) return new Date();
-          
+
           const now = new Date();
           const parts = this.time.split(":");
           const mockDate = new Date();
           mockDate.setHours(parseInt(parts[0]));
           mockDate.setMinutes(parseInt(parts[1]));
           mockDate.setSeconds(now.getSeconds());
-          
+
           // Override getDay method
           const originalGetDay = mockDate.getDay;
           mockDate.getDay = () => this.dayOfWeek;
-          
+
           // Override getUTCHours and getUTCMinutes
           mockDate.getUTCHours = () => parseInt(parts[0]);
           mockDate.getUTCMinutes = () => parseInt(parts[1]);
-          
+
           return mockDate;
         }
       };
@@ -232,9 +232,9 @@
 
         // Create the time HTML
         var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
-        '<span class="time-sub">' +
-        '<span class="seconds">' + seconds + '</span>' +
-        '</span>';
+          '<span class="time-sub">' +
+          '<span class="seconds">' + seconds + '</span>' +
+          '</span>';
 
         // Update the display
         var timeDisplay = document.querySelector('.time-display');
@@ -242,44 +242,25 @@
           timeDisplay.innerHTML = timeHtml;
         }
 
-        // Calculate milliseconds until next second
-        var millisToNextSecond = 1000 - now.getUTCMilliseconds();
-
-        // For very small values, add a full second to avoid potential timer issues
-        if (millisToNextSecond < 20) {
-          millisToNextSecond += 1000;
-        }
-
-        // Add a small adjustment for older browsers' processing delays
-        // This helps counteract the common delay pattern in older JavaScript engines
-        millisToNextSecond -= 15;
-
-        // Ensure we don't schedule negative or very short timeouts
-        if (millisToNextSecond < 10) {
-          millisToNextSecond = 10;
-        }
-
-        // Clear any existing timeout
+        // Schedule next update
         if (window.timeUpdateTimeout) {
           clearTimeout(window.timeUpdateTimeout);
         }
 
-        // Schedule next update precisely at the start of next second
-        window.timeUpdateTimeout = setTimeout(function () {
-          // Check if time is still within acceptable range
-          // This helps avoid cases where setTimeout fires too early or too late
-          var checkTime = new Date();
-          var millisError = checkTime.getUTCMilliseconds();
+        // Calculate time to next second - aim for consistent updates
+        var millisToNextSecond = 1000 - now.getUTCMilliseconds();
 
-          if (millisError > 100) {
-            // If we're already past the ideal point by more than 100ms,
-            // update immediately and schedule for next second
-            updateTime();
-          } else {
-            // Otherwise proceed with regular update
-            updateTime();
-          }
-        }, millisToNextSecond);
+        // Add small buffer to ensure we don't run too early
+        millisToNextSecond = Math.max(millisToNextSecond, 10);
+
+        // Schedule next update with simple, reliable timeout
+        window.timeUpdateTimeout = setTimeout(updateTime, millisToNextSecond);
+      }
+
+      // In your initialize function, add this line to remove any existing interval
+      if (window.driftCheckInterval) {
+        clearInterval(window.driftCheckInterval);
+
       }
 
       function convertTo12Hour() {
@@ -433,16 +414,16 @@
       // Add this function before the initialize() function
       function formatTimeWithAmPm(timeStr) {
         if (!timeStr || timeStr.indexOf(":") === -1) return timeStr;
-        
+
         var parts = timeStr.split(":");
         var hours24 = parseInt(parts[0], 10);
         var minutes = parseInt(parts[1], 10);
-        
+
         if (isNaN(hours24) || isNaN(minutes)) return timeStr;
-        
+
         var period = hours24 >= 12 ? "PM" : "AM";
         var hours12 = hours24 % 12 || 12;
-        
+
         return hours12 + ":" + timeUtils.padNumber(minutes, 2) + period;
       }
 
@@ -773,6 +754,7 @@
       }
 
       function initialize() {
+        // Initial updates
         updateTime();
         updateNextPrayer();
         updateAnnouncement();
@@ -780,49 +762,43 @@
         updateJumuahTimes();
         updateToNextDayTimesIfNeeded();
 
-        setInterval(function () {
+        // Store interval reference for cleanup
+        window.mainInterval = setInterval(function () {
+          // Handle regular UI updates
           updateNextPrayer();
           updateAnnouncement();
           convertTo12Hour();
           updateJumuahTimes();
           updateToNextDayTimesIfNeeded();
-        }, 1000);
 
-        setInterval(forceMidnightRefresh, 1000);
-
-        // Force time sync every 30 seconds as a backup measure
-        setInterval(function () {
-          if (window.timeUpdateTimeout) {
-            clearTimeout(window.timeUpdateTimeout);
+          // Check for midnight refresh
+          var now = new Date();
+          if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
+            persistentRefresh();
           }
-          updateTime();
-        }, 30000);
 
-        // Add a drift detection mechanism that checks if displayed time is accurate
-        // and forces an update if it's off by more than 2 seconds
-        if (!window.driftCheckInterval) {
-          window.driftCheckInterval = setInterval(function () {
-            var now = new Date();
-            var seconds = now.getUTCSeconds();
-
-            // Get the displayed seconds from the UI
+          // Lighter drift checking - only once every 10 seconds
+          if (now.getUTCSeconds() % 10 === 0) {
             var displayedSeconds = document.querySelector('.time-sub .seconds');
             if (displayedSeconds) {
-              var displayText = displayedSeconds.textContent;
-              // Extract just the number from the format ":31"
-              var displayedSecondsValue = parseInt(displayText, 10);
-
-              // If displayed time is off by more than 2 seconds, force update
-              if (!isNaN(displayedSecondsValue) &&
-                Math.abs(seconds - displayedSecondsValue) > 2) {
+              var displayedSecondsValue = parseInt(displayedSeconds.textContent, 10);
+              if (isNaN(displayedSecondsValue) || Math.abs(now.getUTCSeconds() - displayedSecondsValue) > 1) {
                 if (window.timeUpdateTimeout) {
                   clearTimeout(window.timeUpdateTimeout);
                 }
                 updateTime();
               }
             }
-          }, 1000);
-        }
+          }
+        }, 1000);
+
+        // Force time sync every 30 seconds as a backup measure
+        window.timeRefreshInterval = setInterval(function () {
+          if (window.timeUpdateTimeout) {
+            clearTimeout(window.timeUpdateTimeout);
+          }
+          updateTime();
+        }, 30000);
       }
 
       if (document.readyState === "loading") {
