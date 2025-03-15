@@ -171,12 +171,17 @@
         var minutes = timeUtils.padNumber(now.getUTCMinutes(), 2);
         var seconds = timeUtils.padNumber(now.getUTCSeconds(), 2);
 
+        // Using string concatenation instead of template literals
         var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
           '<span class="time-sub">' +
           '<span class="seconds">:' + seconds + '</span>' +
           '</span>';
 
-        document.querySelector(selectors.timeDisplay).innerHTML = timeHtml;
+        // Using traditional method to support older browsers
+        var timeDisplay = document.querySelector(selectors.timeDisplay);
+        if (timeDisplay) {
+          timeDisplay.innerHTML = timeHtml;
+        }
       }
 
       function convertTo12Hour() {
@@ -328,26 +333,64 @@
 
       function showNextMessage(message) {
         var announcementElement = document.querySelector(selectors.announcement);
+        if (!announcementElement) return;
 
         // Set the message
         announcementElement.textContent = message;
 
-        // Add the scroll animation class
-        announcementElement.classList.add('scroll-announcement');
+        // Add class for older browsers
+        if (announcementElement.classList) {
+          announcementElement.classList.add('scroll-announcement');
+        } else {
+          // Fallback for older browsers without classList
+          announcementElement.className += ' scroll-announcement';
+        }
         isScrolling = true;
 
         // Wait for animation to complete
-        setTimeout(function () {
-          announcementElement.classList.remove('scroll-announcement');
+        setTimeout(function() {
+          // Remove class for older browsers
+          if (announcementElement.classList) {
+            announcementElement.classList.remove('scroll-announcement');
+          } else {
+            // Fallback for older browsers
+            announcementElement.className = announcementElement.className
+              .replace(/\bscroll-announcement\b/, '');
+          }
           isScrolling = false;
 
           // Small delay before next message
-          setTimeout(function () {
-            if (messageQueue.length > 0) {
+          setTimeout(function() {
+            if (messageQueue && messageQueue.length > 0) {
               showNextMessage(messageQueue.shift());
             }
-          }, 3000); // 3 second gap between messages
-        }, 25000); // 25 seconds for scroll animation to complete
+          }, 3000);
+        }, 25000);
+      }
+
+      // Add a simple polyfill for classList
+      function hasClass(el, className) {
+        if (el.classList) {
+          return el.classList.contains(className);
+        } else {
+          return new RegExp('\\b' + className + '\\b').test(el.className);
+        }
+      }
+
+      function addClass(el, className) {
+        if (el.classList) {
+          el.classList.add(className);
+        } else if (!hasClass(el, className)) {
+          el.className += ' ' + className;
+        }
+      }
+
+      function removeClass(el, className) {
+        if (el.classList) {
+          el.classList.remove(className);
+        } else {
+          el.className = el.className.replace(new RegExp('\\b' + className + '\\b', 'g'), '');
+        }
       }
 
       function updateJumuahTimes() {
