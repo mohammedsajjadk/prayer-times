@@ -131,6 +131,50 @@
     </div>
     <!-- JavaScript -->
     <script>
+      // TIME TESTING CONFIGURATION
+      var testMode = {
+        enabled: false,          // Set to true to enable test mode
+        time: "18:36",           // Format: "HH:MM" (24-hour format)
+        dayOfWeek: 6,            // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
+        
+        // Returns current time in minutes since midnight (overrides actual time when enabled)
+        getCurrentTimeMinutes: function() {
+          if (this.enabled) {
+            const parts = this.time.split(":");
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+          } else {
+            const now = new Date();
+            return now.getUTCHours() * 60 + now.getUTCMinutes();
+          }
+        },
+        
+        // Returns current day of week (overrides actual day when enabled)
+        getCurrentDayOfWeek: function() {
+          return this.enabled ? this.dayOfWeek : new Date().getDay();
+        },
+        
+        // Gets a mock Date object for testing (limited functionality)
+        getMockDate: function() {
+          if (!this.enabled) return new Date();
+          
+          const now = new Date();
+          const parts = this.time.split(":");
+          const mockDate = new Date();
+          mockDate.setHours(parseInt(parts[0]));
+          mockDate.setMinutes(parseInt(parts[1]));
+          mockDate.setSeconds(now.getSeconds());
+          
+          // Override getDay method
+          const originalGetDay = mockDate.getDay;
+          mockDate.getDay = () => this.dayOfWeek;
+          
+          // Override getUTCHours and getUTCMinutes
+          mockDate.getUTCHours = () => parseInt(parts[0]);
+          mockDate.getUTCMinutes = () => parseInt(parts[1]);
+          
+          return mockDate;
+        }
+      };
       // Utility functions
       var timeUtils = {
         timeToMinutes: function (timeStr) {
@@ -178,7 +222,7 @@
       };
 
       function updateTime() {
-        var now = new Date();
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
         // Get current time components
         var hours = now.getUTCHours();
@@ -256,7 +300,7 @@
       }
 
       function updateNextPrayer() {
-        var now = new Date();
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
         // Testing currentTime. Uncomment following code to test different times.
         // var currentTime =16 * 60 + 47;
         // var isJumuah = 5 === 5; // 0 is Sunday, 5 is Friday
@@ -375,16 +419,32 @@
 
         warnings: {
           sunrise: function (sunriseTime, endTime) {
-            return "NO PRAYER UNTIL " + endTime + " • Time Reserved for Morning Dhikr & Du'a after Sunrise (" + sunriseTime + ")";
+            return "NO SALAH AFTER SUNRISE (" + formatTimeWithAmPm(sunriseTime) + ") • Please Wait Until " + formatTimeWithAmPm(endTime);
           },
           zawal: function (zawalTime, zohrTime) {
-            return "NO PRAYER AT ZAWAL TIME (" + zawalTime + ") • Please Wait for Zohr (" + zohrTime + ")";
+            return "NO SALAH AT ZAWAL TIME (" + formatTimeWithAmPm(zawalTime) + ") • Please Wait for Zohr to Begin (" + formatTimeWithAmPm(zohrTime) + ")";
           },
           sunset: function (magribTime) {
-            return "NO PRAYER DURING SUNSET • Please Wait for Magrib Adhan (" + magribTime + ")";
+            return "NO SALAH DURING SUNSET • Please Wait for Magrib Adhan (" + formatTimeWithAmPm(magribTime) + ")";
           }
         }
       };
+
+      // Add this function before the initialize() function
+      function formatTimeWithAmPm(timeStr) {
+        if (!timeStr || timeStr.indexOf(":") === -1) return timeStr;
+        
+        var parts = timeStr.split(":");
+        var hours24 = parseInt(parts[0], 10);
+        var minutes = parseInt(parts[1], 10);
+        
+        if (isNaN(hours24) || isNaN(minutes)) return timeStr;
+        
+        var period = hours24 >= 12 ? "PM" : "AM";
+        var hours12 = hours24 % 12 || 12;
+        
+        return hours12 + ":" + timeUtils.padNumber(minutes, 2) + period;
+      }
 
       function showNextMessage(message) {
         var announcementElement = document.querySelector(selectors.announcement);
@@ -499,7 +559,7 @@
       }
 
       function updateAnnouncement() {
-        var now = new Date();
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
         // Testing currentTime. Uncomment following code to test different times.
         // var currentTime =16 * 60 + 47;
@@ -563,7 +623,7 @@
 
       // Function to update prayer times to next day when appropriate
       function updateToNextDayTimesIfNeeded() {
-        var now = new Date();
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
         // Testing
         // var currentTime =16 * 60 + 47;
