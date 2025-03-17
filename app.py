@@ -36,9 +36,11 @@ def get_islamic_date():
 
 def calculate_important_times(prayer_times):
     # Convert string times to datetime objects for calculations
-    sehri_time = datetime.strptime(prayer_times[3], '%H:%M')
-    sunrise_time = prayer_times[4]
-    zohr_time = datetime.strptime(prayer_times[5], '%H:%M')
+    # Correct indices based on your current CSV structure:
+    # [0]=MONTH, [1]=DATE, [2]=FAJR BEGINNING, [3]=SUNRISE BEGINNING, [4]=ZOHR BEGINNING, etc.
+    sehri_time = datetime.strptime(prayer_times[2], '%H:%M')
+    sunrise_time = prayer_times[3]
+    zohr_time = datetime.strptime(prayer_times[4], '%H:%M')
 
     # Calculate Sehri ends (10 minutes before Fajr)
     sehri_ends = (sehri_time - timedelta(minutes=10)).strftime('%H:%M')
@@ -56,11 +58,21 @@ def calculate_important_times(prayer_times):
 def index():
     prayer_times = load_prayer_times()
     
-    # Get today's prayer times
-    today = datetime.now(timezone.utc).day  # Use UTC day
-    today_prayer_times = next((row for row in prayer_times if int(row[0]) == today), None)
-    tomorrow = (datetime.now(timezone.utc) + timedelta(days=1)).day
-    tomorrow_prayer_times = next((row for row in prayer_times if int(row[0]) == tomorrow), None)
+    # Get today's date information
+    now = datetime.now(timezone.utc)
+    current_month = now.month
+    current_day = now.day
+    
+    # Get today's prayer times using both month and day
+    today_prayer_times = next((row for row in prayer_times if int(row[0]) == current_month and int(row[1]) == current_day), None)
+    
+    # Get tomorrow's date
+    tomorrow = now + timedelta(days=1)
+    tomorrow_month = tomorrow.month
+    tomorrow_day = tomorrow.day
+
+    # Get tomorrow's prayer times using both month and day
+    tomorrow_prayer_times = next((row for row in prayer_times if int(row[0]) == tomorrow_month and int(row[1]) == tomorrow_day), None)
 
     # Calculate important times
     important_times = calculate_important_times(today_prayer_times)
