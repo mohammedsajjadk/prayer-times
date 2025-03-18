@@ -21,7 +21,7 @@
       </span>
     </div>
     <div class="date-container">
-      <div class="islamic-date">{{ islamic_date }}</div>
+      <div class="gregorian-date">{{ current_date }}</div>
       <div class="theme-dropdown">
         <button class="theme-button"></button>
         <div class="theme-content">
@@ -32,7 +32,7 @@
           <div class="theme-option" data-theme="theme5">Theme 5</div>
         </div>
       </div>
-      <div class="gregorian-date">{{ current_date }}</div>
+      <div class="islamic-date">{{ islamic_date }}</div>
     </div>
     <div class="divider"></div>
     <!-- Prayer Times Section -->
@@ -84,7 +84,7 @@
         </div>
       </div>
       <div class="jamaah">
-        <h2>JAMAAH</h2>
+        <h2>JAMA'AH</h2>
         <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[8] }}"
           data-tomorrow="{{ tomorrow_prayer_times[8] }}">{{ today_prayer_times[8] }}</div>
         <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[9] }}"

@@ -80,7 +80,7 @@ def index():
 
     return render_template('index.html',
                          current_time=datetime.now(timezone.utc).strftime('%H:%M:%S'),
-                         current_date=datetime.now(timezone.utc).strftime('%a, %b %d'),
+                         current_date=datetime.now(timezone.utc).strftime('%a %d %b %Y'),
                          islamic_date=get_islamic_date(),
                          today_prayer_times=today_prayer_times,
                          tomorrow_prayer_times=tomorrow_prayer_times,

@@ -199,12 +199,12 @@ body, html {
 }
 
 .islamic-date {
-    text-align: left;
+    text-align: right;
     flex: 1;
 }
 
 .gregorian-date {
-    text-align: right;
+    text-align: left;
     flex: 1;
 }
 
