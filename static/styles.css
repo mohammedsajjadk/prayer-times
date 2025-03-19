@@ -137,7 +137,7 @@ body, html {
     /*padding-top: 2vh; /* Small padding at the top */
 }
 
-/* Time header at the top */
+/* Time display*/
 .time-display {
     display: flex;
     align-items: center;
@@ -153,6 +153,15 @@ body, html {
     font-size: 14vw;
     font-weight: bold;
     line-height: 1;
+    text-align: center;
+    display: inline-block;
+}
+
+.time-sub {
+    display: flex;
+    align-items: center;
+    margin-left: 0.2vw; /* Small space between minutes and seconds colon */
+    position: relative;
 }
 
 .time-sub::before {
@@ -167,18 +176,14 @@ body, html {
     margin-right: 0.05em;
 }
 
-.time-sub {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 0.2vw; /* Reduced from 0.5vw for better spacing */
-}
-
 .seconds {
     font-family: 'DS-Digital', monospace;
     font-size: 11vw;  /* Same size as the colon */
     font-weight: bold;
     line-height: 1;
-    transform: translateY(0.5vh); /* Adjusted for vertical alignment */
+    display: inline-block;
+    width: 2ch; /* Fixed width for seconds */
+    text-align: left;
 }
 
 /* Date below time */
