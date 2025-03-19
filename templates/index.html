@@ -784,7 +784,8 @@
 
       function forceMidnightRefresh() {
         var now = new Date();
-        if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
+        if ((now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() <= 2) ||
+          (now.getUTCHours() === 11 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2)) {
           persistentRefresh();
         }
       }
@@ -829,9 +830,10 @@
           updateJumuahTimes();
           updateToNextDayTimesIfNeeded();
 
-          // Check for midnight refresh
+          // Check for midnight refresh and 11:30 AM refresh
           var now = new Date();
-          if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() === 0) {
+          if ((now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() <= 2) ||
+            (now.getUTCHours() === 11 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2)) {
             persistentRefresh();
           }
 
