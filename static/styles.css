@@ -162,6 +162,7 @@ body, html {
     align-items: center;
     margin-left: 0.2vw; /* Small space between minutes and seconds colon */
     position: relative;
+    transform: translateY(2px); /* Slight adjustment to center vertically */
 }
 
 .time-sub::before {
@@ -184,6 +185,13 @@ body, html {
     display: inline-block;
     width: 2ch; /* Fixed width for seconds */
     text-align: left;
+}
+
+.time-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
 /* Date below time */
