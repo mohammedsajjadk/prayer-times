@@ -226,14 +226,21 @@
 
         // Get current time components
         var hours = now.getUTCHours();
-        hours = hours % 12 || 12; // Convert to 12-hour format
-        var minutes = timeUtils.padNumber(now.getUTCMinutes(), 2);
-        var seconds = timeUtils.padNumber(now.getUTCSeconds(), 2);
+        var minutes = now.getUTCMinutes();
+        var seconds = now.getUTCSeconds();
+        
+        // Check if current time matches any jamaah time
+        checkForJamaahTimeMatch(hours, minutes, seconds);
+        
+        // Format for display (12-hour format)
+        hours = hours % 12 || 12; 
+        var formattedMinutes = timeUtils.padNumber(minutes, 2);
+        var formattedSeconds = timeUtils.padNumber(seconds, 2);
 
         // Create the time HTML
-        var timeHtml = '<span class="time-main">' + hours + ':' + minutes + '</span>' +
+        var timeHtml = '<span class="time-main">' + hours + ':' + formattedMinutes + '</span>' +
           '<span class="time-sub">' +
-          '<span class="seconds">' + seconds + '</span>' +
+          '<span class="seconds">' + formattedSeconds + '</span>' +
           '</span>';
 
         // Update the display
@@ -262,6 +269,54 @@
         clearInterval(window.driftCheckInterval);
 
       }
+      
+      function checkForJamaahTimeMatch(hours, minutes, seconds) {
+        // Only check when seconds is 0 to trigger exactly at the minute change
+        if (seconds !== 0) return;
+
+        // Check if today is Friday
+        var isFriday = testMode.enabled ? 
+          testMode.dayOfWeek === 5 : 
+          new Date().getDay() === 5;
+        
+        // Current time in HH:MM format (24-hour)
+        var currentTime = timeUtils.padNumber(hours, 2) + ":" + timeUtils.padNumber(minutes, 2);
+
+        // Get Zohr jamaah time
+        var zohrJamaahTime = document.querySelector(selectors.prayerTimes.zohrJamaah).getAttribute('data-time');
+        
+        // Check all jamaah prayer times
+        var jamaahTimes = [
+          document.querySelector(selectors.prayerTimes.fajrJamaah).getAttribute('data-time'),
+          document.querySelector(selectors.prayerTimes.asrJamaah).getAttribute('data-time'),
+          document.querySelector(selectors.prayerTimes.magribJamaah).getAttribute('data-time'),
+          document.querySelector(selectors.prayerTimes.ishaJamaah).getAttribute('data-time'),
+        ];
+
+        if (!isFriday) {
+          jamaahTimes.push(zohrJamaahTime);
+        }
+        
+        // If current time matches any prayer time, trigger the effect
+        if (jamaahTimes.includes(currentTime)) {
+          triggerPrayerTimeEffect();
+        }
+      }
+
+      // Function to create the prayer time effect
+      function triggerPrayerTimeEffect() {
+        // Add the effect class to time display
+        var timeDisplay = document.querySelector('.time-display');
+        if (timeDisplay) {
+          timeDisplay.classList.add('prayer-time-simple');
+          
+          // Remove the effect after 2 seconds
+          setTimeout(function() {
+            timeDisplay.classList.remove('prayer-time-simple');
+          }, 2000);
+        }
+      }
+
 
       function convertTo12Hour() {
         var elements = document.querySelectorAll(".prayer-time-value.beginning, .prayer-time-value.jamaah");

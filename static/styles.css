@@ -490,3 +490,24 @@ body, html {
     50% { transform: scale(1.05); text-shadow: 0 0 25px rgba(0, 240, 255, 0.9); }
     100% { transform: scale(1); text-shadow: 0 0 15px rgba(0, 240, 255, 0.7); }
   }
+
+  /* Simple Prayer Time Effect */
+.prayer-time-simple {
+    animation: simpleFlash 2s ease-out;
+  }
+  
+  @keyframes simpleFlash {
+    0% {
+      color: var(--highlight-color);
+      transform: scale(1);
+    }
+    50% {
+      color: #FFFFFF;
+      transform: scale(1.1);
+      text-shadow: 0 0 10px var(--highlight-color);
+    }
+    100% {
+      color: var(--highlight-color);
+      transform: scale(1);
+    }
+  }
