@@ -629,20 +629,20 @@
         var programStartTime = asrJamaahTime + 10; // 10 mins after Asr Jamaah
 
         // Check for program announcements based on day
-        if (dayOfWeek === 5 && currentTime >= fajrTime && currentTime < programStartTime) {
-          // Friday
-          message = announcements.friday(timeUtils.addMinutes(times.asrJamaah, 10));
-        } else if (dayOfWeek === 6) {
-          // Saturday - two programs
-          if (currentTime >= fajrTime && currentTime < programStartTime) {
-            message = announcements.saturday.asr(timeUtils.addMinutes(times.asrJamaah, 10));
-          } else if (currentTime >= programStartTime && currentTime < 22 * 60) { // Until 10 PM
-            message = announcements.saturday.night();
-          }
-        } else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < programStartTime) {
-          // Sunday
-          message = announcements.sunday(timeUtils.addMinutes(times.asrJamaah, 10));
-        }
+        // if (dayOfWeek === 5 && currentTime >= fajrTime && currentTime < programStartTime) {
+        //   // Friday
+        //   message = announcements.friday(timeUtils.addMinutes(times.asrJamaah, 10));
+        // } else if (dayOfWeek === 6) {
+        //   // Saturday - two programs
+        //   if (currentTime >= fajrTime && currentTime < programStartTime) {
+        //     message = announcements.saturday.asr(timeUtils.addMinutes(times.asrJamaah, 10));
+        //   } else if (currentTime >= programStartTime && currentTime < 22 * 60) { // Until 10 PM
+        //     message = announcements.saturday.night();
+        //   }
+        // } else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < programStartTime) {
+        //   // Sunday
+        //   message = announcements.sunday(timeUtils.addMinutes(times.asrJamaah, 10));
+        // }
 
         // Override with warning messages if needed (existing warning logic)
         if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
