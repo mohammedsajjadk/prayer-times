@@ -268,7 +268,7 @@
       }
 
       // In your initialize function, add this line to remove any existing interval
-      if  (window.driftCheckInterval) {
+      if (window.driftCheckInterval) {
         clearInterval(window.driftCheckInterval);
 
       }
@@ -421,11 +421,11 @@
       var announcements = {
         default: "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.",
 
-        friday: function() {
+        friday: function () {
           return "TARAWEEH QURAN COMPLETION & NEW MASJID FUNDRAISER TONIGHT AT 9PM • EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM"
         },
 
-        eid: function() {
+        eid: function () {
           return "EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM"
         },
 
@@ -610,6 +610,7 @@
         var announcementElement = document.querySelector(selectors.announcement);
         var message = announcements.default;
         var isWarning = false;
+        var isSpecialAnnouncement = false;
 
         // Convert times
         var sunriseTime = timeUtils.timeToMinutes(times.sunrise);
@@ -619,22 +620,26 @@
         var asrJamaahTime = timeUtils.timeToMinutes(times.asrJamaah);
         var ishaJamaahTime = timeUtils.timeToMinutes(times.ishaJamaah);
 
-        // Check for program announcements based on day
+
         if (dayOfWeek === 5 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
           // Friday
           message = announcements.friday();
-        } 
+          isSpecialAnnouncement = true;
+        }
         else if (dayOfWeek === 5 && currentTime > ishaJamaahTime + 7 && currentTime < (23 * 60 + 59)) {
           // Friday
           message = announcements.eid();
-        } 
+          isSpecialAnnouncement = true;
+        }
         else if (dayOfWeek === 6 && currentTime >= fajrTime && currentTime < (23 * 60 + 59)) { // till 11:59PM
           // Saturday
           message = announcements.eid();
+          isSpecialAnnouncement = true;
         }
         else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < (8 * 30 + 59)) { // till 8:30AM
           // Sunday
           message = announcements.eid();
+          isSpecialAnnouncement = true;
         }
         // else if (dayOfWeek === 6) {
         //   // Saturday - two programs
@@ -645,22 +650,45 @@
         //   }
         // } 
 
-
-        // Override with warning messages if needed (existing warning logic)
+        // Then check for warnings (which take precedence)
         if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
           message = announcements.warnings.sunrise(times.sunrise, timeUtils.addMinutes(times.sunrise, 15));
           isWarning = true;
+          isSpecialAnnouncement = false;
         } else if (currentTime >= zawalTime && currentTime < zawalTime + 10) {
           message = announcements.warnings.zawal(times.zawal, times.zohrBeginning);
           isWarning = true;
+          isSpecialAnnouncement = false;
         } else if (currentTime >= magribTime - 10 && currentTime < magribTime) {
           message = announcements.warnings.sunset(times.magribBeginning);
           isWarning = true;
+          isSpecialAnnouncement = false;
+        }
+        // Set the message text
+        announcementElement.textContent = message;
+
+        // Remove all classes first
+        announcementElement.classList.remove("announcement-text-normal", "announcement-text-long", "announcement-text-very-long");
+        announcementElement.classList.remove("announcement-warning", "special-announcement");
+        document.querySelector(".announcement").classList.remove("warning-active", "special-active");
+
+        // Add appropriate animation class based on message length
+        if (message.length < 60) {
+          announcementElement.classList.add("announcement-text-normal");
+        } else if (message.length < 100) {
+          announcementElement.classList.add("announcement-text-long");
+        } else {
+          announcementElement.classList.add("announcement-text-very-long");
         }
 
-        announcementElement.textContent = message;
-        announcementElement.classList.toggle("announcement-warning", isWarning);
-        document.querySelector(".announcement").classList.toggle("warning-active", isWarning);
+        // Add styling classes (warning takes priority)
+        if (isWarning) {
+          announcementElement.classList.add("announcement-warning");
+          document.querySelector(".announcement").classList.add("warning-active");
+        } else if (isSpecialAnnouncement) {
+          announcementElement.classList.add("special-announcement");
+          document.querySelector(".announcement").classList.add("special-active");
+        }
       }
 
       // Function to update prayer times to next day when appropriate

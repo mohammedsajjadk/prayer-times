@@ -63,6 +63,21 @@ body, html {
     transform: rotate(180deg); /* Flip the text to be readable */
 }
 
+.announcement-text-normal {
+    animation: scroll-announcement 30s linear infinite;
+    transform: rotate(180deg);
+}
+
+.announcement-text-long {
+    animation: scroll-announcement 45s linear infinite;
+    transform: rotate(180deg);
+}
+
+.announcement-text-very-long {
+    animation: scroll-announcement 60s linear infinite; 
+    transform: rotate(180deg);
+}
+
 .announcement-warning {
     color: var(--announcement-warning) !important; /* Orange instead of red */
     font-weight: bold;
@@ -91,6 +106,28 @@ body, html {
     background-color: #ffffff !important; /* Black background */
     box-shadow: 0 0 30px rgba(255, 0, 0, 0.7) !important; /* Red glow */
     animation: warningBorderPulse 1s infinite alternate !important;
+    border-top: 0.3vw solid #FF0000 !important; /* Ensure border color is set to red */
+}
+
+/* Ensure that when both classes are present (which shouldn't happen based on our JS), 
+   the warning styles take precedence */
+.announcement.warning-active.special-active {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.7) !important;
+    animation: warningBorderPulse 1s infinite alternate !important;
+}
+
+/* Similarly ensure text styles for warnings take precedence */
+.announcement-warning.special-announcement {
+    color: var(--announcement-warning) !important;
+    animation: warningPulse 2s infinite !important;
+    text-shadow: 0 0 10px rgba(255, 165, 0, 0.5) !important;
+}
+
+/* Ensure special announcement doesn't add stars when it's a warning */
+.announcement-warning.special-announcement::before,
+.announcement-warning.special-announcement::after {
+    content: none !important;
 }
 
 /* Pulsing border animation for warning container */
@@ -524,3 +561,62 @@ body, html {
       transform: scale(1);
     }
   }
+
+  .special-announcement {
+    color: #ffffff !important; /* Bright cyan */
+    font-weight: bold !important;
+    letter-spacing: 0.05em; /* Slightly reduced letter spacing */
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); /* Reduced shadow blur */
+    animation: specialPulse 2s infinite;
+    font-size: 5.2vw !important;
+}
+
+@keyframes specialPulse {
+    0% { 
+        transform: scale(1);
+        text-shadow: 0 0 6px rgba(0, 240, 255, 0.5); /* Less blur */
+    }
+    50% { 
+        transform: scale(1.015); /* Reduced scale amount */
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.7); /* Less blur */
+    }
+    100% { 
+        transform: scale(1);
+        text-shadow: 0 0 6px rgba(0, 240, 255, 0.5); /* Less blur */
+    }
+}
+
+.announcement.special-active {
+    background-color: #001F3F !important; /* Darker navy blue background */
+    border-top: 0.4vw solid #00FFFF !important; /* Slightly thicker border */
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.25) !important; /* Reduced glow */
+    animation: specialBorderPulse 3s infinite alternate !important;
+}
+
+/* Pulsing border animation for special container */
+@keyframes specialBorderPulse {
+    0% { 
+        border-color: #00FFFF; /* Cyan */
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    }
+    100% { 
+        border-color: #0088FF; /* Slightly darker blue */
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+}
+
+/* Add styles for special announcement icons - with clearer icons */
+.special-announcement::before,
+.special-announcement::after {
+    content: "★"; /* More defined star character */
+    display: inline-block;
+    margin: 0 12px;
+    color: #00FFFF; /* Cyan */
+    animation: starTwinkle 1.5s infinite alternate;
+    text-shadow: none; /* Remove text shadow from stars */
+}
+
+@keyframes starTwinkle {
+    0% { opacity: 0.8; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
