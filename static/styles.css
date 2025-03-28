@@ -43,7 +43,7 @@ body, html {
     background-color: var(--announcement-bg-color);
     padding: 0.3vh;
     text-align: center;
-    font-size: 4.0vw;
+    font-size: 5.0vw;
     white-space: nowrap;
     overflow: hidden;
     position: fixed;
@@ -58,7 +58,7 @@ body, html {
 
 
 #announcement-text {
-    animation: scroll-announcement 25s linear infinite;
+    animation: scroll-announcement 30s linear infinite;
     color: var(--announcement-text-color); /* Bright color for visibility */
     transform: rotate(180deg); /* Flip the text to be readable */
 }
