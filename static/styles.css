@@ -64,17 +64,17 @@ body, html {
 }
 
 .announcement-text-normal {
-    animation: scroll-announcement 30s linear infinite;
+    animation: scroll-announcement 30s linear infinite !important;
     transform: rotate(180deg);
 }
 
 .announcement-text-long {
-    animation: scroll-announcement 45s linear infinite;
+    animation: scroll-announcement 45s linear infinite !important;
     transform: rotate(180deg);
 }
 
 .announcement-text-very-long {
-    animation: scroll-announcement 60s linear infinite; 
+    animation: scroll-announcement 60s linear infinite !important; 
     transform: rotate(180deg);
 }
 
