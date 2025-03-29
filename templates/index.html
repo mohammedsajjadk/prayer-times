@@ -543,7 +543,9 @@
         friday: function () {
           return "TARAWEEH QURAN COMPLETION & NEW MASJID FUNDRAISER TONIGHT AT 9PM • EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM"
         },
-
+        clock_and_eid: function () {
+          return "EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM • REMEMBER CLOCKS GO FORWARD 1 HOUR THIS SUNDAY"
+        },
         eid: function () {
           return "EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM"
         },
@@ -771,11 +773,10 @@
           isSpecialAnnouncement = true;
         }
         else if (dayOfWeek === 6 && currentTime >= fajrTime && currentTime < (23 * 60 + 59)) { // till 11:59PM
-          // Saturday
-          message = announcements.eid();
+          message = announcements.clock_and_eid();
           isSpecialAnnouncement = true;
         }
-        else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < (8 * 30 + 59)) { // till 8:30AM
+        else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < (8 * 60 + 30)) { // till 8:30AM
           // Sunday
           message = announcements.eid();
           isSpecialAnnouncement = true;
