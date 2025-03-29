@@ -19,8 +19,12 @@ def load_prayer_times():
     return prayer_times
 
 
-def get_islamic_date():
-    today = datetime.today().date()  # Get today's date
+def get_islamic_date(date=None):
+    if date is None:
+        today = datetime.today().date()  # Get today's date
+    else:
+        today = date
+        
     hijri_date = convert.Gregorian(today.year, today.month, today.day).to_hijri()
 
     # Format Islamic date like "14 J-Ul-Awwal 1436"
@@ -53,21 +57,42 @@ def calculate_important_times(prayer_times):
         'noon': noon_time
     }
 
+
+# To determine if a given date is in Irish Summer Time
+def is_ireland_dst(dt):
+    # Ireland's DST rules: starts last Sunday in March, ends last Sunday in October
+    year = dt.year
+    # Last Sunday in March
+    march_last_day = 31 - (datetime(year, 3, 31).weekday() + 1) % 7
+    dst_start = datetime(year, 3, march_last_day, 1, 0, tzinfo=timezone.utc)
+    
+    # Last Sunday in October
+    oct_last_day = 31 - (datetime(year, 10, 31).weekday() + 1) % 7
+    dst_end = datetime(year, 10, oct_last_day, 1, 0, tzinfo=timezone.utc)
+    
+    return dst_start <= dt < dst_end
+
 # Get the current time and date from the prayer times
 @app.route('/')
 def index():
     prayer_times = load_prayer_times()
     
-    # Get today's date information
+    # Determine if Ireland is currently in DST (summer time)
     now = datetime.now(timezone.utc)
-    current_month = now.month
-    current_day = now.day
+    is_summer_time = is_ireland_dst(now)
+    
+    # Apply the Irish time offset
+    irish_time = now + timedelta(hours=(1 if is_summer_time else 0))
+    
+    # Use Irish time for day and month
+    current_month = irish_time.month
+    current_day = irish_time.day
     
     # Get today's prayer times using both month and day
     today_prayer_times = next((row for row in prayer_times if int(row[0]) == current_month and int(row[1]) == current_day), None)
     
-    # Get tomorrow's date
-    tomorrow = now + timedelta(days=1)
+    # Get tomorrow's date (also in Irish time)
+    tomorrow = irish_time + timedelta(days=1)
     tomorrow_month = tomorrow.month
     tomorrow_day = tomorrow.day
 
@@ -79,14 +104,13 @@ def index():
     tomorrow_important_times = calculate_important_times(tomorrow_prayer_times)
 
     return render_template('index.html',
-                         current_time=datetime.now(timezone.utc).strftime('%H:%M:%S'),
-                         current_date=datetime.now(timezone.utc).strftime('%a %d %b %Y'),
-                         islamic_date=get_islamic_date(),
+                         current_time=irish_time.strftime('%H:%M:%S'),
+                         current_date=irish_time.strftime('%a %d %b %Y'),
+                         islamic_date=get_islamic_date(irish_time.date()),
                          today_prayer_times=today_prayer_times,
                          tomorrow_prayer_times=tomorrow_prayer_times,
                          important_times=important_times,
                          tomorrow_important_times=tomorrow_important_times)
-
 
 if __name__ == '__main__':
     app.run(debug=True)

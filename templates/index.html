@@ -226,9 +226,14 @@
 
       function updateTime() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
+        
+        // Get Irish time - determine offset based on date
+        var isIrishSummerTime = isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0; // UTC+1 for summer, UTC+0 for winter
 
-        // Get current time components
-        var hours = now.getUTCHours();
+        // Get time components adjusted for Irish time
+        var hours = now.getUTCHours() + irishOffset;
+        hours = hours >= 24 ? hours - 24 : hours; // Handle day wraparound
         var minutes = now.getUTCMinutes();
         var seconds = now.getUTCSeconds();
 
@@ -267,6 +272,24 @@
         window.timeUpdateTimeout = setTimeout(updateTime, millisToNextSecond);
       }
 
+      // To detect if Ireland is currently in DST (summer time)
+      function isIrelandDST(date) {
+        // Ireland's DST starts at 1am UTC on the last Sunday in March
+        // and ends at 1am UTC on the last Sunday in October
+        var year = date.getUTCFullYear();
+        var lastSundayMarch = getLastSundayOfMonth(year, 3);
+        var lastSundayOctober = getLastSundayOfMonth(year, 10);
+        
+        // Convert to UTC timestamps for comparison
+        var dstStart = Date.UTC(year, 2, lastSundayMarch, 1, 0, 0, 0); // March is month 2 (0-indexed)
+        var dstEnd = Date.UTC(year, 9, lastSundayOctober, 1, 0, 0, 0); // October is month 9
+        
+        // Get timestamp of the input date
+        var timestamp = date.getTime();
+        
+        return timestamp >= dstStart && timestamp < dstEnd;
+      }
+
       // In your initialize function, add this line to remove any existing interval
       if (window.driftCheckInterval) {
         clearInterval(window.driftCheckInterval);
@@ -277,10 +300,16 @@
         // Only check when seconds is 0 to trigger exactly at the minute change
         if (seconds !== 0) return;
 
-        // Check if today is Friday
-        var isFriday = testMode.enabled ?
-          testMode.dayOfWeek === 5 :
-          new Date().getDay() === 5;
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
+        var isIrishSummerTime = isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0;
+        var irishHours = now.getUTCHours() + irishOffset;
+        var currentDay = now.getUTCDay();
+        if (irishHours < now.getUTCHours()) {
+          currentDay = (currentDay + 1) % 7;
+        }
+
+        var isFriday = testMode.enabled ? testMode.dayOfWeek === 5 : currentDay === 5;
 
         // Current time in HH:MM format (24-hour)
         var currentTime = timeUtils.padNumber(hours, 2) + ":" + timeUtils.padNumber(minutes, 2);
@@ -340,11 +369,24 @@
 
       function updateNextPrayer() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        var isJumuah = now.getDay() === 5; // 0 is Sunday, 5 is Friday
+        
+        // Get Irish time
+        var isIrishSummerTime = isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0;
+        var irishHours = now.getUTCHours() + irishOffset;
+        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+        
+        // Use Irish time consistently
+        var currentTime = irishHours * 60 + now.getUTCMinutes();
 
-        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        var isJumuah = now.getUTCDay() === 5; // 0 is Sunday, 5 is Friday
+        // For day-of-week, we need to account for day rollover when Irish time is ahead
+        var currentDay = now.getUTCDay();
+        if (irishHours < now.getUTCHours()) {
+          // If Irish time has rolled over to the next day (unlikely but possible at edge cases)
+          currentDay = (currentDay + 1) % 7;
+        }
+        var isJumuah = currentDay === 5; // 0 is Sunday, 5 is Friday
+
         var currentDate = now.getUTCDate();
         var currentMonth = now.getUTCMonth() + 1; // JavaScript months are 0-based
         var currentYear = now.getUTCFullYear();
@@ -582,14 +624,23 @@
       }
 
       function updateJumuahTimes() {
-        var now = new Date();
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
-        // Testing
-        // var currentTime =16 * 60 + 47;
-        // var isFriday = 5 === 5;
+        // Get Irish time
+        var isIrishSummerTime = isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0;
+        var irishHours = now.getUTCHours() + irishOffset;
+        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
 
-        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        var isFriday = now.getDay() === 5;
+        var currentTime = irishHours * 60 + now.getUTCMinutes();
+
+        // For day-of-week, handle potential day rollover
+        var currentDay = now.getUTCDay();
+        if (irishHours < now.getUTCHours()) {
+          currentDay = (currentDay + 1) % 7;
+        }
+
+        var isFriday = currentDay === 5;
 
         // Check if time is between 14:00 and 15:00
         var isSecondJumuahTime = currentTime >= 14 * 60 && currentTime < 15 * 60;
@@ -634,12 +685,22 @@
       function updateAnnouncement() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
-        // Testing currentTime. Uncomment following code to test different times.
-        // var currentTime =16 * 60 + 47;
-        // var dayOfWeek = 5; // 0 is Sunday, 5 is Friday, 6 is Saturday
+        // Get Irish time
+        var isIrishSummerTime = isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0;
+        var irishHours = now.getUTCHours() + irishOffset;
+        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
 
-        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        var dayOfWeek = now.getDay(); // 0 is Sunday, 5 is Friday, 6 is Saturday
+        // Use Irish time for calculations
+        var currentTime = irishHours * 60 + now.getUTCMinutes();
+        
+        // For day-of-week, handle potential day rollover
+        var currentDay = now.getUTCDay();
+        if (irishHours < now.getUTCHours()) {
+          currentDay = (currentDay + 1) % 7;
+        }
+        
+        var dayOfWeek = currentDay; // 0 is Sunday, 5 is Friday, 6 is Saturday
 
         var times = {
           sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
@@ -739,8 +800,22 @@
       // Function to update prayer times to next day when appropriate
       function updateToNextDayTimesIfNeeded() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
-        var isFriday = now.getDay() === 5;
+        
+        // Get Irish time
+        var isIrishSummerTime = isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0;
+        var irishHours = now.getUTCHours() + irishOffset;
+        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+        
+        var currentTime = irishHours * 60 + now.getUTCMinutes();
+        
+        // For day-of-week, handle potential day rollover
+        var currentDay = now.getUTCDay();
+        if (irishHours < now.getUTCHours()) {
+          currentDay = (currentDay + 1) % 7;
+        }
+        
+        var isFriday = currentDay === 5;
 
         // Update sunrise if it's past sunrise + 120 mins
         var sunriseEl = document.querySelector(".time-box:nth-child(2) .time-value");
@@ -860,13 +935,22 @@
 
 
       function forceMidnightRefresh() {
-        var now = new Date();
-        if ((now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 11 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 12 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 16 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 17 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2)) {
-          persistentRefresh();
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
+        
+        // Get Irish time
+        var isIrishSummerTime = isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0;
+        var irishHours = now.getUTCHours() + irishOffset;
+        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+        var irishMins = now.getUTCMinutes();
+        var irishSecs = now.getUTCSeconds();
+
+        if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
+            (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
+            (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
+            (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
+            (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
+            persistentRefresh();
         }
       }
 
@@ -911,13 +995,20 @@
           updateToNextDayTimesIfNeeded();
 
           // Check for midnight refresh and 11:30 AM refresh
-          var now = new Date();
-          if ((now.getUTCHours() === 0 && now.getUTCMinutes() === 0 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 11 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 12 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 16 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2) ||
-          (now.getUTCHours() === 17 && now.getUTCMinutes() === 30 && now.getUTCSeconds() <= 2)) {
-            persistentRefresh();
+          var now = testMode.enabled ? testMode.getMockDate() : new Date();
+          var isIrishSummerTime = isIrelandDST(now);
+          var irishOffset = isIrishSummerTime ? 1 : 0;
+          var irishHours = now.getUTCHours() + irishOffset;
+          irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+          var irishMins = now.getUTCMinutes();
+          var irishSecs = now.getUTCSeconds();
+
+          if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
+              (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
+              (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
+              (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
+              (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
+              persistentRefresh();
           }
 
           // Lighter drift checking - only once every 10 seconds
