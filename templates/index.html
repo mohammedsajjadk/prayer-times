@@ -160,20 +160,45 @@
         getMockDate: function () {
           if (!this.enabled) return new Date();
 
+          // Create a mock date based on the test time
           const now = new Date();
           const parts = this.time.split(":");
           const mockDate = new Date();
           mockDate.setHours(parseInt(parts[0]));
           mockDate.setMinutes(parseInt(parts[1]));
           mockDate.setSeconds(now.getSeconds());
+          mockDate.setMilliseconds(now.getMilliseconds());
 
-          // Override getDay method
-          const originalGetDay = mockDate.getDay;
+          // Store the UTC hours for Irish time calculation
+          const utcHours = parseInt(parts[0]);
+
+          // Override getDay method to return test day of week
           mockDate.getDay = () => this.dayOfWeek;
 
-          // Override getUTCHours and getUTCMinutes
-          mockDate.getUTCHours = () => parseInt(parts[0]);
+          // Also override getUTCDay to return the same test day
+          mockDate.getUTCDay = () => this.dayOfWeek;
+
+          // Override getUTCHours to return the correct UTC hours
+          mockDate.getUTCHours = () => utcHours;
+
+          // Override getUTCMinutes
           mockDate.getUTCMinutes = () => parseInt(parts[1]);
+
+          // Override getUTCSeconds and getUTCMilliseconds
+          mockDate.getUTCSeconds = () => now.getSeconds();
+          mockDate.getUTCMilliseconds = () => now.getMilliseconds();
+
+          // Override getTime to ensure timestamp comparisons work for DST checks
+          const timestamp = Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            utcHours,
+            parseInt(parts[1]),
+            now.getSeconds(),
+            now.getMilliseconds()
+          );
+          mockDate.getTime = () => timestamp;
 
           return mockDate;
         }
@@ -226,7 +251,7 @@
 
       function updateTime() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        
+
         // Get Irish time - determine offset based on date
         var isIrishSummerTime = isIrelandDST(now);
         var irishOffset = isIrishSummerTime ? 1 : 0; // UTC+1 for summer, UTC+0 for winter
@@ -279,14 +304,14 @@
         var year = date.getUTCFullYear();
         var lastSundayMarch = getLastSundayOfMonth(year, 3);
         var lastSundayOctober = getLastSundayOfMonth(year, 10);
-        
+
         // Convert to UTC timestamps for comparison
         var dstStart = Date.UTC(year, 2, lastSundayMarch, 1, 0, 0, 0); // March is month 2 (0-indexed)
         var dstEnd = Date.UTC(year, 9, lastSundayOctober, 1, 0, 0, 0); // October is month 9
-        
+
         // Get timestamp of the input date
         var timestamp = date.getTime();
-        
+
         return timestamp >= dstStart && timestamp < dstEnd;
       }
 
@@ -301,12 +326,19 @@
         if (seconds !== 0) return;
 
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        var isIrishSummerTime = isIrelandDST(now);
-        var irishOffset = isIrishSummerTime ? 1 : 0;
-        var irishHours = now.getUTCHours() + irishOffset;
-        var currentDay = now.getUTCDay();
-        if (irishHours < now.getUTCHours()) {
-          currentDay = (currentDay + 1) % 7;
+
+        // For day-of-week, use test mode day if enabled, otherwise calculate Irish day
+        var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+
+        // If not in test mode, handle Irish time day rollover
+        if (!testMode.enabled) {
+          var isIrishSummerTime = isIrelandDST(now);
+          var irishOffset = isIrishSummerTime ? 1 : 0;
+          var irishHours = now.getUTCHours() + irishOffset;
+
+          if (irishHours < now.getUTCHours()) {
+            currentDay = (currentDay + 1) % 7;
+          }
         }
 
         var isFriday = testMode.enabled ? testMode.dayOfWeek === 5 : currentDay === 5;
@@ -369,28 +401,28 @@
 
       function updateNextPrayer() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        
+
         // Get Irish time
         var isIrishSummerTime = isIrelandDST(now);
         var irishOffset = isIrishSummerTime ? 1 : 0;
         var irishHours = now.getUTCHours() + irishOffset;
         irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
-        
+
         // Use Irish time consistently
         var currentTime = irishHours * 60 + now.getUTCMinutes();
 
         // For day-of-week, we need to account for day rollover when Irish time is ahead
-        var currentDay = now.getUTCDay();
-        if (irishHours < now.getUTCHours()) {
-          // If Irish time has rolled over to the next day (unlikely but possible at edge cases)
+        var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+        if (!testMode.enabled && irishHours < now.getUTCHours()) {
           currentDay = (currentDay + 1) % 7;
         }
+
         var isJumuah = currentDay === 5; // 0 is Sunday, 5 is Friday
 
         var currentDate = now.getUTCDate();
         var currentMonth = now.getUTCMonth() + 1; // JavaScript months are 0-based
         var currentYear = now.getUTCFullYear();
-        
+
         // Check if today is the day before a clock change
         var isDayBeforeClockChange = isDateBeforeClockChange(currentDate, currentMonth, currentYear);
 
@@ -456,12 +488,12 @@
         var lastSundayMarch = getLastSundayOfMonth(year, 3); // March is month 3
         var dayBeforeSpringChange = new Date(lastSundayMarch);
         dayBeforeSpringChange.setDate(dayBeforeSpringChange.getDate() - 1);
-        
+
         // Last Sunday in October (day before Fall clock change)
         var lastSundayOctober = getLastSundayOfMonth(year, 10); // October is month 10
         var dayBeforeFallChange = new Date(lastSundayOctober);
         dayBeforeFallChange.setDate(dayBeforeFallChange.getDate() - 1);
-        
+
         // Check if today is the day before a clock change
         var today = new Date(year, month - 1, date); // Adjust month back to 0-based
         return (
@@ -474,13 +506,13 @@
       function getLastSundayOfMonth(year, month) {
         var lastDay = new Date(year, month, 0); // Last day of the month
         var dayOfWeek = lastDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
-        
+
         // Calculate the date of the last Sunday
         var lastSunday = lastDay.getDate() - dayOfWeek;
         if (dayOfWeek === 0) { // If the last day is already a Sunday
           lastSunday = lastDay.getDate();
         }
-        
+
         return new Date(year, month - 1, lastSunday);
       }
 
@@ -635,8 +667,8 @@
         var currentTime = irishHours * 60 + now.getUTCMinutes();
 
         // For day-of-week, handle potential day rollover
-        var currentDay = now.getUTCDay();
-        if (irishHours < now.getUTCHours()) {
+        var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+        if (!testMode.enabled && irishHours < now.getUTCHours()) {
           currentDay = (currentDay + 1) % 7;
         }
 
@@ -693,15 +725,16 @@
 
         // Use Irish time for calculations
         var currentTime = irishHours * 60 + now.getUTCMinutes();
-        
+
         // For day-of-week, handle potential day rollover
-        var currentDay = now.getUTCDay();
-        if (irishHours < now.getUTCHours()) {
+        var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+        if (!testMode.enabled && irishHours < now.getUTCHours()) {
           currentDay = (currentDay + 1) % 7;
         }
-        
+
         var dayOfWeek = currentDay; // 0 is Sunday, 5 is Friday, 6 is Saturday
 
+        // Continue with regular announcement code
         var times = {
           sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
           zawal: document.querySelector(selectors.importantTimes.zawal).getAttribute('data-time'),
@@ -770,51 +803,53 @@
           isWarning = true;
           isSpecialAnnouncement = false;
         }
-        // Set the message text
-        announcementElement.textContent = message;
 
-        // Remove all classes first
-        announcementElement.classList.remove("announcement-text-normal", "announcement-text-long", "announcement-text-very-long");
-        announcementElement.classList.remove("announcement-warning", "special-announcement");
-        document.querySelector(".announcement").classList.remove("warning-active", "special-active");
+        if (announcementElement) {
+          // Set the message text
+          announcementElement.textContent = message;
 
-        // Add appropriate animation class based on message length
-        if (message.length < 60) {
-          announcementElement.classList.add("announcement-text-normal");
-        } else if (message.length < 100) {
-          announcementElement.classList.add("announcement-text-long");
-        } else {
-          announcementElement.classList.add("announcement-text-very-long");
-        }
+          // Remove all classes first
+          announcementElement.classList.remove("announcement-text-normal", "announcement-text-long", "announcement-text-very-long");
+          announcementElement.classList.remove("announcement-warning", "special-announcement");
+          document.querySelector(".announcement").classList.remove("warning-active", "special-active");
 
-        // Add styling classes (warning takes priority)
-        if (isWarning) {
-          announcementElement.classList.add("announcement-warning");
-          document.querySelector(".announcement").classList.add("warning-active");
-        } else if (isSpecialAnnouncement) {
-          announcementElement.classList.add("special-announcement");
-          document.querySelector(".announcement").classList.add("special-active");
+          // Add appropriate animation class based on message length
+          if (message.length < 60) {
+            announcementElement.classList.add("announcement-text-normal");
+          } else if (message.length < 100) {
+            announcementElement.classList.add("announcement-text-long");
+          } else {
+            announcementElement.classList.add("announcement-text-very-long");
+          }
+
+          // Add styling classes (warning takes priority)
+          if (isWarning) {
+            announcementElement.classList.add("announcement-warning");
+            document.querySelector(".announcement").classList.add("warning-active");
+          } else if (isSpecialAnnouncement) {
+            announcementElement.classList.add("special-announcement");
+            document.querySelector(".announcement").classList.add("special-active");
         }
       }
 
       // Function to update prayer times to next day when appropriate
       function updateToNextDayTimesIfNeeded() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        
+
         // Get Irish time
         var isIrishSummerTime = isIrelandDST(now);
         var irishOffset = isIrishSummerTime ? 1 : 0;
         var irishHours = now.getUTCHours() + irishOffset;
         irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
-        
+
         var currentTime = irishHours * 60 + now.getUTCMinutes();
-        
-        // For day-of-week, handle potential day rollover
-        var currentDay = now.getUTCDay();
-        if (irishHours < now.getUTCHours()) {
+
+        // For day-of-week, use test mode day if enabled, otherwise calculate Irish day
+        var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+        if (!testMode.enabled && irishHours < now.getUTCHours()) {
           currentDay = (currentDay + 1) % 7;
         }
-        
+
         var isFriday = currentDay === 5;
 
         // Update sunrise if it's past sunrise + 120 mins
@@ -842,7 +877,7 @@
           if (zawalTime) {
             var zawalMinutes = timeUtils.timeToMinutes(zawalTime);
             var zawalThreshold = zawalMinutes + 120;
-            
+
             if (currentTime >= zawalThreshold) {
               var tomorrowZawal = zawalEl.getAttribute("data-tomorrow");
               if (tomorrowZawal) {
@@ -936,7 +971,7 @@
 
       function forceMidnightRefresh() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        
+
         // Get Irish time
         var isIrishSummerTime = isIrelandDST(now);
         var irishOffset = isIrishSummerTime ? 1 : 0;
@@ -946,11 +981,11 @@
         var irishSecs = now.getUTCSeconds();
 
         if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
-            (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
-            (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
-            (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
-            (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
-            persistentRefresh();
+          (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
+          (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
+          (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
+          (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
+          persistentRefresh();
         }
       }
 
@@ -1004,11 +1039,11 @@
           var irishSecs = now.getUTCSeconds();
 
           if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
-              (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
-              (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
-              (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
-              (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
-              persistentRefresh();
+            (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
+            (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
+            (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
+            (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
+            persistentRefresh();
           }
 
           // Lighter drift checking - only once every 10 seconds
