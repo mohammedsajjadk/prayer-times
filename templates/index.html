@@ -694,21 +694,16 @@
       // Function to update prayer times to next day when appropriate
       function updateToNextDayTimesIfNeeded() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-
-        // Testing
-        // var currentTime =16 * 60 + 47;
-        // var isFriday = 5 === 5;
-
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
         var isFriday = now.getDay() === 5;
 
-        // Update sunrise if it's past sunrise + 60 mins
+        // Update sunrise if it's past sunrise + 120 mins
         var sunriseEl = document.querySelector(".time-box:nth-child(2) .time-value");
         if (sunriseEl) {
           var sunriseTime = sunriseEl.getAttribute("data-time");
           if (sunriseTime) {
             var sunriseMinutes = timeUtils.timeToMinutes(sunriseTime);
-            var sunriseThreshold = sunriseMinutes + 60;
+            var sunriseThreshold = sunriseMinutes + 120;
 
             if (currentTime >= sunriseThreshold) {
               var tomorrowSunrise = sunriseEl.getAttribute("data-tomorrow");
@@ -719,6 +714,25 @@
             }
           }
         }
+
+        // Update zawal separately - only when 120 minutes past zawal time
+        var zawalEl = document.querySelector(".time-box:nth-child(3) .time-value");
+        if (zawalEl) {
+          var zawalTime = zawalEl.getAttribute("data-time");
+          if (zawalTime) {
+            var zawalMinutes = timeUtils.timeToMinutes(zawalTime);
+            var zawalThreshold = zawalMinutes + 120;
+            
+            if (currentTime >= zawalThreshold) {
+              var tomorrowZawal = zawalEl.getAttribute("data-tomorrow");
+              if (tomorrowZawal) {
+                zawalEl.setAttribute("data-time", tomorrowZawal);
+                zawalEl.textContent = formatTimeFor12Hour(tomorrowZawal);
+              }
+            }
+          }
+        }
+
 
         // Define prayer types to update (excluding Jumu'ah)
         var prayers = ['fajr', 'zohr', 'asr', 'magrib', 'isha'];
@@ -777,18 +791,6 @@
                     if (tomorrowSehri) {
                       sehriEl.setAttribute("data-time", tomorrowSehri);
                       sehriEl.textContent = formatTimeFor12Hour(tomorrowSehri);
-                    }
-                  }
-                }
-
-                // Update Zawal time when Zohr time is updated
-                if (prayer === 'zohr') {
-                  var zawalEl = document.querySelector(".time-box:nth-child(3) .time-value");
-                  if (zawalEl) {
-                    var tomorrowZawal = zawalEl.getAttribute("data-tomorrow");
-                    if (tomorrowZawal) {
-                      zawalEl.setAttribute("data-time", tomorrowZawal);
-                      zawalEl.textContent = formatTimeFor12Hour(tomorrowZawal);
                     }
                   }
                 }
