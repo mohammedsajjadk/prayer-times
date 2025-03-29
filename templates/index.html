@@ -340,17 +340,27 @@
 
       function updateNextPrayer() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
-        // Testing currentTime. Uncomment following code to test different times.
-        // var currentTime =16 * 60 + 47;
-        // var isJumuah = 5 === 5; // 0 is Sunday, 5 is Friday
-
         var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
         var isJumuah = now.getDay() === 5; // 0 is Sunday, 5 is Friday
+
+        var currentTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+        var isJumuah = now.getUTCDay() === 5; // 0 is Sunday, 5 is Friday
+        var currentDate = now.getUTCDate();
+        var currentMonth = now.getUTCMonth() + 1; // JavaScript months are 0-based
+        var currentYear = now.getUTCFullYear();
+        
+        // Check if today is the day before a clock change
+        var isDayBeforeClockChange = isDateBeforeClockChange(currentDate, currentMonth, currentYear);
 
         // Clear existing highlights
         var highlighted = document.querySelectorAll(".next-prayer");
         for (var i = 0; i < highlighted.length; i++) {
           highlighted[i].classList.remove("next-prayer");
+        }
+
+        // Don't highlight next prayer on day before clock change
+        if (isDayBeforeClockChange) {
+          return;
         }
 
         // Get all required times
@@ -397,6 +407,41 @@
           highlightNextPrayer(nextPrayer, isJumuah);
         }
       }
+
+      // To check if a date is the day before a clock change
+      function isDateBeforeClockChange(date, month, year) {
+        // Last Sunday in March (day before Spring clock change)
+        var lastSundayMarch = getLastSundayOfMonth(year, 3); // March is month 3
+        var dayBeforeSpringChange = new Date(lastSundayMarch);
+        dayBeforeSpringChange.setDate(dayBeforeSpringChange.getDate() - 1);
+        
+        // Last Sunday in October (day before Fall clock change)
+        var lastSundayOctober = getLastSundayOfMonth(year, 10); // October is month 10
+        var dayBeforeFallChange = new Date(lastSundayOctober);
+        dayBeforeFallChange.setDate(dayBeforeFallChange.getDate() - 1);
+        
+        // Check if today is the day before a clock change
+        var today = new Date(year, month - 1, date); // Adjust month back to 0-based
+        return (
+          (today.getDate() === dayBeforeSpringChange.getDate() && today.getMonth() === dayBeforeSpringChange.getMonth()) ||
+          (today.getDate() === dayBeforeFallChange.getDate() && today.getMonth() === dayBeforeFallChange.getMonth())
+        );
+      }
+
+      // To get last Sunday of a given month
+      function getLastSundayOfMonth(year, month) {
+        var lastDay = new Date(year, month, 0); // Last day of the month
+        var dayOfWeek = lastDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        
+        // Calculate the date of the last Sunday
+        var lastSunday = lastDay.getDate() - dayOfWeek;
+        if (dayOfWeek === 0) { // If the last day is already a Sunday
+          lastSunday = lastDay.getDate();
+        }
+        
+        return new Date(year, month - 1, lastSunday);
+      }
+
 
       function highlightNextPrayer(prayer, isJumuah) {
         var prayerIndex = {
