@@ -163,14 +163,14 @@
           // Create a mock date based on the test time
           const now = new Date();
           const parts = this.time.split(":");
+          const hours = parseInt(parts[0]);
+          const minutes = parseInt(parts[1]);
+
           const mockDate = new Date();
-          mockDate.setHours(parseInt(parts[0]));
-          mockDate.setMinutes(parseInt(parts[1]));
+          mockDate.setHours(hours);
+          mockDate.setMinutes(minutes);
           mockDate.setSeconds(now.getSeconds());
           mockDate.setMilliseconds(now.getMilliseconds());
-
-          // Store the UTC hours for Irish time calculation
-          const utcHours = parseInt(parts[0]);
 
           // Override getDay method to return test day of week
           mockDate.getDay = () => this.dayOfWeek;
@@ -178,23 +178,23 @@
           // Also override getUTCDay to return the same test day
           mockDate.getUTCDay = () => this.dayOfWeek;
 
-          // Override getUTCHours to return the correct UTC hours
-          mockDate.getUTCHours = () => utcHours;
+          // Override getUTCHours to return the same hours (no DST adjustment)
+          mockDate.getUTCHours = () => hours;
 
           // Override getUTCMinutes
-          mockDate.getUTCMinutes = () => parseInt(parts[1]);
+          mockDate.getUTCMinutes = () => minutes;
 
           // Override getUTCSeconds and getUTCMilliseconds
           mockDate.getUTCSeconds = () => now.getSeconds();
           mockDate.getUTCMilliseconds = () => now.getMilliseconds();
 
-          // Override getTime to ensure timestamp comparisons work for DST checks
+          // Override getTime - this value is still needed for comparison functions
           const timestamp = Date.UTC(
             now.getUTCFullYear(),
             now.getUTCMonth(),
             now.getUTCDate(),
-            utcHours,
-            parseInt(parts[1]),
+            hours,
+            minutes,
             now.getSeconds(),
             now.getMilliseconds()
           );
@@ -252,15 +252,24 @@
       function updateTime() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
-        // Get Irish time - determine offset based on date
-        var isIrishSummerTime = isIrelandDST(now);
-        var irishOffset = isIrishSummerTime ? 1 : 0; // UTC+1 for summer, UTC+0 for winter
+        // Get time components, applying Irish offset only when NOT in test mode
+        var hours, minutes, seconds;
 
-        // Get time components adjusted for Irish time
-        var hours = now.getUTCHours() + irishOffset;
-        hours = hours >= 24 ? hours - 24 : hours; // Handle day wraparound
-        var minutes = now.getUTCMinutes();
-        var seconds = now.getUTCSeconds();
+        if (testMode.enabled) {
+          // In test mode: use exactly what was set in testMode.time
+          const parts = testMode.time.split(":");
+          hours = parseInt(parts[0]);
+          minutes = parseInt(parts[1]);
+          seconds = now.getUTCSeconds(); // Keep seconds updating
+        } else {
+          // Normal mode: apply Irish time offset
+          var isIrishSummerTime = isIrelandDST(now);
+          var irishOffset = isIrishSummerTime ? 1 : 0;
+          hours = now.getUTCHours() + irishOffset;
+          hours = hours >= 24 ? hours - 24 : hours; // Handle day wraparound
+          minutes = now.getUTCMinutes();
+          seconds = now.getUTCSeconds();
+        }
 
         // Check if current time matches any jamaah time
         if (seconds === 0) {
@@ -298,21 +307,44 @@
       }
 
       // To detect if Ireland is currently in DST (summer time)
+      // To detect if Ireland is currently in DST (summer time)
       function isIrelandDST(date) {
         // Ireland's DST starts at 1am UTC on the last Sunday in March
         // and ends at 1am UTC on the last Sunday in October
         var year = date.getUTCFullYear();
-        var lastSundayMarch = getLastSundayOfMonth(year, 3);
-        var lastSundayOctober = getLastSundayOfMonth(year, 10);
 
-        // Convert to UTC timestamps for comparison
-        var dstStart = Date.UTC(year, 2, lastSundayMarch, 1, 0, 0, 0); // March is month 2 (0-indexed)
-        var dstEnd = Date.UTC(year, 9, lastSundayOctober, 1, 0, 0, 0); // October is month 9
+        // Calculate last Sunday of March
+        var lastDayMarch = new Date(Date.UTC(year, 2, 31)); // Start with March 31
+        while (lastDayMarch.getUTCMonth() > 2) {
+          // Adjust if we went to April (this happens because some months don't have 31 days)
+          lastDayMarch = new Date(Date.UTC(year, 2, lastDayMarch.getUTCDate() - 1));
+        }
+        // Go back to the last Sunday
+        while (lastDayMarch.getUTCDay() !== 0) {
+          lastDayMarch = new Date(Date.UTC(year, 2, lastDayMarch.getUTCDate() - 1));
+        }
+
+        // Calculate last Sunday of October
+        var lastDayOctober = new Date(Date.UTC(year, 9, 31)); // Start with October 31
+        while (lastDayOctober.getUTCMonth() > 9) {
+          // Adjust if we went to November
+          lastDayOctober = new Date(Date.UTC(year, 9, lastDayOctober.getUTCDate() - 1));
+        }
+        // Go back to the last Sunday
+        while (lastDayOctober.getUTCDay() !== 0) {
+          lastDayOctober = new Date(Date.UTC(year, 9, lastDayOctober.getUTCDate() - 1));
+        }
+
+        // Set transition times (1am UTC)
+        var dstStart = new Date(Date.UTC(year, lastDayMarch.getUTCMonth(),
+          lastDayMarch.getUTCDate(), 1, 0, 0, 0));
+        var dstEnd = new Date(Date.UTC(year, lastDayOctober.getUTCMonth(),
+          lastDayOctober.getUTCDate(), 1, 0, 0, 0));
 
         // Get timestamp of the input date
         var timestamp = date.getTime();
 
-        return timestamp >= dstStart && timestamp < dstEnd;
+        return timestamp >= dstStart.getTime() && timestamp < dstEnd.getTime();
       }
 
       // In your initialize function, add this line to remove any existing interval
@@ -402,14 +434,20 @@
       function updateNextPrayer() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
-        // Get Irish time
-        var isIrishSummerTime = isIrelandDST(now);
-        var irishOffset = isIrishSummerTime ? 1 : 0;
-        var irishHours = now.getUTCHours() + irishOffset;
-        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
-
-        // Use Irish time consistently
-        var currentTime = irishHours * 60 + now.getUTCMinutes();
+        // Get current time in minutes from midnight
+        var currentTime;
+        if (testMode.enabled) {
+          // In test mode, use exactly what was set
+          const parts = testMode.time.split(":");
+          currentTime = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        } else {
+          // Normal mode: apply Irish time offset
+          var isIrishSummerTime = isIrelandDST(now);
+          var irishOffset = isIrishSummerTime ? 1 : 0;
+          var irishHours = now.getUTCHours() + irishOffset;
+          irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+          currentTime = irishHours * 60 + now.getUTCMinutes();
+        }
 
         // For day-of-week, we need to account for day rollover when Irish time is ahead
         var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
@@ -503,17 +541,16 @@
       }
 
       // To get last Sunday of a given month
+      // To get last Sunday of a given month
       function getLastSundayOfMonth(year, month) {
-        var lastDay = new Date(year, month, 0); // Last day of the month
-        var dayOfWeek = lastDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        var date = new Date(year, month, 0); // Last day of the month
 
-        // Calculate the date of the last Sunday
-        var lastSunday = lastDay.getDate() - dayOfWeek;
-        if (dayOfWeek === 0) { // If the last day is already a Sunday
-          lastSunday = lastDay.getDate();
+        // Move back until we reach a Sunday (day 0)
+        while (date.getDay() !== 0) {
+          date.setDate(date.getDate() - 1);
         }
 
-        return new Date(year, month - 1, lastSunday);
+        return date.getDate();
       }
 
 
@@ -660,13 +697,20 @@
       function updateJumuahTimes() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
-        // Get Irish time
-        var isIrishSummerTime = isIrelandDST(now);
-        var irishOffset = isIrishSummerTime ? 1 : 0;
-        var irishHours = now.getUTCHours() + irishOffset;
-        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
-
-        var currentTime = irishHours * 60 + now.getUTCMinutes();
+        // Get current time in minutes from midnight
+        var currentTime;
+        if (testMode.enabled) {
+          // In test mode, use exactly what was set
+          const parts = testMode.time.split(":");
+          currentTime = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        } else {
+          // Normal mode: apply Irish time offset
+          var isIrishSummerTime = isIrelandDST(now);
+          var irishOffset = isIrishSummerTime ? 1 : 0;
+          var irishHours = now.getUTCHours() + irishOffset;
+          irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+          currentTime = irishHours * 60 + now.getUTCMinutes();
+        }
 
         // For day-of-week, handle potential day rollover
         var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
@@ -719,14 +763,20 @@
       function updateAnnouncement() {
         var now = testMode.enabled ? testMode.getMockDate() : new Date();
 
-        // Get Irish time
-        var isIrishSummerTime = isIrelandDST(now);
-        var irishOffset = isIrishSummerTime ? 1 : 0;
-        var irishHours = now.getUTCHours() + irishOffset;
-        irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
-
-        // Use Irish time for calculations
-        var currentTime = irishHours * 60 + now.getUTCMinutes();
+        // Get current time in minutes from midnight
+        var currentTime;
+        if (testMode.enabled) {
+          // In test mode, use exactly what was set
+          const parts = testMode.time.split(":");
+          currentTime = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        } else {
+          // Normal mode: apply Irish time offset
+          var isIrishSummerTime = isIrelandDST(now);
+          var irishOffset = isIrishSummerTime ? 1 : 0;
+          var irishHours = now.getUTCHours() + irishOffset;
+          irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+          currentTime = irishHours * 60 + now.getUTCMinutes();
+        }
 
         // For day-of-week, handle potential day rollover
         var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
