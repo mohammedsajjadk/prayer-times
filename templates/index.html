@@ -586,7 +586,9 @@
         eid: function () {
           return "EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM"
         },
-
+        eid_mubarak: function () {
+          return "EID MUBARAK. MAY ALLAH ACCEPT YOUR FASTING AND PRAYERS. MAY ALLAH GRANT YOU PEACE AND PROSPERITY IN THIS LIFE AND THE HEREAFTER."
+        },
         // saturday: {
         //   asr: function (startTime) {
         //     return [
@@ -827,6 +829,11 @@
           isSpecialAnnouncement = true;
         }
         else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < (8 * 60 + 30)) { // till 8:30AM
+          // Sunday
+          message = announcements.eid();
+          isSpecialAnnouncement = true;
+        }
+        else if (dayOfWeek === 0 && currentTime >= (9 * 60 + 30) && currentTime < (10 * 60 + 30)) { // till 10:30AM
           // Sunday
           message = announcements.eid();
           isSpecialAnnouncement = true;
