@@ -136,9 +136,9 @@
     <script>
       // TIME TESTING CONFIGURATION
       var testMode = {
-        enabled: false,          // Set to true to enable test mode
-        time: "10:00",           // Format: "HH:MM" (24-hour format)
-        dayOfWeek: 6,            // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
+        enabled: true,          // Set to true to enable test mode
+        time: "18:55",           // Format: "HH:MM" (24-hour format)
+        dayOfWeek: 5,            // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
 
         // Returns current time in minutes since midnight (overrides actual time when enabled)
         getCurrentTimeMinutes: function () {
@@ -709,26 +709,32 @@
         // Determine if it's Summer Time or Winter Time
         var isIrishSummerTime = isIrelandDST(now);
 
-        // Set Jumuah times based on whether it's Summer Time or Winter Time
-        var firstJumuahTime, secondJumuahTime, switchTime;
+        // Set Jumuah time based on whether it's Summer Time or Winter Time
+        var jumuahTime;
         if (isIrishSummerTime) {
           // Summer Time
-          firstJumuahTime = "13:45";
-          secondJumuahTime = "14:30";
-          switchTime = 14 * 60 + 10; // 2:10PM in minutes from midnight
+          jumuahTime = "13:45";
         } else {
           // Winter Time
-          firstJumuahTime = "13:20";
-          secondJumuahTime = "14:15";
-          switchTime = 14 * 60; // 2:00PM in minutes from midnight
+          jumuahTime = "13:20";
         }
-
-        // Check if time is past the switch time but before Asr
-        var isSecondJumuahTime = currentTime >= switchTime;
 
         // Get the Asr beginning time to check if Jumu'ah is over
         var asrBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(4)");
-        var asrBeginningTime = asrBeginningEl ? timeUtils.timeToMinutes(asrBeginningEl.getAttribute('data-time')) : 15 * 60;
+        var asrBeginningTime;
+
+        if (asrBeginningEl && asrBeginningEl.getAttribute('data-time')) {
+          var asrTimeStr = asrBeginningEl.getAttribute('data-time');
+          var asrParts = asrTimeStr.split(":");
+          if (asrParts.length === 2) {
+            asrBeginningTime = parseInt(asrParts[0]) * 60 + parseInt(asrParts[1]);
+          } else {
+            asrBeginningTime = 15 * 60; // Default to 3 PM if format is invalid
+          }
+        } else {
+          asrBeginningTime = 15 * 60; // Default to 3 PM if element not found
+        }
+
         var isAfterAsr = currentTime >= asrBeginningTime;
 
         // Get the Jumu'ah time element
@@ -737,29 +743,41 @@
         // Get the Jumu'ah label element
         var jumuahLabelElement = document.querySelector(".prayer .prayer-time-value:nth-child(7) .english");
 
-        if (isFriday && isSecondJumuahTime && !isAfterAsr) {
-          // Change to second Jumu'ah
-          jumuahElement.textContent = formatTimeFor12Hour(secondJumuahTime);
-          jumuahElement.setAttribute("data-time", secondJumuahTime);
+        // Update to the correct Jumu'ah time
+        jumuahElement.textContent = formatTimeFor12Hour(jumuahTime);
+        jumuahElement.setAttribute("data-time", jumuahTime);
 
-          // Add "2nd" indicator to the label
-          if (jumuahLabelElement && !jumuahLabelElement.textContent.includes("2nd")) {
-            jumuahLabelElement.textContent = "JUMU'AH (2nd)";
-          }
-        } else {
-          // Reset to first Jumu'ah for all other times
-          jumuahElement.textContent = formatTimeFor12Hour(firstJumuahTime);
-          jumuahElement.setAttribute("data-time", firstJumuahTime);
-
-          // Remove "2nd" indicator if present
-          if (jumuahLabelElement && jumuahLabelElement.textContent.includes("2nd")) {
-            jumuahLabelElement.textContent = "JUMU'AH";
-          }
+        // Make sure the label is correct
+        if (jumuahLabelElement && jumuahLabelElement.textContent.includes("2nd")) {
+          jumuahLabelElement.textContent = "JUMU'AH";
         }
+
         // Remove highlighting from Jumu'ah after Asr begins on Friday
-        if (isFriday && isAfterAsr) {
-          jumuahElement.classList.remove("jumuah-highlight");
-          jumuahElement.classList.remove("next-prayer");
+        // and ensure Asr gets properly highlighted
+        if (isFriday) {
+          if (isAfterAsr) {
+            // Remove Jumuah highlighting after Asr begins
+            jumuahElement.classList.remove("jumuah-highlight");
+            jumuahElement.classList.remove("next-prayer");
+
+            // Make sure Asr gets highlighted if it's still before Maghrib
+            var asrJamaahEl = document.querySelector(".jamaah .prayer-time-value:nth-child(4)");
+            var magribBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(5)");
+
+            if (asrJamaahEl && magribBeginningEl) {
+              var magribTimeStr = magribBeginningEl.getAttribute('data-time');
+              var magribParts = magribTimeStr.split(":");
+              var magribBeginningTime = parseInt(magribParts[0]) * 60 + parseInt(magribParts[1]);
+
+              if (currentTime < magribBeginningTime - 10) {
+                // Highlight Asr if we're before Maghrib
+                asrJamaahEl.classList.add("next-prayer");
+              }
+            }
+          } else {
+            // Before Asr, ensure Jumuah is highlighted on Fridays
+            jumuahElement.classList.add("jumuah-highlight");
+          }
         }
       }
 
@@ -1084,7 +1102,6 @@
           jumuahElement.setAttribute("data-time", jumuahTime);
           jumuahElement.textContent = formatTimeFor12Hour(jumuahTime);
         }
-
         updateJumuahTimes();
         updateToNextDayTimesIfNeeded();
 
