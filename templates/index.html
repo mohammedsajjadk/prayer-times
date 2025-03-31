@@ -589,22 +589,6 @@
         eid_mubarak: function () {
           return "EID MUBARAK. MAY ALLAH ACCEPT YOUR FASTING AND PRAYERS. MAY ALLAH GRANT YOU PEACE AND PROSPERITY IN THIS LIFE AND THE HEREAFTER."
         },
-        // saturday: {
-        //   asr: function (startTime) {
-        //     return [
-        //       "EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM",
-        //     ].join(" • ");
-        //   },
-        //   night: function () {
-        //     return [
-        //       "WEEKLY YOUTH NIGHT • Boys aged 9 plus",
-        //       "Join us Today after Taraweeh Prayer",
-        //       "Special Ramadhan Programme",
-        //       "Refreshments will be served."
-        //     ].join(" • ");
-        //   }
-        // },
-
         warnings: {
           sunrise: function (sunriseTime, endTime) {
             return "NO SALAH AFTER SUNRISE (" + formatTimeWithAmPm(sunriseTime) + ") • Please Wait Until " + formatTimeWithAmPm(endTime);
@@ -814,30 +798,30 @@
         var ishaJamaahTime = timeUtils.timeToMinutes(times.ishaJamaah);
 
 
-        if (dayOfWeek === 5 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
-          // Friday
-          message = announcements.friday();
-          isSpecialAnnouncement = true;
-        }
-        else if (dayOfWeek === 5 && currentTime > ishaJamaahTime + 7 && currentTime < (23 * 60 + 59)) {
-          // Friday
-          message = announcements.eid();
-          isSpecialAnnouncement = true;
-        }
-        else if (dayOfWeek === 6 && currentTime >= fajrTime && currentTime < (23 * 60 + 59)) { // till 11:59PM
-          message = announcements.clock_and_eid();
-          isSpecialAnnouncement = true;
-        }
-        else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < (8 * 60 + 30)) { // till 8:30AM
-          // Sunday
-          message = announcements.eid();
-          isSpecialAnnouncement = true;
-        }
-        else if (dayOfWeek === 0 && currentTime >= (9 * 60 + 30) && currentTime < (10 * 60 + 30)) { // till 10:30AM
-          // Sunday
-          message = announcements.eid();
-          isSpecialAnnouncement = true;
-        }
+        // if (dayOfWeek === 5 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
+        //   // Friday
+        //   message = announcements.friday();
+        //   isSpecialAnnouncement = true;
+        // }
+        // else if (dayOfWeek === 5 && currentTime > ishaJamaahTime + 7 && currentTime < (23 * 60 + 59)) {
+        //   // Friday
+        //   message = announcements.eid();
+        //   isSpecialAnnouncement = true;
+        // }
+        // else if (dayOfWeek === 6 && currentTime >= fajrTime && currentTime < (23 * 60 + 59)) { // till 11:59PM
+        //   message = announcements.clock_and_eid();
+        //   isSpecialAnnouncement = true;
+        // }
+        // else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < (8 * 60 + 30)) { // till 8:30AM
+        //   // Sunday
+        //   message = announcements.eid();
+        //   isSpecialAnnouncement = true;
+        // }
+        // else if (dayOfWeek === 0 && currentTime >= (9 * 60 + 30) && currentTime < (10 * 60 + 30)) { // till 10:30AM
+        //   // Sunday
+        //   message = announcements.eid();
+        //   isSpecialAnnouncement = true;
+        // }
         // else if (dayOfWeek === 6) {
         //   // Saturday - two programs
         //   if (currentTime >= fajrTime && currentTime < programStartTime) {
@@ -1039,11 +1023,8 @@
         var irishMins = now.getUTCMinutes();
         var irishSecs = now.getUTCSeconds();
 
-        if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
-          (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
-          (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
-          (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
-          (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
+        if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2)
+          (irishHours === 16 && irishMins === 30 && irishSecs <= 2)) {
           persistentRefresh();
         }
       }
@@ -1098,10 +1079,7 @@
           var irishSecs = now.getUTCSeconds();
 
           if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
-            (irishHours === 11 && irishMins === 30 && irishSecs <= 2) ||
-            (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
-            (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
-            (irishHours === 17 && irishMins === 30 && irishSecs <= 2)) {
+            (irishHours === 16 && irishMins === 30 && irishSecs <= 2)) {
             persistentRefresh();
           }
 
