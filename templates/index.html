@@ -102,7 +102,7 @@
         <div class="prayer-time-value jamaah" data-time="{{ today_prayer_times[12] }}"
           data-tomorrow="{{ tomorrow_prayer_times[12] }}">{{ today_prayer_times[12] }}
         </div>
-        <div class="prayer-time-value jamaah" data-time="13:20">13:20</div>
+        <div class="prayer-time-value jamaah" id="jumuah-time" data-time="13:20">1:20</div>
       </div>
     </div>
     <div class="important-times">
@@ -706,8 +706,25 @@
 
         var isFriday = currentDay === 5;
 
-        // Check if time is between 14:00 and 15:00
-        var isSecondJumuahTime = currentTime >= 14 * 60 && currentTime < 15 * 60;
+        // Determine if it's Summer Time or Winter Time
+        var isIrishSummerTime = isIrelandDST(now);
+
+        // Set Jumuah times based on whether it's Summer Time or Winter Time
+        var firstJumuahTime, secondJumuahTime, switchTime;
+        if (isIrishSummerTime) {
+          // Summer Time
+          firstJumuahTime = "13:45";
+          secondJumuahTime = "14:30";
+          switchTime = 14 * 60 + 10; // 2:10PM in minutes from midnight
+        } else {
+          // Winter Time
+          firstJumuahTime = "13:20";
+          secondJumuahTime = "14:15";
+          switchTime = 14 * 60; // 2:00PM in minutes from midnight
+        }
+
+        // Check if time is past the switch time but before Asr
+        var isSecondJumuahTime = currentTime >= switchTime;
 
         // Get the Asr beginning time to check if Jumu'ah is over
         var asrBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(4)");
@@ -722,8 +739,8 @@
 
         if (isFriday && isSecondJumuahTime && !isAfterAsr) {
           // Change to second Jumu'ah
-          jumuahElement.textContent = "2:15";
-          jumuahElement.setAttribute("data-time", "14:15");
+          jumuahElement.textContent = formatTimeFor12Hour(secondJumuahTime);
+          jumuahElement.setAttribute("data-time", secondJumuahTime);
 
           // Add "2nd" indicator to the label
           if (jumuahLabelElement && !jumuahLabelElement.textContent.includes("2nd")) {
@@ -731,8 +748,8 @@
           }
         } else {
           // Reset to first Jumu'ah for all other times
-          jumuahElement.textContent = "1:20";
-          jumuahElement.setAttribute("data-time", "13:20");
+          jumuahElement.textContent = formatTimeFor12Hour(firstJumuahTime);
+          jumuahElement.setAttribute("data-time", firstJumuahTime);
 
           // Remove "2nd" indicator if present
           if (jumuahLabelElement && jumuahLabelElement.textContent.includes("2nd")) {
@@ -1057,6 +1074,17 @@
         updateNextPrayer();
         updateAnnouncement();
         convertTo12Hour();
+
+        // Set initial Jumuah time based on Summer/Winter time on page load
+        var now = testMode.enabled ? testMode.getMockDate() : new Date();
+        var isIrishSummerTime = isIrelandDST(now);
+        var jumuahElement = document.querySelector(".jamaah .prayer-time-value:nth-child(7)");
+        if (jumuahElement) {
+          var jumuahTime = isIrishSummerTime ? "13:45" : "13:20";
+          jumuahElement.setAttribute("data-time", jumuahTime);
+          jumuahElement.textContent = formatTimeFor12Hour(jumuahTime);
+        }
+
         updateJumuahTimes();
         updateToNextDayTimesIfNeeded();
 
