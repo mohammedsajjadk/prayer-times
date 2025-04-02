@@ -577,17 +577,17 @@
       var announcements = {
         default: "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.",
 
-        friday: function () {
-          return "TARAWEEH QURAN COMPLETION & NEW MASJID FUNDRAISER TONIGHT AT 9PM • EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM"
+        thursday_darood: function () {
+          return "DAROOD SHAREEF FOLLOWED BY SALAT-AN-NABI • THURSDAY AFTER MAGRIB"
         },
-        clock_and_eid: function () {
-          return "EID IS CONFIRMED FOR SUNDAY 30TH MARCH • EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM • REMEMBER CLOCKS GO FORWARD 1 HOUR THIS SUNDAY"
+        friday_tafseer: function () {
+          return "TAFSEER OF THE QURAN • SURAH QAAF • FRIDAY AFTER MAGRIB"
         },
-        eid: function () {
-          return "EID BAYAAN WILL START AT 8:30AM AND JAMA'AH WILL BE AT 9:00AM"
+        clock_go_forward: function () {
+          return "REMEMBER CLOCKS GO FORWARD 1 HOUR THIS SUNDAY"
         },
-        eid_mubarak: function () {
-          return "EID MUBARAK. MAY ALLAH ACCEPT YOUR FASTING AND PRAYERS. MAY ALLAH GRANT YOU PEACE AND PROSPERITY IN THIS LIFE AND THE HEREAFTER."
+        clock_go_backward: function () {
+          return "REMEMBER CLOCKS GO BACKWARD 1 HOUR THIS SUNDAY"
         },
         warnings: {
           sunrise: function (sunriseTime, endTime) {
@@ -719,31 +719,36 @@
           jumuahTime = "13:20";
         }
 
-        // Get the Asr beginning time to check if Jumu'ah is over
+        // Get the Jumuah time element
+        var jumuahElement = document.querySelector(".jamaah .prayer-time-value:nth-child(7)");
+
+        // Get the Jumuah label element
+        var jumuahLabelElement = document.querySelector(".prayer .prayer-time-value:nth-child(7) .english");
+
+        // Get Zohr beginning time and Asr beginning time to determine when to highlight Jumuah
+        var zohrBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(3)");
         var asrBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(4)");
-        var asrBeginningTime;
+
+        var zohrBeginningTime = 0;
+        var asrBeginningTime = 15 * 60; // Default to 3 PM if format is invalid
+
+        if (zohrBeginningEl && zohrBeginningEl.getAttribute('data-time')) {
+          var zohrTimeStr = zohrBeginningEl.getAttribute('data-time');
+          var zohrParts = zohrTimeStr.split(":");
+          if (zohrParts.length === 2) {
+            zohrBeginningTime = parseInt(zohrParts[0]) * 60 + parseInt(zohrParts[1]);
+          }
+        }
 
         if (asrBeginningEl && asrBeginningEl.getAttribute('data-time')) {
           var asrTimeStr = asrBeginningEl.getAttribute('data-time');
           var asrParts = asrTimeStr.split(":");
           if (asrParts.length === 2) {
             asrBeginningTime = parseInt(asrParts[0]) * 60 + parseInt(asrParts[1]);
-          } else {
-            asrBeginningTime = 15 * 60; // Default to 3 PM if format is invalid
           }
-        } else {
-          asrBeginningTime = 15 * 60; // Default to 3 PM if element not found
         }
 
-        var isAfterAsr = currentTime >= asrBeginningTime;
-
-        // Get the Jumu'ah time element
-        var jumuahElement = document.querySelector(".jamaah .prayer-time-value:nth-child(7)");
-
-        // Get the Jumu'ah label element
-        var jumuahLabelElement = document.querySelector(".prayer .prayer-time-value:nth-child(7) .english");
-
-        // Update to the correct Jumu'ah time
+        // Update to the correct Jumuah time
         jumuahElement.textContent = formatTimeFor12Hour(jumuahTime);
         jumuahElement.setAttribute("data-time", jumuahTime);
 
@@ -752,31 +757,29 @@
           jumuahLabelElement.textContent = "JUMU'AH";
         }
 
-        // Remove highlighting from Jumu'ah after Asr begins on Friday
-        // and ensure Asr gets properly highlighted
-        if (isFriday) {
-          if (isAfterAsr) {
-            // Remove Jumuah highlighting after Asr begins
-            jumuahElement.classList.remove("jumuah-highlight");
-            jumuahElement.classList.remove("next-prayer");
+        // Remove any existing highlight first
+        jumuahElement.classList.remove("jumuah-highlight");
+        jumuahElement.classList.remove("next-prayer");
 
-            // Make sure Asr gets highlighted if it's still before Maghrib
-            var asrJamaahEl = document.querySelector(".jamaah .prayer-time-value:nth-child(4)");
-            var magribBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(5)");
+        // Only highlight Jumuah on Friday between Zohr beginning and Asr beginning
+        if (isFriday && currentTime >= zohrBeginningTime && currentTime < asrBeginningTime) {
+          jumuahElement.classList.add("jumuah-highlight");
+        }
 
-            if (asrJamaahEl && magribBeginningEl) {
-              var magribTimeStr = magribBeginningEl.getAttribute('data-time');
-              var magribParts = magribTimeStr.split(":");
+        // If it's Friday after Asr begins, make sure Asr gets highlighted if it's before Maghrib
+        if (isFriday && currentTime >= asrBeginningTime) {
+          var asrJamaahEl = document.querySelector(".jamaah .prayer-time-value:nth-child(4)");
+          var magribBeginningEl = document.querySelector(".beginning .prayer-time-value:nth-child(5)");
+
+          if (asrJamaahEl && magribBeginningEl) {
+            var magribTimeStr = magribBeginningEl.getAttribute('data-time');
+            var magribParts = magribTimeStr.split(":");
+            if (magribParts.length === 2) {
               var magribBeginningTime = parseInt(magribParts[0]) * 60 + parseInt(magribParts[1]);
-
               if (currentTime < magribBeginningTime - 10) {
-                // Highlight Asr if we're before Maghrib
                 asrJamaahEl.classList.add("next-prayer");
               }
             }
-          } else {
-            // Before Asr, ensure Jumuah is highlighted on Fridays
-            jumuahElement.classList.add("jumuah-highlight");
           }
         }
       }
@@ -807,6 +810,9 @@
 
         var dayOfWeek = currentDay; // 0 is Sunday, 5 is Friday, 6 is Saturday
 
+        // Determine if it's summer or winter time
+        var isIrishSummerTime = isIrelandDST(now);
+
         // Continue with regular announcement code
         var times = {
           sunrise: document.querySelector(selectors.importantTimes.sunrise).getAttribute('data-time'),
@@ -830,41 +836,37 @@
         var fajrTime = timeUtils.timeToMinutes(times.fajrBeginning);
         var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
         var asrJamaahTime = timeUtils.timeToMinutes(times.asrJamaah);
+        var magribJamaahTime = timeUtils.timeToMinutes(times.magribJamaah);
         var ishaJamaahTime = timeUtils.timeToMinutes(times.ishaJamaah);
 
-
-        // if (dayOfWeek === 5 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
-        //   // Friday
-        //   message = announcements.friday();
-        //   isSpecialAnnouncement = true;
-        // }
-        // else if (dayOfWeek === 5 && currentTime > ishaJamaahTime + 7 && currentTime < (23 * 60 + 59)) {
-        //   // Friday
-        //   message = announcements.eid();
-        //   isSpecialAnnouncement = true;
-        // }
-        // else if (dayOfWeek === 6 && currentTime >= fajrTime && currentTime < (23 * 60 + 59)) { // till 11:59PM
-        //   message = announcements.clock_and_eid();
-        //   isSpecialAnnouncement = true;
-        // }
-        // else if (dayOfWeek === 0 && currentTime >= fajrTime && currentTime < (8 * 60 + 30)) { // till 8:30AM
-        //   // Sunday
-        //   message = announcements.eid();
-        //   isSpecialAnnouncement = true;
-        // }
-        // else if (dayOfWeek === 0 && currentTime >= (9 * 60 + 30) && currentTime < (10 * 60 + 30)) { // till 10:30AM
-        //   // Sunday
-        //   message = announcements.eid();
-        //   isSpecialAnnouncement = true;
-        // }
-        // else if (dayOfWeek === 6) {
-        //   // Saturday - two programs
-        //   if (currentTime >= fajrTime && currentTime < programStartTime) {
-        //     message = announcements.saturday.asr(timeUtils.addMinutes(times.asrJamaah, 10));
-        //   } else if (currentTime >= programStartTime && currentTime < 22 * 60) { // Until 10 PM
-        //     message = announcements.saturday.night();
-        //   }
-        // } 
+        if (isIrishSummerTime) {
+          if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < magribJamaahTime + 5) {
+            // Thursday
+            message = announcements.thursday_darood();
+          }
+          else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+            // Thursday After Magrib
+            message = announcements.friday_tafseer();
+          }
+          else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
+            // Friday
+            message = announcements.friday_tafseer();
+          }
+        } else {
+          // Winter time rules
+          if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
+            // Thursday
+            message = announcements.thursday_darood();
+          }
+          else if (dayOfWeek === 4 && currentTime >= ishaJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+            // Thursday After Isha
+            message = announcements.friday_tafseer();
+          }
+          else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < ishaJamaahTime + 10) {
+            // Friday
+            message = announcements.friday_tafseer();
+          }
+        }
 
         // Then check for warnings (which take precedence)
         if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
