@@ -429,6 +429,22 @@
             }
           }
         }
+        
+        // Explicitly convert important times (including Zawal)
+        var importantTimes = document.querySelectorAll(".time-box .time-value");
+        for (var i = 0; i < importantTimes.length; i++) {
+          var el = importantTimes[i];
+          var time = el.getAttribute("data-time");
+          if (time && time.indexOf(":") !== -1) {
+            var parts = time.split(":");
+            var hours = parseInt(parts[0]);
+            var minutes = parseInt(parts[1]);
+            if (!isNaN(hours) && !isNaN(minutes)) {
+              var hours12 = hours % 12 || 12;
+              el.textContent = hours12 + ":" + timeUtils.padNumber(minutes, 2);
+            }
+          }
+        }
       }
 
       function updateNextPrayer() {
