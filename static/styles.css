@@ -620,3 +620,19 @@ body, html {
     0% { opacity: 0.8; transform: scale(0.95); }
     100% { opacity: 1; transform: scale(1.05); }
 }
+
+/* Make the next prayer highlight responsive to content width */
+.next-prayer, .jumuah-highlight {
+    padding: 0.2vh 0.8vw !important;
+    width: auto !important;
+    min-width: 7vw !important;
+    box-sizing: border-box !important;
+    display: inline-block !important;
+  }
+  
+/* Add some extra space for double-digit hours */
+.prayer-time-value.jamaah {
+min-width: 8vw;
+text-align: center;
+box-sizing: border-box;
+}
