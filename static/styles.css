@@ -328,7 +328,7 @@ body, html {
     padding: 1vw;
     text-align: center;
     height: 111vh; /* Set a fixed height */
-    min-height: 14.5vh; /* Ensures they don’t shrink */
+    min-height: 13.5vh; /* Ensures they don’t shrink */
 }
 /*border: 0.2vw solid white;*/
 .prayer-time-value {
