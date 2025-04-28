@@ -43,7 +43,7 @@ body, html {
     background-color: var(--announcement-bg-color);
     padding: 0.3vh;
     text-align: center;
-    font-size: 5.0vw;
+    font-size: 4.0vw; /* Reduced from 5.0vw to 4.0vw */
     white-space: nowrap;
     overflow: hidden;
     position: fixed;
@@ -84,7 +84,7 @@ body, html {
     text-shadow: 0 0 10px rgba(255, 165, 0, 0.5); /* Subtle glow effect */
     letter-spacing: 0.1em; /* Slightly spaced letters for better readability */
     animation: warningPulse 2s infinite;
-    font-size: 5vw;
+    font-size: 4vw; /* Reduced from 5vw to 4vw */
 }
 
 @keyframes warningPulse {
@@ -153,7 +153,7 @@ body, html {
 
 
 .jamaah .prayer-time-value {
-    font-size: 9.5vw;
+    font-size: 10.5vw; /* Increased from 9.5vw to 11vw */
 }
 [data-time] {
     transition: color 0.3s ease;
@@ -187,7 +187,7 @@ body, html {
 
 .time-main {
     font-family: 'DS-Digital', monospace;
-    font-size: 14vw;
+    font-size: 14vw; /* Increased from 14vw to 16vw */
     font-weight: bold;
     line-height: 1;
     text-align: center;
@@ -205,7 +205,7 @@ body, html {
 .time-sub::before {
     content: ":";
     font-family: 'DS-Digital', monospace;
-    font-size: 11vw;  /* Smaller than time-main */
+    font-size: 12vw;  /* Increased from 11vw to 12.5vw */
     font-weight: bold;
     line-height: 1;
     color: var(--highlight-color);
@@ -216,7 +216,7 @@ body, html {
 
 .seconds {
     font-family: 'DS-Digital', monospace;
-    font-size: 11vw;  /* Same size as the colon */
+    font-size: 12vw;  /* Increased from 11vw to 12.5vw */
     font-weight: bold;
     line-height: 1;
     display: inline-block;
@@ -233,7 +233,7 @@ body, html {
 
 /* Date below time */
 .current-date {
-    font-size: 2.5vw;
+    font-size: 2.6w; /* Increased from 2.5vw to 2.8vw */
     text-align: center;
     height: auto;
 }
@@ -243,7 +243,7 @@ body, html {
     display: flex;
     justify-content: space-between;
     width: 98%;
-    font-size: 3.0vw;
+    font-size: 3.2vw; /* Increased from 3.0vw to 3.5vw */
     text-align: center;
     margin-top: -2vh;
 }
@@ -316,7 +316,7 @@ body, html {
     padding: 1vh 0;
     margin: 0;
     /* border-bottom: 1px solid var(--border-color); */
-    font-size: 3vw;
+    font-size: 3.0vw; /* Increased from 3vw to 3.5vw */
 }
 
 
@@ -332,13 +332,13 @@ body, html {
 }
 /*border: 0.2vw solid white;*/
 .prayer-time-value {
-    font-size: 7.3vw; 
+    font-size: 8.0vw; /* Increased from 7.3vw to 8.5vw */
     font-weight: bold; /* Optional: makes the times appear bolder */
     font-family: 'DS-Digital', monospace;
 }
 
 .prayer .prayer-time-value{
-    font-size: 3vw;
+    font-size: 3.2vw; /* Increased from 3vw to 3.5vw */
 }
 
 /* Keep regular font for prayer names */
@@ -354,7 +354,7 @@ body, html {
 }
 
 .beginning .prayer-time-value {
-    font-size: 6.5vw;
+    font-size: 7.5vw; /* Increased from 6.5vw to 7.5vw */
 }
 
 .prayer-time-value.beginning,
@@ -392,19 +392,19 @@ body, html {
 }
 
 .time-label {
-    font-size: 2.5vw;
+    font-size: 2.8vw; /* Increased from 2.5vw to 2.8vw */
     font-weight: bold;
 }
 
 .time-value {
     font-family: 'DS-Digital', monospace;
-    font-size: 4vw;
+    font-size: 4.5vw; /* Increased from 4vw to 4.5vw */
     font-weight: bold;
 }
 
 .time-value {
     font-family: 'DS-Digital', monospace;
-    font-size: 4vw;
+    font-size: 4.5vw; /* Increased from 4vw to 4.5vw */
     font-weight: bold;
     color: var(--highlight-color);
 }
@@ -417,7 +417,7 @@ body, html {
                     var(--highlight-color) 0%, 
                     rgba(255, 255, 255, 0.8) 50%,
                     var(--highlight-color) 100%) border-box;
-    font-size: 10vw !important;
+    font-size: 10vw !important; /* Increased from 10vw to 11.5vw */
     padding: 0.5vh 3vw !important;
     position: relative;
     animation: borderPulse 3s ease-in-out infinite;
@@ -486,7 +486,7 @@ body, html {
     color: var(--text-color);
     opacity: 0.3;
     cursor: pointer;
-    font-size: 2vw;
+    font-size: 2.3vw; /* Increased from 2vw to 2.3vw */
     padding: 0.5vh 1vw;
     transition: opacity 0.3s;
 }
@@ -511,7 +511,7 @@ body, html {
     padding: 1vh 1vw;
     text-decoration: none;
     display: block;
-    font-size: 1.5vw;
+    font-size: 1.8vw; /* Increased from 1.5vw to 1.8vw */
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -525,7 +525,7 @@ body, html {
 }
 
 .jumuah-highlight {
-    font-size: 10vw !important;
+    font-size: 11vw !important; /* Increased from 10vw to 11.5vw */
     color: var(--highlight-color) !important; /* Use theme highlight color */
     text-shadow: 0 0 15px rgba(0, 240, 255, 0.7); /* Cyan glow matching highlight color */
     position: relative;
@@ -568,7 +568,7 @@ body, html {
     letter-spacing: 0.05em; /* Slightly reduced letter spacing */
     text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); /* Reduced shadow blur */
     animation: specialPulse 2s infinite;
-    font-size: 5.2vw !important;
+    font-size: 4.2vw !important; /* Reduced from 5.2vw to 4.2vw to align with the new announcement size */
 }
 
 @keyframes specialPulse {
@@ -635,4 +635,8 @@ body, html {
 min-width: 8vw;
 text-align: center;
 box-sizing: border-box;
+}
+
+.empty-prayer-time-value {
+    margin-top: 4vw;
 }

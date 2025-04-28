@@ -60,7 +60,7 @@
         <div class="prayer-time-value beginning">&nbsp;</div>
       </div>
       <div class="prayer">
-        <h2>&nbsp;</h2>
+        <h2 class="empty-prayer-time-value">&nbsp;</h2>
         <div class="prayer-time-value prayer">
           <span class="english">FAJR</span>
           <span class="arabic">الفجر</span>
@@ -136,8 +136,8 @@
     <script>
       // TIME TESTING CONFIGURATION
       var testMode = {
-        enabled: false,          // Set to true to enable test mode
-        time: "18:55",           // Format: "HH:MM" (24-hour format)
+        enabled: true,          // Set to true to enable test mode
+        time: "22:45",           // Format: "HH:MM" (24-hour format)
         dayOfWeek: 5,            // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
 
         // Returns current time in minutes since midnight (overrides actual time when enabled)
