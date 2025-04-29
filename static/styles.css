@@ -53,7 +53,7 @@ body, html {
     justify-content: center;
     border-top: 0.3vw solid var(--border-color);
     left: -0.5vw; /* Adjusted to move it properly */
-    bottom: 1vw; /* Move it to the bottom */
+    bottom: 0vw; /* Move it to the bottom */
 }
 
 
@@ -243,7 +243,7 @@ body, html {
     display: flex;
     justify-content: space-between;
     width: 98%;
-    font-size: 3.2vw; /* Increased from 3.0vw to 3.5vw */
+    font-size: 2.6vw; /* Increased from 3.0vw to 3.5vw */
     text-align: center;
     margin-top: -2vh;
 }
@@ -251,11 +251,13 @@ body, html {
 .islamic-date {
     text-align: right;
     flex: 1;
+    margin-right: 2vw;
 }
 
 .gregorian-date {
     text-align: left;
     flex: 1;
+    margin-left: 2vw;
 }
 
 /* Separator Line */
@@ -367,7 +369,7 @@ body, html {
     width: 103vh;
     position: fixed;
     left: -1.5vw;
-    bottom: 14vh;
+    bottom: 13vh;
 }
 
 .divider {
