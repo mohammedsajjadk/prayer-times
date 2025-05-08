@@ -7,6 +7,8 @@
     --announcement-text-color: #FFFFFF;  /* Cyan */
     --announcement-warning: #ff0000;     /* Orange */
     --next-prayer-border-color: rgba(0, 240, 255, 0.8); /* Slightly transparent highlight color */
+    --underline-gradient: linear-gradient(90deg, var(--highlight-color) 0%, var(--border-color) 100%);
+    --underline-glow: 0 1px 5px rgba(0, 240, 255, 0.4);
 }
 
 
@@ -253,13 +255,19 @@ body, html {
     text-align: right;
     flex: 1;
     margin-right: 2vw;
+    position: relative;
+    padding-bottom: 0.5vh;
 }
 
 .gregorian-date {
     text-align: left;
     flex: 1;
     margin-left: 2vw;
+    position: relative;
+    padding-bottom: 0.5vh;
 }
+
+
 
 /* Separator Line */
 .separator {
@@ -319,6 +327,22 @@ body, html {
     margin: 0;
     /* border-bottom: 1px solid var(--border-color); */
     font-size: 3.0vw; /* Increased from 3vw to 3.5vw */
+    position: relative;
+    padding-bottom: 1vh;
+}
+
+.beginning h2::after,
+.jamaah h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: var(--underline-gradient);
+    border-radius: 2px;
+    box-shadow: var(--underline-glow);
 }
 
 
@@ -396,12 +420,21 @@ body, html {
 .time-label {
     font-size: 2.8vw; /* Increased from 2.5vw to 2.8vw */
     font-weight: bold;
+    position: relative;
+    padding-bottom: 0.5vh;
 }
 
-.time-value {
-    font-family: 'DS-Digital', monospace;
-    font-size: 4.5vw; /* Increased from 4vw to 4.5vw */
-    font-weight: bold;
+.time-label::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 2px;
+    background: var(--underline-gradient);
+    border-radius: 2px;
+    box-shadow: var(--underline-glow);
 }
 
 .time-value {
