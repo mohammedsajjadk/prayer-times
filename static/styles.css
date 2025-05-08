@@ -246,6 +246,7 @@ body, html {
     font-size: 2.35vw; /* Increased from 3.0vw to 3.5vw */
     text-align: center;
     margin-top: -2vh;
+    margin-bottom: 0.5vw;
 }
 
 .islamic-date {
@@ -276,7 +277,6 @@ body, html {
     gap: 0;
     height: auto;
     border-collapse: collapse;
-    margin-top: 1vw;
 }
 
 /* Remove previous background colors */
