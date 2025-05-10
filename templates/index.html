@@ -605,6 +605,13 @@
         clock_go_backward: function () {
           return "REMEMBER CLOCKS GO BACKWARD 1 HOUR THIS SUNDAY"
         },
+        special_sessions: {
+          umrah: "SPECIAL SESSION • HOW TO PERFORM UMRAH • WEDNESDAY AFTER MAGRIB",
+          hajj: "SPECIAL SESSION • HOW TO PERFORM HAJJ • THURSDAY AFTER MAGRIB",
+          madeenah: "VISIT TO MADEENAH MUNAWWARAH SESSION • FRIDAY AFTER MAGRIB",
+          all_sessions: "SPECIAL SESSIONS • HOW TO PERFORM UMRAH (WED AFTER MAGRIB) • HOW TO PERFORM HAJJ (THUR AFTER MAGRIB) • VISIT TO MADEENAH MUNAWWARAH (FRI AFTER MAGRIB)",
+          hajj_madeenah: "SPECIAL SESSIONS • HOW TO PERFORM HAJJ (THUR AFTER MAGRIB) • VISIT TO MADEENAH MUNAWWARAH (FRI AFTER MAGRIB)"
+        },
         warnings: {
           sunrise: function (sunriseTime, endTime) {
             return "NO SALAH AFTER SUNRISE (" + formatTimeWithAmPm(sunriseTime) + ") • Please Wait Until " + formatTimeWithAmPm(endTime);
@@ -632,6 +639,55 @@
         var hours12 = hours24 % 12 || 12;
 
         return hours12 + ":" + timeUtils.padNumber(minutes, 2) + period;
+      }
+
+      // Add function to check if date is within the special session periods
+      function checkSpecialSessionPeriod(now) {
+        if (testMode.enabled) {
+          now = testMode.getMockDate();
+        }
+        
+        // Special session dates (May 2025)
+        var specialStart = new Date(Date.UTC(2025, 4, 10, 0, 0, 0)); // May 11, 2025 00:00 UTC
+        var session1End = new Date(Date.UTC(2025, 4, 13)); // May 13, 2025
+        var session2End = new Date(Date.UTC(2025, 4, 14)); // May 14, 2025
+        var session3End = new Date(Date.UTC(2025, 4, 15)); // May 15, 2025
+        
+        // Get magrib jamaah times for the session end days
+        var magribJamaahEl = document.querySelector(selectors.prayerTimes.magribJamaah);
+        var magribJamaahTime = magribJamaahEl ? magribJamaahEl.getAttribute('data-time') : "19:00"; // Default fallback
+        
+        if (magribJamaahTime && magribJamaahTime.indexOf(':') !== -1) {
+          var timeParts = magribJamaahTime.split(':');
+          var magribHours = parseInt(timeParts[0]);
+          var magribMins = parseInt(timeParts[1]);
+          
+          // Set end times to Magrib Jamaah + 5 mins
+          session1End.setUTCHours(magribHours, magribMins + 5, 0, 0);
+          session2End.setUTCHours(magribHours, magribMins + 5, 0, 0);
+          session3End.setUTCHours(magribHours, magribMins + 5, 0, 0);
+          
+          // Set start times for sessions 2 and 3 to Magrib Jamaah + 6 mins of the previous day
+          var session1EndPlus1 = new Date(session1End);
+          session1EndPlus1.setUTCMinutes(session1End.getUTCMinutes() + 1);
+          
+          var session2EndPlus1 = new Date(session2End);
+          session2EndPlus1.setUTCMinutes(session2End.getUTCMinutes() + 1);
+        }
+        
+        // Current time
+        var currentTime = now.getTime();
+        
+        // Check which period we're in
+        if (currentTime >= specialStart && currentTime <= session1End) {
+          return "all_sessions";
+        } else if (currentTime > session1End && currentTime <= session2End) {
+          return "hajj_madeenah";
+        } else if (currentTime > session2End && currentTime <= session3End) {
+          return "madeenah";
+        }
+        
+        return null;
       }
 
       function showNextMessage(message) {
@@ -845,6 +901,43 @@
         var message = announcements.default;
         var isWarning = false;
         var isSpecialAnnouncement = false;
+        
+        // Check for special session periods first
+        var specialSessionPeriod = checkSpecialSessionPeriod(now);
+        if (specialSessionPeriod) {
+          message = announcements.special_sessions[specialSessionPeriod];
+          isSpecialAnnouncement = true;
+        } else {
+          // Regular announcements logic
+          if (isIrishSummerTime) {
+            if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < magribJamaahTime + 5) {
+              // Thursday
+              message = announcements.thursday_darood();
+            }
+            else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+              // Thursday After Magrib
+              message = announcements.friday_tafseer();
+            }
+            else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
+              // Friday
+              message = announcements.friday_tafseer();
+            }
+          } else {
+            // Winter time rules
+            if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
+              // Thursday
+              message = announcements.thursday_darood();
+            }
+            else if (dayOfWeek === 4 && currentTime >= ishaJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+              // Thursday After Isha
+              message = announcements.friday_tafseer();
+            }
+            else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < ishaJamaahTime + 10) {
+              // Friday
+              message = announcements.friday_tafseer();
+            }
+          }
+        }
 
         // Convert times
         var sunriseTime = timeUtils.timeToMinutes(times.sunrise);
@@ -855,36 +948,7 @@
         var magribJamaahTime = timeUtils.timeToMinutes(times.magribJamaah);
         var ishaJamaahTime = timeUtils.timeToMinutes(times.ishaJamaah);
 
-        if (isIrishSummerTime) {
-          if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < magribJamaahTime + 5) {
-            // Thursday
-            message = announcements.thursday_darood();
-          }
-          else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
-            // Thursday After Magrib
-            message = announcements.friday_tafseer();
-          }
-          else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
-            // Friday
-            message = announcements.friday_tafseer();
-          }
-        } else {
-          // Winter time rules
-          if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
-            // Thursday
-            message = announcements.thursday_darood();
-          }
-          else if (dayOfWeek === 4 && currentTime >= ishaJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
-            // Thursday After Isha
-            message = announcements.friday_tafseer();
-          }
-          else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < ishaJamaahTime + 10) {
-            // Friday
-            message = announcements.friday_tafseer();
-          }
-        }
-
-        // Then check for warnings (which take precedence)
+        // Then check for warnings (which take precedence over any other messages)
         if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
           message = announcements.warnings.sunrise(times.sunrise, timeUtils.addMinutes(times.sunrise, 15));
           isWarning = true;
