@@ -590,6 +590,17 @@
         }
       }
 
+      // Add variables to track message toggling
+      var messageToggle = {
+        lastToggleTime: 0,
+        showingAlternate: false,
+        getToggleInterval: function(dayOfWeek) {
+          // Return toggle interval in milliseconds
+          // Thursday: 10 minutes, Friday: 5 minutes
+          return (dayOfWeek === 4) ? 600000 : 300000; // 10min or 5min in milliseconds
+        }
+      };
+
       var announcements = {
         default: "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.",
         spiritual_weekend: "SPIRITUAL WEEKEND WITH ULAMA FROM UK • Check notice board for further details",
@@ -930,12 +941,60 @@
         var isWarning = false;
         var isSpecialAnnouncement = false;
         
+        // Check if we should toggle message (only relevant for Thursday and Friday during spiritual weekend)
+        var currentTimeMs = now.getTime();
+        var isThursday = (dayOfWeek === 4);
+        var isFriday = (dayOfWeek === 5);
+        var inSpecificMessagePeriod = false;
+        var specificMessage = "";
+        
         // First check if we're in the spiritual weekend period
-        if (isWithinSpiritualWeekend(now)) {
-          message = announcements.spiritual_weekend;
-          isSpecialAnnouncement = true;
-        } 
-        // Then check for special session periods
+        var isInSpiritualWeekend = isWithinSpiritualWeekend(now);
+        
+        if (isInSpiritualWeekend) {
+          // Check if we're in a specific message period (Thursday darood or Friday tafseer)
+          if (isThursday) {
+            if (isIrishSummerTime && currentTime >= fajrTime && currentTime < magribJamaahTime + 5) {
+              inSpecificMessagePeriod = true;
+              specificMessage = announcements.thursday_darood();
+            } else if (!isIrishSummerTime && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
+              inSpecificMessagePeriod = true;
+              specificMessage = announcements.thursday_darood();
+            }
+          } else if (isFriday) {
+            if (isIrishSummerTime && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
+              inSpecificMessagePeriod = true;
+              specificMessage = announcements.friday_tafseer();
+            } else if (!isIrishSummerTime && currentTime > (0 * 60 + 1) && currentTime < ishaJamaahTime + 10) {
+              inSpecificMessagePeriod = true;
+              specificMessage = announcements.friday_tafseer();
+            }
+          }
+          
+          // Check if we need to toggle the message
+          if (inSpecificMessagePeriod) {
+            var toggleInterval = messageToggle.getToggleInterval(dayOfWeek);
+            
+            // Check if it's time to toggle the message
+            if (currentTimeMs - messageToggle.lastToggleTime >= toggleInterval) {
+              messageToggle.showingAlternate = !messageToggle.showingAlternate;
+              messageToggle.lastToggleTime = currentTimeMs;
+            }
+            
+            // Set the appropriate message based on toggle state
+            if (messageToggle.showingAlternate) {
+              message = announcements.spiritual_weekend;
+            } else {
+              message = specificMessage;
+            }
+            isSpecialAnnouncement = true;
+          } else {
+            // Regular spiritual weekend message (no need to alternate)
+            message = announcements.spiritual_weekend;
+            isSpecialAnnouncement = true;
+          }
+        }
+        // If not in spiritual weekend, check for special session periods
         else {
           var specialSessionPeriod = checkSpecialSessionPeriod(now);
           if (specialSessionPeriod) {
