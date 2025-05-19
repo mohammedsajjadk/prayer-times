@@ -897,6 +897,16 @@
           ishaJamaah: document.querySelector(selectors.prayerTimes.ishaJamaah).getAttribute('data-time')
         };
 
+        // Convert times
+        var sunriseTime = timeUtils.timeToMinutes(times.sunrise);
+        var zawalTime = timeUtils.timeToMinutes(times.zawal);
+        var fajrTime = timeUtils.timeToMinutes(times.fajrBeginning);
+        var zohrTime = timeUtils.timeToMinutes(times.zohrBeginning);
+        var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
+        var asrJamaahTime = timeUtils.timeToMinutes(times.asrJamaah);
+        var magribJamaahTime = timeUtils.timeToMinutes(times.magribJamaah);
+        var ishaJamaahTime = timeUtils.timeToMinutes(times.ishaJamaah);
+
         var announcementElement = document.querySelector(selectors.announcement);
         var message = announcements.default;
         var isWarning = false;
@@ -939,14 +949,6 @@
           }
         }
 
-        // Convert times
-        var sunriseTime = timeUtils.timeToMinutes(times.sunrise);
-        var zawalTime = timeUtils.timeToMinutes(times.zawal);
-        var fajrTime = timeUtils.timeToMinutes(times.fajrBeginning);
-        var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
-        var asrJamaahTime = timeUtils.timeToMinutes(times.asrJamaah);
-        var magribJamaahTime = timeUtils.timeToMinutes(times.magribJamaah);
-        var ishaJamaahTime = timeUtils.timeToMinutes(times.ishaJamaah);
 
         // Then check for warnings (which take precedence over any other messages)
         if (currentTime >= sunriseTime && currentTime < sunriseTime + 15) {
