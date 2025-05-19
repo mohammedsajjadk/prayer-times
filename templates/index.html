@@ -592,6 +592,7 @@
 
       var announcements = {
         default: "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.",
+        spiritual_weekend: "SPIRITUAL WEEKEND WITH ULAMA FROM UK • Check notice board for further details",
 
         thursday_darood: function () {
           return "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER MAGRIB"
@@ -639,6 +640,23 @@
         var hours12 = hours24 % 12 || 12;
 
         return hours12 + ":" + timeUtils.padNumber(minutes, 2) + period;
+      }
+
+      // Add function to check if date is within the spiritual weekend period
+      function isWithinSpiritualWeekend(now) {
+        if (testMode.enabled) {
+          now = testMode.getMockDate();
+        }
+        
+        // Spiritual Weekend dates (May 18-25, 2025)
+        var weekendStart = new Date(Date.UTC(2025, 4, 18, 0, 0, 0)); // May 18, 2025 00:00 UTC
+        var weekendEnd = new Date(Date.UTC(2025, 4, 25, 19, 20, 0)); // May 25, 2025 19:20 UTC
+        
+        // Current time
+        var currentTime = now.getTime();
+        
+        // Check if we're in the period
+        return currentTime >= weekendStart.getTime() && currentTime <= weekendEnd.getTime();
       }
 
       // Add function to check if date is within the special session periods
@@ -912,39 +930,46 @@
         var isWarning = false;
         var isSpecialAnnouncement = false;
         
-        // Check for special session periods first
-        var specialSessionPeriod = checkSpecialSessionPeriod(now);
-        if (specialSessionPeriod) {
-          message = announcements.special_sessions[specialSessionPeriod];
+        // First check if we're in the spiritual weekend period
+        if (isWithinSpiritualWeekend(now)) {
+          message = announcements.spiritual_weekend;
           isSpecialAnnouncement = true;
-        } else {
-          // Regular announcements logic
-          if (isIrishSummerTime) {
-            if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < magribJamaahTime + 5) {
-              // Thursday
-              message = announcements.thursday_darood();
-            }
-            else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
-              // Thursday After Magrib
-              message = announcements.friday_tafseer();
-            }
-            else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
-              // Friday
-              message = announcements.friday_tafseer();
-            }
+        } 
+        // Then check for special session periods
+        else {
+          var specialSessionPeriod = checkSpecialSessionPeriod(now);
+          if (specialSessionPeriod) {
+            message = announcements.special_sessions[specialSessionPeriod];
+            isSpecialAnnouncement = true;
           } else {
-            // Winter time rules
-            if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
-              // Thursday
-              message = announcements.thursday_darood();
-            }
-            else if (dayOfWeek === 4 && currentTime >= ishaJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
-              // Thursday After Isha
-              message = announcements.friday_tafseer();
-            }
-            else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < ishaJamaahTime + 10) {
-              // Friday
-              message = announcements.friday_tafseer();
+            // Regular announcements logic
+            if (isIrishSummerTime) {
+              if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < magribJamaahTime + 5) {
+                // Thursday
+                message = announcements.thursday_darood();
+              }
+              else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+                // Thursday After Magrib
+                message = announcements.friday_tafseer();
+              }
+              else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
+                // Friday
+                message = announcements.friday_tafseer();
+              }
+            } else {
+              // Winter time rules
+              if (dayOfWeek === 4 && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
+                // Thursday
+                message = announcements.thursday_darood();
+              }
+              else if (dayOfWeek === 4 && currentTime >= ishaJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+                // Thursday After Isha
+                message = announcements.friday_tafseer();
+              }
+              else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < ishaJamaahTime + 10) {
+                // Friday
+                message = announcements.friday_tafseer();
+              }
             }
           }
         }
