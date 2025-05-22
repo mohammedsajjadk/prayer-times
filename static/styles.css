@@ -76,7 +76,7 @@ body, html {
 }
 
 .announcement-text-very-long {
-    animation: scroll-announcement 60s linear infinite !important; 
+    animation: scroll-announcement 90s linear infinite !important; 
     transform: rotate(180deg);
 }
 

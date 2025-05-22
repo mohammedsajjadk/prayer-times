@@ -604,6 +604,11 @@
       var announcements = {
         default: "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.",
         spiritual_weekend: "SPIRITUAL WEEKEND WITH ULAMA FROM UK • Check notice board for further details",
+        
+        // Special spiritual weekend announcements
+        spiritual_weekend_thu_full: "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING-THURSDAY AFTER MAGRIB • Special Jumuah Talk—1.15pm (Guest speaker Shaykh Saeed Ahmed from UK) • Special Tafseer of Qur'an—Fri after Magrib (Guest speaker Shaykh Dr Mahmood Chandia from UK) • SPIRITUAL WEEKEND WITH ULAMA FROM UK—Check notice board for further details",
+        spiritual_weekend_jumuah: "Special Jumuah Talk—1.15pm (Guest speaker Shaykh Saeed Ahmed from UK) • Special Tafseer of Qur'an—Fri after Magrib (Guest speaker Shaykh Dr Mahmood Chandia from UK) • SPIRITUAL WEEKEND WITH ULAMA FROM UK—Check notice board for further details",
+        spiritual_weekend_basic: "SPIRITUAL WEEKEND WITH ULAMA FROM UK—Check notice board for further details",
 
         thursday_darood: function () {
           return "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER MAGRIB"
@@ -941,57 +946,20 @@
         var isWarning = false;
         var isSpecialAnnouncement = false;
         
-        // Check if we should toggle message (only relevant for Thursday and Friday during spiritual weekend)
-        var currentTimeMs = now.getTime();
-        var isThursday = (dayOfWeek === 4);
-        var isFriday = (dayOfWeek === 5);
-        var inSpecificMessagePeriod = false;
-        var specificMessage = "";
-        
-        // First check if we're in the spiritual weekend period
-        var isInSpiritualWeekend = isWithinSpiritualWeekend(now);
-        
-        if (isInSpiritualWeekend) {
-          // Check if we're in a specific message period (Thursday darood or Friday tafseer)
-          if (isThursday) {
-            if (isIrishSummerTime && currentTime >= fajrTime && currentTime < magribJamaahTime + 5) {
-              inSpecificMessagePeriod = true;
-              specificMessage = announcements.thursday_darood();
-            } else if (!isIrishSummerTime && currentTime >= fajrTime && currentTime < ishaJamaahTime + 5) {
-              inSpecificMessagePeriod = true;
-              specificMessage = announcements.thursday_darood();
-            }
-          } else if (isFriday) {
-            if (isIrishSummerTime && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
-              inSpecificMessagePeriod = true;
-              specificMessage = announcements.friday_tafseer();
-            } else if (!isIrishSummerTime && currentTime > (0 * 60 + 1) && currentTime < ishaJamaahTime + 10) {
-              inSpecificMessagePeriod = true;
-              specificMessage = announcements.friday_tafseer();
-            }
-          }
+        // Check if we're in the spiritual weekend period
+        if (isWithinSpiritualWeekend(now)) {
+          isSpecialAnnouncement = true;
           
-          // Check if we need to toggle the message
-          if (inSpecificMessagePeriod) {
-            var toggleInterval = messageToggle.getToggleInterval(dayOfWeek);
-            
-            // Check if it's time to toggle the message
-            if (currentTimeMs - messageToggle.lastToggleTime >= toggleInterval) {
-              messageToggle.showingAlternate = !messageToggle.showingAlternate;
-              messageToggle.lastToggleTime = currentTimeMs;
-            }
-            
-            // Set the appropriate message based on toggle state
-            if (messageToggle.showingAlternate) {
-              message = announcements.spiritual_weekend;
-            } else {
-              message = specificMessage;
-            }
-            isSpecialAnnouncement = true;
+          // Get the specific phase of the spiritual weekend
+          var weekendPhase = getSpiritualWeekendPhase(now, dayOfWeek, currentTime, 
+            magribJamaahTime, isIrishSummerTime);
+          
+          if (weekendPhase === "thursday_full") {
+            message = announcements.spiritual_weekend_thu_full;
+          } else if (weekendPhase === "jumuah_phase") {
+            message = announcements.spiritual_weekend_jumuah;
           } else {
-            // Regular spiritual weekend message (no need to alternate)
-            message = announcements.spiritual_weekend;
-            isSpecialAnnouncement = true;
+            message = announcements.spiritual_weekend_basic;
           }
         }
         // If not in spiritual weekend, check for special session periods
@@ -1076,6 +1044,38 @@
             document.querySelector(".announcement").classList.add("special-active");
           }
         }
+      }
+
+      // Function to determine which phase of the spiritual weekend we're in
+      function getSpiritualWeekendPhase(now, dayOfWeek, currentTime, magribJamaahTime, isIrishSummerTime) {
+        if (testMode.enabled) {
+          now = testMode.getMockDate();
+        }
+        
+        // Get Friday's Jumuah time (1:15pm = 13*60 + 15 = 795 minutes)
+        var jumuahTimeInMinutes = 13 * 60 + 15;
+        
+        // Spiritual Weekend dates (May 18-25, 2025)
+        var weekendStart = new Date(Date.UTC(2025, 4, 18, 0, 0, 0)); // May 18, 2025 00:00 UTC
+        var fridayJumuahTime = new Date(Date.UTC(2025, 4, 23, 13, 15, 0)); // May 23, 2025 13:15 UTC
+        var sundayMagribTime = new Date(Date.UTC(2025, 4, 25, 19, 20, 0)); // May 25, 2025 19:20 UTC
+        
+        // Current time
+        var currentDateMs = now.getTime();
+        
+        // Thursday full announcement period (Thursday 00:00 to Magrib Jamaah + 4 mins)
+        if (dayOfWeek === 4 && currentTime <= (magribJamaahTime + 4)) {
+          return "thursday_full";
+        }
+        
+        // Period between Thursday after Magrib to Friday Jumuah at 13:15
+        if ((dayOfWeek === 4 && currentTime > (magribJamaahTime + 5)) || 
+            (dayOfWeek === 5 && currentTime < jumuahTimeInMinutes)) {
+          return "jumuah_phase";
+        }
+        
+        // Basic announcement for all other times during the spiritual weekend
+        return "basic";
       }
 
       // Function to update prayer times to next day when appropriate
