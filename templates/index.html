@@ -608,6 +608,7 @@
         // Special spiritual weekend announcements
         spiritual_weekend_thu_full: "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING-THURSDAY AFTER MAGRIB • Special Jumuah Talk—1.15pm (Guest speaker Shaykh Saeed Ahmed from UK) • Special Tafseer of Qur'an—Fri after Magrib (Guest speaker Shaykh Dr Mahmood Chandia from UK) • SPIRITUAL WEEKEND WITH ULAMA FROM UK—Check notice board for further details",
         spiritual_weekend_jumuah: "Special Jumuah Talk—1.15pm (Guest speaker Shaykh Saeed Ahmed from UK) • Special Tafseer of Qur'an—Fri after Magrib (Guest speaker Shaykh Dr Mahmood Chandia from UK) • SPIRITUAL WEEKEND WITH ULAMA FROM UK—Check notice board for further details",
+        spiritual_weekend_jumuah_part2: "Special Tafseer of Qur'an—Fri after Magrib (Guest speaker Shaykh Dr Mahmood Chandia from UK) • SPIRITUAL WEEKEND WITH ULAMA FROM UK—Check notice board for further details",
         spiritual_weekend_basic: "SPIRITUAL WEEKEND WITH ULAMA FROM UK—Check notice board for further details",
 
         thursday_darood: function () {
@@ -958,6 +959,8 @@
             message = announcements.spiritual_weekend_thu_full;
           } else if (weekendPhase === "jumuah_phase") {
             message = announcements.spiritual_weekend_jumuah;
+          } else if (weekendPhase === "jumuah_phase_part2") {
+            message = announcements.spiritual_weekend_jumuah_part2;
           } else {
             message = announcements.spiritual_weekend_basic;
           }
@@ -1072,6 +1075,11 @@
         if ((dayOfWeek === 4 && currentTime > (magribJamaahTime + 5)) || 
             (dayOfWeek === 5 && currentTime < jumuahTimeInMinutes)) {
           return "jumuah_phase";
+        }
+
+        // Period between Friday Jumuah at 13:15 to Friday after Magrib
+        if (dayOfWeek === 5 && currentTime >= jumuahTimeInMinutes && currentTime < (magribJamaahTime + 5)) {
+          return "jumuah_phase_part2";
         }
         
         // Basic announcement for all other times during the spiritual weekend
