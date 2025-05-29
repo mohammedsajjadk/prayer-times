@@ -611,6 +611,15 @@
         spiritual_weekend_jumuah_part2: "Special Tafseer of Qur'an—Fri after Magrib (Guest speaker Shaykh Dr Mahmood Chandia from UK) ■ SPIRITUAL WEEKEND WITH ULAMA FROM UK on Sunday • Women's Bayan After Zohr (2:30PM) • Men's Bayan After Asr (7:15PM) • Food Served After the Programmes",
         spiritual_weekend_basic: "SPIRITUAL WEEKEND WITH ULAMA FROM UK on Sunday • Women's Bayan After Zohr (2:30PM) • Men's Bayan After Asr (7:15PM) • Food Served After the Programmes",
 
+        // Eid ul Adha announcements
+        eid_announcements: {
+          may29_durood: "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER MAGRIB ■ Day of Arafah (9th Dhul Hijjah) - Thurs 5th June • Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am",
+          may30_tafseer: "TAFSEER OF THE QUR'AN • SURAH QAAF • FRIDAY AFTER MAGRIB ■ Day of Arafah (9th Dhul Hijjah) - Thurs 5th June • Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am", 
+          june4_arafah: "Day of Arafah (9th Dhul Hijjah) - Thurs 5th June • Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am",
+          june4_durood: "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER MAGRIB ■ Day of Arafah (9th Dhul Hijjah) - Thurs 5th June • Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am",
+          june5_eid: "Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am"
+        },
+
         thursday_darood: function () {
           return "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER MAGRIB"
         },
@@ -720,6 +729,94 @@
           return "hajj_madeenah";
         } else if (currentTime > session2End && currentTime <= session3End) {
           return "madeenah";
+        }
+        
+        return null;
+      }
+
+      // Add function to check for Eid ul Adha announcements
+      function checkEidAnnouncements(now, magribJamaahTime) {
+        if (testMode.enabled) {
+          now = testMode.getMockDate();
+          
+          // For test mode, use the specifically configured date
+          const currentDay = testMode.dayOfWeek;
+          
+          // Special handling for test mode to respect day of week
+          if (testMode.time === "13:45" && currentDay === 5) {
+            // If it's Friday at 13:45 in test mode
+            return "may30_tafseer"; // Show Friday's message
+          } else if (testMode.time === "18:16" && currentDay === 5) {
+            // If it's Friday at 18:16 in test mode
+            return "may30_tafseer"; // Show Friday's message
+          } else if (testMode.time === "18:16" && currentDay === 4) {
+            // If it's Thursday at 18:16 in test mode
+            return "may29_durood"; // Show Thursday's message
+          } else if (testMode.time === "15:00" && currentDay === 3) {
+            // If it's Wed at 15:00 in test mode
+            return "may29_durood"; // Show Thursday's message
+          }
+        }
+        
+        // Helper function to create a Date for a specific time on a specific day
+        function createDateWithTime(year, month, day, timeStr) {
+          var date = new Date(Date.UTC(year, month, day));
+          if (timeStr) {
+            var parts = timeStr.split(':');
+            if (parts.length === 2) {
+              date.setUTCHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+            }
+          }
+          return date;
+        }
+        
+        // Get current time in minutes
+        var currentTime = now.getTime();
+        
+        // Get magribJamaah time in minutes since midnight
+        var magribJamaahMin = 0;
+        if (typeof magribJamaahTime === 'string' && magribJamaahTime.indexOf(':') !== -1) {
+          var parts = magribJamaahTime.split(':');
+          magribJamaahMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+        
+        // Eid dates and times
+        var may29_start = createDateWithTime(2025, 4, 29, "00:00");
+        var may29_end = createDateWithTime(2025, 4, 29);
+        may29_end.setUTCHours(Math.floor(magribJamaahMin/60), magribJamaahMin%60 + 15, 0, 0);
+        
+        var may29_evening_start = createDateWithTime(2025, 4, 29);
+        may29_evening_start.setUTCHours(Math.floor(magribJamaahMin/60), magribJamaahMin%60 + 16, 0, 0);
+        
+        var may30_end = createDateWithTime(2025, 4, 30);
+        may30_end.setUTCHours(Math.floor(magribJamaahMin/60), magribJamaahMin%60 + 15, 0, 0);
+        
+        var june4_start = createDateWithTime(2025, 5, 4, "00:00");
+        var june4_end = createDateWithTime(2025, 5, 4);
+        june4_end.setUTCHours(Math.floor(magribJamaahMin/60), magribJamaahMin%60 + 15, 0, 0);
+        
+        var june4_evening_start = createDateWithTime(2025, 5, 4);
+        june4_evening_start.setUTCHours(Math.floor(magribJamaahMin/60), magribJamaahMin%60 + 16, 0, 0);
+        
+        var june5_end = createDateWithTime(2025, 5, 5);
+        june5_end.setUTCHours(Math.floor(magribJamaahMin/60), magribJamaahMin%60 + 15, 0, 0);
+        
+        var june5_evening_start = createDateWithTime(2025, 5, 5);
+        june5_evening_start.setUTCHours(Math.floor(magribJamaahMin/60), magribJamaahMin%60 + 16, 0, 0);
+        
+        var june6_morning = createDateWithTime(2025, 5, 6, "07:30");
+        
+        // Check which announcement period we're in
+        if (currentTime >= may29_start.getTime() && currentTime <= may29_end.getTime()) {
+          return "may29_durood";
+        } else if (currentTime > may29_evening_start.getTime() && currentTime <= may30_end.getTime()) {
+          return "may30_tafseer";
+        } else if (currentTime >= june4_start.getTime() && currentTime <= june4_end.getTime()) {
+          return "june4_arafah";
+        } else if (currentTime > june4_evening_start.getTime() && currentTime <= june5_end.getTime()) {
+          return "june4_durood";
+        } else if (currentTime > june5_evening_start.getTime() && currentTime < june6_morning.getTime()) {
+          return "june5_eid";
         }
         
         return null;
@@ -947,8 +1044,14 @@
         var isWarning = false;
         var isSpecialAnnouncement = false;
         
-        // Check if we're in the spiritual weekend period
-        if (isWithinSpiritualWeekend(now)) {
+        // Check for Eid ul Adha announcements first (highest priority)
+        var eidAnnouncement = checkEidAnnouncements(now, times.magribJamaah);
+        if (eidAnnouncement) {
+          message = announcements.eid_announcements[eidAnnouncement];
+          isSpecialAnnouncement = true;
+        }
+        // If not Eid announcement, check if we're in the spiritual weekend period
+        else if (isWithinSpiritualWeekend(now)) {
           isSpecialAnnouncement = true;
           
           // Get the specific phase of the spiritual weekend
@@ -1180,8 +1283,8 @@
             // If current time is past jamaah + 5 minutes, update to tomorrow's times
             if (currentTime >= thresholdTime) {
               // Get next day's times from data attributes we'll store
-              var tomorrowBeginning = beginningEl.getAttribute('data-tomorrow');
-              var tomorrowJamaah = jamaahEl.getAttribute('data-tomorrow');
+              var tomorrowBeginning = beginningEl.getAttribute("data-tomorrow");
+              var tomorrowJamaah = jamaahEl.getAttribute("data-tomorrow");
 
               // Only update if we have tomorrow's data
               if (tomorrowBeginning && tomorrowJamaah) {
@@ -1398,6 +1501,7 @@
           var selectedTheme = themes[themeName];
 
           // Apply the theme
+
           applyTheme(selectedTheme);
 
           // Save theme preference (optional)
