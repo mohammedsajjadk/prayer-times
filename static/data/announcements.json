@@ -40,8 +40,8 @@
     "endDate": "2025-06-02T23:59:59Z",
     "type": "image",
     "displayCondition": {
-      "frequency": 1,
-      "duration": 10,
+      "frequency": 3,
+      "duration": 20,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
