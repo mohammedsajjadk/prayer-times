@@ -40,7 +40,7 @@ var announcements = {
 };
 
 // Dynamic announcements loaded from external source
-var dynamicAnnouncements = [];
+var dynamicAnnouncements = []; // Initialize as empty array to avoid undefined errors
 
 var announcementModule = {
   init: function() {
@@ -54,10 +54,20 @@ var announcementModule = {
   // Load dynamic announcements from external file
   loadDynamicAnnouncements: function() {
     fetch('/static/data/announcements.json')
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok: ' + response.status);
+        }
+        return response.json();
+      })
       .then(data => {
-        dynamicAnnouncements = data;
-        console.log("Loaded dynamic announcements:", dynamicAnnouncements.length);
+        if (Array.isArray(data)) {
+          dynamicAnnouncements = data;
+          console.log("Loaded dynamic announcements:", dynamicAnnouncements.length);
+        } else {
+          console.error("Invalid announcements data format:", data);
+          dynamicAnnouncements = [];
+        }
         // Update announcements immediately after loading
         this.updateAnnouncement();
       })
@@ -65,32 +75,56 @@ var announcementModule = {
         console.error("Error loading dynamic announcements:", error);
         // Fallback to empty array if loading fails
         dynamicAnnouncements = [];
+        // Still attempt to update announcements with default values
+        this.updateAnnouncement();
       });
   },
   
   // Find active announcement from the dynamic list based on current date/time
   getActiveDynamicAnnouncement: function(now) {
-    if (!dynamicAnnouncements || dynamicAnnouncements.length === 0) {
+    // Ensure dynamicAnnouncements exists and has items
+    if (!dynamicAnnouncements || !Array.isArray(dynamicAnnouncements) || dynamicAnnouncements.length === 0) {
       return null;
     }
     
     var currentTime = now.getTime();
+    var activeAnnouncements = {
+      textAnnouncement: null,
+      imageAnnouncement: null
+    };
     
-    // Find the first announcement that is currently active
+    // Check all announcements
     for (var i = 0; i < dynamicAnnouncements.length; i++) {
       var announcement = dynamicAnnouncements[i];
+      
+      // Skip invalid announcements
+      if (!announcement || !announcement.startDate || !announcement.endDate) {
+        continue;
+      }
+      
       var startTime = new Date(announcement.startDate).getTime();
       var endTime = new Date(announcement.endDate).getTime();
       
       if (currentTime >= startTime && currentTime <= endTime) {
-        return {
-          message: announcement.message,
-          isSpecial: announcement.isSpecial || false
-        };
+        // Handle both text messages and image announcements
+        if (announcement.type === "image") {
+          activeAnnouncements.imageAnnouncement = {
+            isImage: true,
+            images: announcement.images || [],
+            displayCondition: announcement.displayCondition || {},
+            isSpecial: announcement.isSpecial || false
+          };
+        } else if (announcement.message) {
+          activeAnnouncements.textAnnouncement = {
+            message: announcement.message || "",
+            isSpecial: announcement.isSpecial || false
+          };
+        }
       }
     }
     
-    return null;
+    return (activeAnnouncements.textAnnouncement || activeAnnouncements.imageAnnouncement) ? 
+      activeAnnouncements : null;
   },
   
   // Update the announcement message based on current time and special events
@@ -130,6 +164,8 @@ var announcementModule = {
       fajrBeginning: document.querySelector(selectors.prayerTimes.fajrBeginning).getAttribute('data-time'),
       zohrBeginning: document.querySelector(selectors.prayerTimes.zohrBeginning).getAttribute('data-time'),
       magribBeginning: document.querySelector(selectors.prayerTimes.magribBeginning).getAttribute('data-time'),
+      fajrJamaah: document.querySelector(selectors.prayerTimes.fajrJamaah).getAttribute('data-time'),
+      zohrJamaah: document.querySelector(selectors.prayerTimes.zohrJamaah).getAttribute('data-time'),
       asrJamaah: document.querySelector(selectors.prayerTimes.asrJamaah).getAttribute('data-time'),
       magribJamaah: document.querySelector(selectors.prayerTimes.magribJamaah).getAttribute('data-time'),
       ishaJamaah: document.querySelector(selectors.prayerTimes.ishaJamaah).getAttribute('data-time')
@@ -141,6 +177,8 @@ var announcementModule = {
     var fajrTime = timeUtils.timeToMinutes(times.fajrBeginning);
     var zohrTime = timeUtils.timeToMinutes(times.zohrBeginning);
     var magribTime = timeUtils.timeToMinutes(times.magribBeginning);
+    var fajrJamaahTime = timeUtils.timeToMinutes(times.fajrJamaah);
+    var zohrJamaahTime = timeUtils.timeToMinutes(times.zohrJamaah);
     var asrJamaahTime = timeUtils.timeToMinutes(times.asrJamaah);
     var magribJamaahTime = timeUtils.timeToMinutes(times.magribJamaah);
     var ishaJamaahTime = timeUtils.timeToMinutes(times.ishaJamaah);
@@ -149,12 +187,25 @@ var announcementModule = {
     var message = announcements.default;
     var isWarning = false;
     var isSpecialAnnouncement = false;
+    var imageData = null;
     
     // First check for any dynamic announcements
     var activeDynamicAnnouncement = this.getActiveDynamicAnnouncement(now);
     if (activeDynamicAnnouncement) {
-      message = activeDynamicAnnouncement.message;
-      isSpecialAnnouncement = activeDynamicAnnouncement.isSpecial;
+      // Handle text announcement
+      if (activeDynamicAnnouncement.textAnnouncement) {
+        message = activeDynamicAnnouncement.textAnnouncement.message || announcements.default;
+        isSpecialAnnouncement = activeDynamicAnnouncement.textAnnouncement.isSpecial;
+      }
+      
+      // Handle image announcement separately (can exist alongside text)
+      if (activeDynamicAnnouncement.imageAnnouncement) {
+        imageData = {
+          images: activeDynamicAnnouncement.imageAnnouncement.images,
+          displayCondition: activeDynamicAnnouncement.imageAnnouncement.displayCondition,
+          isSpecial: activeDynamicAnnouncement.imageAnnouncement.isSpecial
+        };
+      }
     }
     // If no dynamic announcement, use standard recurring announcements
     else {
@@ -205,7 +256,7 @@ var announcementModule = {
     }
 
     if (announcementElement) {
-      // Set the message text
+      // First update the text announcement
       announcementElement.textContent = message;
 
       // Remove all classes first
@@ -230,7 +281,191 @@ var announcementModule = {
         announcementElement.classList.add("special-announcement");
         document.querySelector(".announcement").classList.add("special-active");
       }
+      
+      // Process image announcement separately - even if there's a text announcement
+      if (imageData && !isWarning) {
+        this.handleImageAnnouncement(
+          imageData, 
+          currentTime, 
+          [fajrJamaahTime, zohrJamaahTime, asrJamaahTime, magribJamaahTime, ishaJamaahTime]
+        );
+      }
     }
+  },
+  
+  // Handle image announcements with display conditions
+  handleImageAnnouncement: function(imageData, currentTime, jamaahTimes) {
+    var displayCondition = imageData.displayCondition;
+    var frequency = displayCondition.frequency || 5; // Default: every 5 minutes
+    var duration = displayCondition.duration || 10;  // Default: 10 seconds
+    var avoidJamaahTime = displayCondition.avoidJamaahTime !== false; // Default: true
+    
+    // Check if we're within 5 minutes of any jamaah time
+    if (avoidJamaahTime && jamaahTimes) {
+      for (var i = 0; i < jamaahTimes.length; i++) {
+        var jamaahTime = jamaahTimes[i];
+        // Check if jamaahTime is valid before comparing
+        if (jamaahTime && !isNaN(jamaahTime) && Math.abs(currentTime - jamaahTime) <= 5) {
+          // We're within 5 minutes of jamaah time, don't show images
+          return;
+        }
+      }
+    }
+    
+    // Check if we should show images now based on frequency
+    var currentMinute = Math.floor(currentTime % (24 * 60));
+    var currentSecond = new Date().getSeconds();
+    
+    if (currentMinute % frequency === 0 && currentSecond < duration) {
+      // Time to display an image!
+      this.displayRotatingImages(imageData.images, duration);
+    }
+  },
+  
+  // Display rotating images with proper timing
+  displayRotatingImages: function(images, duration) {
+    // Removed the announcementElement parameter since we're not modifying it
+    if (!images || images.length === 0) return;
+    
+    // Create ID for this slideshow session to avoid conflicts
+    var slideshowId = 'slideshow-' + new Date().getTime();
+    
+    // Check if there's already a slideshow running
+    var existingSlideshow = document.querySelector('.image-slideshow-container');
+    if (existingSlideshow) {
+      // Already displaying images, don't start another slideshow
+      return;
+    }
+    
+    // Get only the prayer-times element that we'll hide
+    var prayerTimesElement = document.querySelector('.prayer-times');
+    
+    // Save original state of prayer-times
+    var originalState = null;
+    if (prayerTimesElement) {
+      originalState = {
+        display: prayerTimesElement.style.display,
+        html: prayerTimesElement.innerHTML,
+        className: prayerTimesElement.className
+      };
+      
+      // Hide the prayer-times element
+      prayerTimesElement.style.display = 'none';
+    }
+    
+    // Store the original state in window for later retrieval
+    window[slideshowId] = {
+      originalState: originalState,
+      elementToRestore: prayerTimesElement
+    };
+    
+    // Create image container that will be placed in the same location as prayer-times
+    var imageContainer = document.createElement('div');
+    imageContainer.id = slideshowId;
+    imageContainer.className = 'image-slideshow-container';
+    imageContainer.style.width = '100%';
+    imageContainer.style.textAlign = 'center';
+    imageContainer.style.marginTop = '10px';
+    imageContainer.style.padding = '5px';
+    
+    // Insert the image container where prayer-times would normally be
+    if (prayerTimesElement && prayerTimesElement.parentNode) {
+      prayerTimesElement.parentNode.insertBefore(imageContainer, prayerTimesElement);
+    } else {
+      // Fallback: add after date-container's divider
+      var dateContainer = document.querySelector('.date-container');
+      var insertAfterElement = dateContainer ? dateContainer.nextElementSibling : document.body;
+      if (insertAfterElement) {
+        insertAfterElement.parentNode.insertBefore(imageContainer, insertAfterElement.nextSibling);
+      } else {
+        document.body.appendChild(imageContainer);
+      }
+    }
+    
+    // Create the image element with simple fade transition
+    var imgElement = document.createElement('img');
+    imgElement.style.maxWidth = '90%';
+    imgElement.style.height = 'auto';
+    imgElement.style.transition = 'opacity 0.5s ease-in-out';
+    imgElement.style.opacity = '1';
+    
+    // Add the image to container
+    imageContainer.appendChild(imgElement);
+    
+    var currentIndex = 0;
+    
+    // Function to show the next image with simple fade transition
+    var showNextImage = function() {
+      if (currentIndex >= images.length) {
+        // We've shown all images, clean up and restore original content
+        cleanupSlideshow(slideshowId);
+        return;
+      }
+      
+      // Load the next image
+      imgElement.style.opacity = '0';
+      
+      setTimeout(function() {
+        // Set new image source
+        imgElement.src = images[currentIndex];
+        
+        // When image loads, fade it in
+        imgElement.onload = function() {
+          imgElement.style.opacity = '1';
+        };
+        
+        // Handle image load error
+        imgElement.onerror = function() {
+          console.error("Failed to load image:", images[currentIndex]);
+          currentIndex++;
+          setTimeout(showNextImage, 100); // Try next image quickly
+        };
+        
+        // Increment index for next round
+        currentIndex++;
+        
+        // Set timer for next image
+        setTimeout(showNextImage, duration * 1000);
+      }, 500); // Brief fade-out transition
+    };
+    
+    // Function to clean up slideshow and restore original prayer-times
+    var cleanupSlideshow = function(id) {
+      // Remove the slideshow container
+      var container = document.getElementById(id);
+      if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+      
+      // Restore the prayer-times element
+      var savedState = window[id];
+      if (savedState && savedState.elementToRestore && savedState.originalState) {
+        var el = savedState.elementToRestore;
+        var origState = savedState.originalState;
+        
+        // Restore display and class
+        el.style.display = origState.display || '';
+        el.className = origState.className || '';
+        
+        // Only restore HTML if necessary
+        if (origState.html && (el.innerHTML.trim() === '' || el.children.length === 0)) {
+          el.innerHTML = origState.html;
+        }
+      }
+      
+      // Clean up saved state
+      delete window[id];
+    };
+    
+    // Start the slideshow
+    imgElement.onload = function() {
+      imgElement.style.opacity = '1';
+      currentIndex++;
+      setTimeout(showNextImage, duration * 1000);
+    };
+    
+    // Set the first image
+    imgElement.src = images[0];
   },
   
   // Show next message in the queue with scrolling effect

@@ -33,5 +33,21 @@
     "endDate": "2025-10-26T23:59:59Z",
     "message": "REMEMBER CLOCKS GO BACKWARD 1 HOUR THIS SUNDAY",
     "isSpecial": true
+  },
+  {
+    "id": "ramadan_announcement",
+    "startDate": "2025-06-01T00:00:00Z",
+    "endDate": "2025-06-02T23:59:59Z",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 10,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Image 1.jpeg"
+    ],
+    "isSpecial": true
   }
 ]
