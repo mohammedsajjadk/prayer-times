@@ -5,7 +5,7 @@
 
 // Test mode configuration for development and debugging
 var testMode = {
-  enabled: true,          // Set to true to enable test mode
+  enabled: false,          // Set to true to enable test mode
   time: "13:45",           // Format: "HH:MM" (24-hour format)
   dayOfWeek: 5,            // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
 
