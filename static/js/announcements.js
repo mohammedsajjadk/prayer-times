@@ -300,13 +300,13 @@ var announcementModule = {
     var duration = displayCondition.duration || 10;  // Default: 10 seconds
     var avoidJamaahTime = displayCondition.avoidJamaahTime !== false; // Default: true
     
-    // Check if we're within 5 minutes of any jamaah time
+    // Check if we're within 2 minutes of any jamaah time
     if (avoidJamaahTime && jamaahTimes) {
       for (var i = 0; i < jamaahTimes.length; i++) {
         var jamaahTime = jamaahTimes[i];
         // Check if jamaahTime is valid before comparing
-        if (jamaahTime && !isNaN(jamaahTime) && Math.abs(currentTime - jamaahTime) <= 5) {
-          // We're within 5 minutes of jamaah time, don't show images
+        if (jamaahTime && !isNaN(jamaahTime) && Math.abs(currentTime - jamaahTime) <= 2) {
+          // We're within 2 minutes of jamaah time, don't show images
           return;
         }
       }
@@ -365,8 +365,8 @@ var announcementModule = {
     imageContainer.className = 'image-slideshow-container';
     imageContainer.style.width = '100%';
     imageContainer.style.textAlign = 'center';
-    imageContainer.style.marginTop = '10px';
-    imageContainer.style.padding = '5px';
+    imageContainer.style.marginTop = '5vw';
+    imageContainer.style.padding = '0.5vw';
     
     // Insert the image container where prayer-times would normally be
     if (prayerTimesElement && prayerTimesElement.parentNode) {

@@ -36,17 +36,17 @@
   },
   {
     "id": "ramadan_announcement",
-    "startDate": "2025-06-01T00:00:00Z",
-    "endDate": "2025-06-02T23:59:59Z",
+    "startDate": "2025-06-02T00:00:00Z",
+    "endDate": "2025-06-06T07:00:00Z",
     "type": "image",
     "displayCondition": {
-      "frequency": 3,
+      "frequency": 2,
       "duration": 20,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
     "images": [
-      "/static/images/Image 1.jpeg"
+      "/static/images/Eid ul Adha Tralee Masjid Schedule.jpeg"
     ],
     "isSpecial": true
   }
