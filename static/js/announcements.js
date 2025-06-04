@@ -365,7 +365,7 @@ var announcementModule = {
     imageContainer.className = 'image-slideshow-container';
     imageContainer.style.width = '100%';
     imageContainer.style.textAlign = 'center';
-    imageContainer.style.marginTop = '5vw';
+    imageContainer.style.marginTop = '-0.2vw';
     imageContainer.style.padding = '0.5vw';
     
     // Insert the image container where prayer-times would normally be
