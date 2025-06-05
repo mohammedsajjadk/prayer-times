@@ -109,6 +109,7 @@ var timeModule = {
     var irishSecs = now.getUTCSeconds();
 
     if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
+        (irishHours === 3 && irishMins === 30 && irishSecs <= 2)||
         (irishHours === 12 && irishMins === 30 && irishSecs <= 2)||
         (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
         (irishHours === 19 && irishMins === 45 && irishSecs <= 2) ||
