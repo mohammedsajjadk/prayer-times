@@ -10,7 +10,7 @@
     "id": "eid_durood_evening",
     "startDate": "2025-06-04T19:31:00Z",
     "endDate": "2025-06-05T19:30:00Z",
-    "message": "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER MAGRIB ■ Day of Arafah (9th Dhul Hijjah) - Thurs 5th June • Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am",
+    "message": "Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am",
     "isSpecial": true
   },
   {
@@ -41,7 +41,7 @@
     "type": "image",
     "displayCondition": {
       "frequency": 2,
-      "duration": 20,
+      "duration": 30,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
