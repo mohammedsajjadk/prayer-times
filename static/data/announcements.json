@@ -36,8 +36,8 @@
   },
   {
     "id": "ramadan_announcement",
-    "startDate": "2025-06-05T00:00:00Z",
-    "endDate": "2025-06-05T08:13:00Z",
+    "startDate": "2025-06-06T00:14:00Z",
+    "endDate": "2025-06-06T15:00:00Z",
     "type": "image",
     "displayCondition": {
       "frequency": 2,
@@ -46,25 +46,7 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/1_.jpg",
-      "/static/images/2_.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "ramadan_announcement",
-    "startDate": "2025-06-05T20:14:00Z",
-    "endDate": "2025-06-06T07:00:00Z",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 30,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/3_.jpg",
-      "/static/images/4_.jpg"
+      "/static/images/1_.jpg"
     ],
     "isSpecial": true
   }
