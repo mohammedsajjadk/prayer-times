@@ -14,13 +14,6 @@
     "isSpecial": true
   },
   {
-    "id": "eid_day",
-    "startDate": "2025-06-05T19:31:00Z",
-    "endDate": "2025-06-06T12:00:00Z",
-    "message": "Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am",
-    "isSpecial": true
-  },
-  {
     "id": "clocks_forward_2025",
     "startDate": "2025-03-28T00:00:00Z",
     "endDate": "2025-03-30T23:59:59Z",
@@ -35,8 +28,8 @@
     "isSpecial": true
   },
   {
-    "id": "ramadan_announcement",
-    "startDate": "2025-06-06T00:14:00Z",
+    "id": "bakrid_announcement",
+    "startDate": "2025-06-06T00:00:00Z",
     "endDate": "2025-06-06T15:00:00Z",
     "type": "image",
     "displayCondition": {

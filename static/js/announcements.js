@@ -14,7 +14,8 @@ var announcements = {
   },
   
   friday_tafseer: function() {
-    return "TAFSEER OF THE QUR'AN • SURAH QAAF • FRIDAY AFTER MAGRIB";
+    return "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.";
+    // return "TAFSEER OF THE QUR'AN • SURAH QAAF • FRIDAY AFTER MAGRIB";
   },
   
   clock_go_forward: function() {
@@ -365,7 +366,7 @@ var announcementModule = {
     imageContainer.className = 'image-slideshow-container';
     imageContainer.style.width = '100%';
     imageContainer.style.textAlign = 'center';
-    imageContainer.style.marginTop = '-0.2vw';
+    imageContainer.style.marginTop = '2.0vw';
     imageContainer.style.padding = '0.5vw';
     
     // Insert the image container where prayer-times would normally be
