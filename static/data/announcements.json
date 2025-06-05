@@ -1,36 +1,36 @@
 [
   {
     "id": "eid_ul_adha_2025",
-    "startDate": "2025-06-04T00:00:00Z",
-    "endDate": "2025-06-04T19:30:00Z",
+    "startDate": "2025-06-04T01:00:00+01:00",
+    "endDate": "2025-06-04T20:30:00+01:00",
     "message": "Day of Arafah (9th Dhul Hijjah) - Thurs 5th June • Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am ■ Fajr Jamaah at 3:15AM ONLY on Thurs 5th June",
     "isSpecial": true
   },
   {
     "id": "eid_durood_evening",
-    "startDate": "2025-06-04T19:31:00Z",
-    "endDate": "2025-06-05T19:30:00Z",
+    "startDate": "2025-06-04T20:31:00+01:00",
+    "endDate": "2025-06-05T20:30:00+01:00",
     "message": "Eid ul Adha - Fri 6th June • Eid Talk - 7:30am • Eid Salaah 8am",
     "isSpecial": true
   },
   {
     "id": "clocks_forward_2025",
-    "startDate": "2025-03-28T00:00:00Z",
-    "endDate": "2025-03-30T23:59:59Z",
+    "startDate": "2025-03-28T00:00:00+00:00",
+    "endDate": "2025-03-30T23:59:59+00:00",
     "message": "REMEMBER CLOCKS GO FORWARD 1 HOUR THIS SUNDAY",
     "isSpecial": true
   },
   {
     "id": "clocks_backward_2025",
-    "startDate": "2025-10-24T00:00:00Z",
-    "endDate": "2025-10-26T23:59:59Z",
+    "startDate": "2025-10-24T01:00:00+01:00",
+    "endDate": "2025-10-26T23:59:59+01:00",
     "message": "REMEMBER CLOCKS GO BACKWARD 1 HOUR THIS SUNDAY",
     "isSpecial": true
   },
   {
     "id": "bakrid_announcement",
-    "startDate": "2025-06-06T00:00:00Z",
-    "endDate": "2025-06-06T15:00:00Z",
+    "startDate": "2025-06-06T00:00:00+01:00",
+    "endDate": "2025-06-06T13:00:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 2,
