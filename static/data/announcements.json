@@ -46,8 +46,8 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/1_.jpeg",
-      "/static/images/2_.jpeg"
+      "/static/images/1_.jpg",
+      "/static/images/2_.jpg"
     ],
     "isSpecial": true
   },
@@ -63,8 +63,8 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/3_.jpeg",
-      "/static/images/4_.jpeg"
+      "/static/images/3_.jpg",
+      "/static/images/4_.jpg"
     ],
     "isSpecial": true
   }
