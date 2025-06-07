@@ -460,9 +460,12 @@ var announcementModule = {
     var adhkarContainer = document.createElement('div');
     adhkarContainer.className = 'adhkar-container image-slideshow-container';
     adhkarContainer.style.width = '100%';
-    adhkarContainer.style.textAlign = 'center';
-    adhkarContainer.style.marginTop = '2.0vw';
-    adhkarContainer.style.padding = '0.5vw';
+    adhkarContainer.style.height = '115vh'; // Set container height to 60% of viewport height
+    adhkarContainer.style.display = 'flex';
+    adhkarContainer.style.justifyContent = 'center';
+    adhkarContainer.style.alignItems = 'center';
+    adhkarContainer.style.marginTop = '1.0vw'; // Reduced margin to give more space for image
+    adhkarContainer.style.padding = '0'; // Remove padding to maximize space
     
     // Insert the adhkar container where prayer-times would normally be
     if (prayerTimesElement && prayerTimesElement.parentNode) {
@@ -481,10 +484,14 @@ var announcementModule = {
     // Create the image element
     var imgElement = document.createElement('img');
     imgElement.src = '/static/images/english-adhkar.jpg';
-    imgElement.style.maxWidth = '90%';
+    imgElement.style.maxWidth = '100%'; // Increased from 90%
+    imgElement.style.maxHeight = '100%'; // Added maxHeight to fill container height
     imgElement.style.height = 'auto';
+    imgElement.style.width = 'auto';
+    imgElement.style.objectFit = 'contain'; // Ensure image maintains aspect ratio while filling space
     imgElement.style.transition = 'opacity 0.5s ease-in-out';
     imgElement.style.opacity = '0';
+    imgElement.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // Add subtle shadow for better visibility
     
     // Add the image to container
     adhkarContainer.appendChild(imgElement);
