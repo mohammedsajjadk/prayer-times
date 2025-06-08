@@ -440,13 +440,14 @@ var announcementModule = {
   
   // Display the Adhkar image for a specified duration
   displayAdhkarImage: function(durationSeconds) {
-    // Get only the prayer-times element that we'll hide
+    // Get both the prayer-times and important-times elements that we'll hide
     var prayerTimesElement = document.querySelector('.prayer-times');
+    var importantTimesElement = document.querySelector('.important-times');
     
     // Save original state of prayer-times
-    var originalState = null;
+    var originalPrayerTimesState = null;
     if (prayerTimesElement) {
-      originalState = {
+      originalPrayerTimesState = {
         display: prayerTimesElement.style.display,
         html: prayerTimesElement.innerHTML,
         className: prayerTimesElement.className
@@ -456,11 +457,24 @@ var announcementModule = {
       prayerTimesElement.style.display = 'none';
     }
     
+    // Save original state of important-times
+    var originalImportantTimesState = null;
+    if (importantTimesElement) {
+      originalImportantTimesState = {
+        display: importantTimesElement.style.display,
+        html: importantTimesElement.innerHTML,
+        className: importantTimesElement.className
+      };
+      
+      // Hide the important-times element
+      importantTimesElement.style.display = 'none';
+    }
+    
     // Create adhkar container
     var adhkarContainer = document.createElement('div');
     adhkarContainer.className = 'adhkar-container image-slideshow-container';
     adhkarContainer.style.width = '100%';
-    adhkarContainer.style.height = '115vh'; // Set container height to 60% of viewport height
+    adhkarContainer.style.height = '132vh'; // Set container height to 60% of viewport height
     adhkarContainer.style.display = 'flex';
     adhkarContainer.style.justifyContent = 'center';
     adhkarContainer.style.alignItems = 'center';
@@ -509,9 +523,15 @@ var announcementModule = {
       }
       
       // Restore prayer-times element
-      if (prayerTimesElement && originalState) {
-        prayerTimesElement.style.display = originalState.display || '';
-        prayerTimesElement.className = originalState.className || '';
+      if (prayerTimesElement && originalPrayerTimesState) {
+        prayerTimesElement.style.display = originalPrayerTimesState.display || '';
+        prayerTimesElement.className = originalPrayerTimesState.className || '';
+      }
+      
+      // Restore important-times element
+      if (importantTimesElement && originalImportantTimesState) {
+        importantTimesElement.style.display = originalImportantTimesState.display || '';
+        importantTimesElement.className = originalImportantTimesState.className || '';
       }
       
       // Resume any paused announcements
@@ -568,13 +588,14 @@ var announcementModule = {
       return;
     }
     
-    // Get only the prayer-times element that we'll hide
+    // Get the prayer-times and important-times elements that we'll hide
     var prayerTimesElement = document.querySelector('.prayer-times');
+    var importantTimesElement = document.querySelector('.important-times');
     
     // Save original state of prayer-times
-    var originalState = null;
+    var originalPrayerTimesState = null;
     if (prayerTimesElement) {
-      originalState = {
+      originalPrayerTimesState = {
         display: prayerTimesElement.style.display,
         html: prayerTimesElement.innerHTML,
         className: prayerTimesElement.className
@@ -584,10 +605,25 @@ var announcementModule = {
       prayerTimesElement.style.display = 'none';
     }
     
-    // Store the original state in window for later retrieval
+    // Save original state of important-times
+    var originalImportantTimesState = null;
+    if (importantTimesElement) {
+      originalImportantTimesState = {
+        display: importantTimesElement.style.display,
+        html: importantTimesElement.innerHTML,
+        className: importantTimesElement.className
+      };
+      
+      // Hide the important-times element
+      importantTimesElement.style.display = 'none';
+    }
+    
+    // Store the original states in window for later retrieval
     window[slideshowId] = {
-      originalState: originalState,
-      elementToRestore: prayerTimesElement
+      prayerTimesState: originalPrayerTimesState,
+      prayerTimesElement: prayerTimesElement,
+      importantTimesState: originalImportantTimesState,
+      importantTimesElement: importantTimesElement
     };
     
     // Create image container that will be placed in the same location as prayer-times
@@ -660,7 +696,7 @@ var announcementModule = {
       }, 500); // Brief fade-out transition
     };
     
-    // Function to clean up slideshow and restore original prayer-times
+    // Function to clean up slideshow and restore original elements
     var cleanupSlideshow = function(id) {
       // Remove the slideshow container
       var container = document.getElementById(id);
@@ -668,19 +704,25 @@ var announcementModule = {
         container.parentNode.removeChild(container);
       }
       
-      // Restore the prayer-times element
+      // Restore the prayer-times and important-times elements
       var savedState = window[id];
-      if (savedState && savedState.elementToRestore && savedState.originalState) {
-        var el = savedState.elementToRestore;
-        var origState = savedState.originalState;
+      if (savedState) {
+        // Restore prayer-times
+        if (savedState.prayerTimesElement && savedState.prayerTimesState) {
+          var el = savedState.prayerTimesElement;
+          var state = savedState.prayerTimesState;
+          
+          el.style.display = state.display || '';
+          el.className = state.className || '';
+        }
         
-        // Restore display and class
-        el.style.display = origState.display || '';
-        el.className = origState.className || '';
-        
-        // Only restore HTML if necessary
-        if (origState.html && (el.innerHTML.trim() === '' || el.children.length === 0)) {
-          el.innerHTML = origState.html;
+        // Restore important-times
+        if (savedState.importantTimesElement && savedState.importantTimesState) {
+          var el = savedState.importantTimesElement;
+          var state = savedState.importantTimesState;
+          
+          el.style.display = state.display || '';
+          el.className = state.className || '';
         }
       }
       
