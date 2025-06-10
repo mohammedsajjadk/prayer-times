@@ -42,5 +42,21 @@
       "/static/images/1_.jpg"
     ],
     "isSpecial": true
+  },
+  {
+    "id": "eid_qurbani_meal",
+    "startDate": "2025-06-10T00:00:00+01:00",
+    "endDate": "2025-06-11T20:30:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 2,
+      "duration": 30,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/1.jpeg"
+    ],
+    "isSpecial": true
   }
 ]
