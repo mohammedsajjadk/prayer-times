@@ -45,8 +45,8 @@
   },
   {
     "id": "eid_qurbani_meal",
-    "startDate": "2025-06-13T12:00:00+01:00",
-    "endDate": "2025-06-13T13:55:00+01:00",
+    "startDate": "2025-06-14T12:00:00+01:00",
+    "endDate": "2025-06-15T20:30:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 2,
