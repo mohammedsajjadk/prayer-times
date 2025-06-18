@@ -14,8 +14,7 @@ var announcements = {
   },
   
   friday_tafseer: function() {
-    return "SILENCE, PLEASE. WE ARE IN THE HOUSE OF ALLAH. KINDLY TURN OFF YOUR MOBILE.";
-    // return "TAFSEER OF THE QUR'AN • SURAH QAAF • FRIDAY AFTER MAGRIB";
+    return "TAFSEER OF THE QUR'AN • SURAH QAAF • FRIDAY AFTER MAGRIB";
   },
   
   clock_go_forward: function() {
