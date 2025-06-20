@@ -330,6 +330,44 @@ var announcementModule = {
     if (displayState.adhkarActive) {
       return result;
     }
+
+    // Special case: Friday Tafseer image display
+    if (dayOfWeek === 5) { // Friday
+      var fajrTime = timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.fajrBeginning).getAttribute('data-time'));
+      var endTime;
+      
+      if (isIrishSummerTime) {
+        // Summer: From Fajr beginning till Magrib jamaah + 15 mins
+        endTime = jamaahTimes.magribJamaah + 15;
+      } else {
+        // Winter: From Fajr beginning till Isha jamaah + 15 mins
+        endTime = jamaahTimes.ishaJamaah + 15;
+      }
+      
+      // Check if current time is within the Friday display window
+      if (currentTime >= fajrTime && currentTime < endTime) {
+        // For Friday Tafseer, display every 2 minutes for 30 seconds
+        var currentMinute = Math.floor(currentTime);
+        var currentSecond = new Date().getSeconds();
+        
+        if (currentMinute % 2 === 0 && currentSecond < 30) {
+          // Avoid displaying during jamaah times (2 minutes before/after)
+          var isJamaahTime = false;
+          for (var jamaahType in jamaahTimes) {
+            if (Math.abs(currentTime - jamaahTimes[jamaahType]) <= 2) {
+              isJamaahTime = true;
+              break;
+            }
+          }
+          
+          if (!isJamaahTime) {
+            this.displayTafseerImage(30); // Display for 30 seconds
+            result.shouldDisplay = true;
+            return result;
+          }
+        }
+      }
+    }
     
     // Special case: Friday Zohr continuous display
     if (dayOfWeek === 5) { // Friday
@@ -536,6 +574,110 @@ var announcementModule = {
       // Resume any paused announcements
       announcementModule.resumeAnnouncements();
     }, durationSeconds * 1000);
+  },
+  
+  // Display the Tafseer image for Friday
+  displayTafseerImage: function(durationSeconds) {
+    // Get both the prayer-times and important-times elements that we'll hide
+    var prayerTimesElement = document.querySelector('.prayer-times');
+    var importantTimesElement = document.querySelector('.important-times');
+    
+    // Save original state of prayer-times
+    var originalPrayerTimesState = null;
+    if (prayerTimesElement) {
+      originalPrayerTimesState = {
+        display: prayerTimesElement.style.display,
+        html: prayerTimesElement.innerHTML,
+        className: prayerTimesElement.className
+      };
+      
+      // Hide the prayer-times element
+      prayerTimesElement.style.display = 'none';
+    }
+    
+    // Save original state of important-times
+    var originalImportantTimesState = null;
+    if (importantTimesElement) {
+      originalImportantTimesState = {
+        display: importantTimesElement.style.display,
+        html: importantTimesElement.innerHTML,
+        className: importantTimesElement.className
+      };
+      
+      // Hide the important-times element
+      importantTimesElement.style.display = 'none';
+    }
+    
+    // Create tafseer container
+    var tafseerContainer = document.createElement('div');
+    tafseerContainer.className = 'tafseer-container image-slideshow-container';
+    tafseerContainer.style.width = '100%';
+    tafseerContainer.style.height = '132vh'; // Set container height to 60% of viewport height
+    tafseerContainer.style.display = 'flex';
+    tafseerContainer.style.justifyContent = 'center';
+    tafseerContainer.style.alignItems = 'center';
+    tafseerContainer.style.marginTop = '1.0vw'; // Reduced margin to give more space for image
+    tafseerContainer.style.padding = '0'; // Remove padding to maximize space
+    
+    // Insert the tafseer container where prayer-times would normally be
+    if (prayerTimesElement && prayerTimesElement.parentNode) {
+      prayerTimesElement.parentNode.insertBefore(tafseerContainer, prayerTimesElement);
+    } else {
+      // Fallback: add after date-container's divider
+      var dateContainer = document.querySelector('.date-container');
+      var insertAfterElement = dateContainer ? dateContainer.nextElementSibling : document.body;
+      if (insertAfterElement) {
+        insertAfterElement.parentNode.insertBefore(tafseerContainer, insertAfterElement.nextSibling);
+      } else {
+        document.body.appendChild(tafseerContainer);
+      }
+    }
+    
+    // Create the image element
+    var imgElement = document.createElement('img');
+    imgElement.src = '/static/images/Tafseer of the Quran.jpg';
+    imgElement.style.maxWidth = '100%'; // Increased from 90%
+    imgElement.style.maxHeight = '100%'; // Added maxHeight to fill container height
+    imgElement.style.height = 'auto';
+    imgElement.style.width = 'auto';
+    imgElement.style.objectFit = 'contain'; // Ensure image maintains aspect ratio while filling space
+    imgElement.style.transition = 'opacity 0.5s ease-in-out';
+    imgElement.style.opacity = '0';
+    imgElement.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // Add subtle shadow for better visibility
+    
+    // Add the image to container
+    tafseerContainer.appendChild(imgElement);
+    
+    // Fade in the image
+    setTimeout(function() {
+      imgElement.style.opacity = '1';
+    }, 100);
+    
+    // Set up cleanup and resumption of original content
+    displayState.resumeTimeout = setTimeout(function() {
+      // Remove tafseer container
+      if (tafseerContainer.parentNode) {
+        tafseerContainer.parentNode.removeChild(tafseerContainer);
+      }
+      
+      // Restore prayer-times element
+      if (prayerTimesElement && originalPrayerTimesState) {
+        prayerTimesElement.style.display = originalPrayerTimesState.display || '';
+        prayerTimesElement.className = originalPrayerTimesState.className || '';
+      }
+      
+      // Restore important-times element
+      if (importantTimesElement && originalImportantTimesState) {
+        importantTimesElement.style.display = originalImportantTimesState.display || '';
+        importantTimesElement.className = originalImportantTimesState.className || '';
+      }
+      
+      // Resume any paused announcements
+      announcementModule.resumeAnnouncements();
+    }, durationSeconds * 1000);
+    
+    // Set the adhkar active flag to prevent other announcements during display
+    displayState.adhkarActive = true;
   },
   
   // Handle image announcements with display conditions
