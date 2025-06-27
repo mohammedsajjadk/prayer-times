@@ -329,10 +329,13 @@ var announcementModule = {
     // If Adhkar is already active, don't check again
     if (displayState.adhkarActive) {
       return result;
-    }
-
-    // Special case: Friday Tafseer image display
-    if (dayOfWeek === 5) { // Friday
+    }    // Special case: Friday Tafseer image display - ONLY if no dynamic announcements are active
+    // Check if there are any active dynamic image announcements first
+    var now = testMode.enabled ? testMode.getMockDate() : new Date();
+    var activeDynamic = announcementModule.getActiveDynamicAnnouncement(now);
+    var hasDynamicImageAnnouncement = activeDynamic && activeDynamic.imageAnnouncement;
+    
+    if (dayOfWeek === 5 && !hasDynamicImageAnnouncement) { // Friday and no dynamic image announcements
       var fajrTime = timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.fajrBeginning).getAttribute('data-time'));
       var endTime;
       
@@ -677,8 +680,7 @@ var announcementModule = {
     }, durationSeconds * 1000);
     
     // Set the adhkar active flag to prevent other announcements during display
-    displayState.adhkarActive = true;
-  },
+    displayState.adhkarActive = true;  },
   
   // Handle image announcements with display conditions
   handleImageAnnouncement: function(imageData, currentTime, jamaahTimes) {
@@ -704,14 +706,137 @@ var announcementModule = {
       }
     }
     
-    // Check if we should show images now based on frequency
+    // Calculate which image cycle we're in and which image to show
+    var totalCycleDuration = imageData.images.length * duration; // Total time for all images
     var currentMinute = Math.floor(currentTime % (24 * 60));
     var currentSecond = new Date().getSeconds();
     
-    if (currentMinute % frequency === 0 && currentSecond < duration) {
-      // Time to display an image!
-      this.displayRotatingImages(imageData.images, duration);
+    // Check if we're in a display window (every frequency minutes)
+    if (currentMinute % frequency === 0) {
+      // Calculate which image should be showing based on seconds elapsed
+      var imageIndex = Math.floor(currentSecond / duration);
+      var secondsIntoCurrentImage = currentSecond % duration;
+        // Only show if we're within the total cycle duration and have a valid image
+      if (currentSecond < totalCycleDuration && imageIndex < imageData.images.length) {
+        // Show the specific image for the remaining time in its slot
+        var remainingTime = duration - secondsIntoCurrentImage;
+        this.displaySingleImage(imageData.images[imageIndex], remainingTime);
+      }
     }
+  },
+  
+  // Display a single image for a specified duration
+  displaySingleImage: function(imagePath, duration) {
+    // Check if there's already a slideshow running
+    var existingSlideshow = document.querySelector('.image-slideshow-container');
+    if (existingSlideshow) {
+      // Already displaying images, don't start another slideshow
+      return;
+    }
+    
+    // Create ID for this slideshow session to avoid conflicts
+    var slideshowId = 'slideshow-' + new Date().getTime();
+    
+    // Get the prayer-times and important-times elements that we'll hide
+    var prayerTimesElement = document.querySelector('.prayer-times');
+    var importantTimesElement = document.querySelector('.important-times');
+    
+    // Save original state of prayer-times
+    var originalPrayerTimesState = null;
+    if (prayerTimesElement) {
+      originalPrayerTimesState = {
+        display: prayerTimesElement.style.display,
+        html: prayerTimesElement.innerHTML,
+        className: prayerTimesElement.className
+      };
+      
+      // Hide the prayer-times element
+      prayerTimesElement.style.display = 'none';
+    }
+    
+    // Save original state of important-times
+    var originalImportantTimesState = null;
+    if (importantTimesElement) {
+      originalImportantTimesState = {
+        display: importantTimesElement.style.display,
+        html: importantTimesElement.innerHTML,
+        className: importantTimesElement.className
+      };
+      
+      // Hide the important-times element
+      importantTimesElement.style.display = 'none';
+    }
+    
+    // Create image container that will be placed in the same location as prayer-times
+    var imageContainer = document.createElement('div');
+    imageContainer.id = slideshowId;
+    imageContainer.className = 'image-slideshow-container';
+    imageContainer.style.width = '100%';
+    imageContainer.style.height = '132vh';
+    imageContainer.style.display = 'flex';
+    imageContainer.style.justifyContent = 'center';
+    imageContainer.style.alignItems = 'center';
+    imageContainer.style.marginTop = '1.0vw';
+    imageContainer.style.padding = '0';
+    
+    // Insert the image container where prayer-times would normally be
+    if (prayerTimesElement && prayerTimesElement.parentNode) {
+      prayerTimesElement.parentNode.insertBefore(imageContainer, prayerTimesElement);
+    } else {
+      // Fallback: add after date-container's divider
+      var dateContainer = document.querySelector('.date-container');
+      var insertAfterElement = dateContainer ? dateContainer.nextElementSibling : document.body;
+      if (insertAfterElement) {
+        insertAfterElement.parentNode.insertBefore(imageContainer, insertAfterElement.nextSibling);
+      } else {
+        document.body.appendChild(imageContainer);
+      }
+    }
+    
+    // Create the image element
+    var imgElement = document.createElement('img');
+    imgElement.src = imagePath;
+    imgElement.style.maxWidth = '100%';
+    imgElement.style.maxHeight = '100%';
+    imgElement.style.height = 'auto';
+    imgElement.style.width = 'auto';
+    imgElement.style.objectFit = 'contain';
+    imgElement.style.transition = 'opacity 0.5s ease-in-out';
+    imgElement.style.opacity = '0';
+    imgElement.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+    
+    // Add the image to container
+    imageContainer.appendChild(imgElement);
+    
+    // Fade in the image
+    setTimeout(function() {
+      imgElement.style.opacity = '1';
+    }, 100);
+    
+    // Function to clean up slideshow and restore original elements
+    var cleanupSlideshow = function() {
+      // Remove the slideshow container
+      if (imageContainer && imageContainer.parentNode) {
+        imageContainer.parentNode.removeChild(imageContainer);
+      }
+      
+      // Restore the prayer-times element
+      if (prayerTimesElement && originalPrayerTimesState) {
+        prayerTimesElement.style.display = originalPrayerTimesState.display;
+        prayerTimesElement.innerHTML = originalPrayerTimesState.html;
+        prayerTimesElement.className = originalPrayerTimesState.className;
+      }
+      
+      // Restore the important-times element
+      if (importantTimesElement && originalImportantTimesState) {
+        importantTimesElement.style.display = originalImportantTimesState.display;
+        importantTimesElement.innerHTML = originalImportantTimesState.html;
+        importantTimesElement.className = originalImportantTimesState.className;
+      }
+    };
+    
+    // Set up cleanup after the specified duration
+    setTimeout(cleanupSlideshow, duration * 1000);
   },
   
   // Display rotating images with proper timing
@@ -801,13 +926,19 @@ var announcementModule = {
     imageContainer.appendChild(imgElement);
     
     var currentIndex = 0;
-    
-    // Function to show the next image with simple fade transition
+      // Function to show the next image with simple fade transition
     var showNextImage = function() {
-      if (currentIndex >= images.length) {
-        // We've shown all images, clean up and restore original content
+      // Check if we've reached the end of the duration
+      var currentTime = new Date().getTime();
+      if (currentTime >= startTime + (duration * 1000)) {
+        // Duration is over, clean up and restore original content
         cleanupSlideshow(slideshowId);
         return;
+      }
+      
+      // Cycle through images
+      if (currentIndex >= images.length) {
+        currentIndex = 0; // Reset to start for continuous rotation
       }
       
       // Load the next image
@@ -832,10 +963,13 @@ var announcementModule = {
         // Increment index for next round
         currentIndex++;
         
-        // Set timer for next image
-        setTimeout(showNextImage, duration * 1000);
+        // Set timer for next image (show each image for a portion of the total duration)
+        var imageDisplayTime = Math.max(2, (duration * 1000) / (images.length * 2)); // At least 2 seconds per image
+        setTimeout(showNextImage, imageDisplayTime);
       }, 500); // Brief fade-out transition
     };
+      // Store the start time for duration checking
+    var startTime = new Date().getTime();
     
     // Function to clean up slideshow and restore original elements
     var cleanupSlideshow = function(id) {
@@ -870,16 +1004,21 @@ var announcementModule = {
       // Clean up saved state
       delete window[id];
     };
-    
-    // Start the slideshow
+      // Start the slideshow
     imgElement.onload = function() {
       imgElement.style.opacity = '1';
       currentIndex++;
-      setTimeout(showNextImage, duration * 1000);
+      // Calculate time per image (show each image for a portion of the total duration)
+      var imageDisplayTime = Math.max(2000, (duration * 1000) / (images.length * 2)); // At least 2 seconds per image
+      setTimeout(showNextImage, imageDisplayTime);
     };
-    
-    // Set the first image
+      // Set the first image
     imgElement.src = images[0];
+    
+    // Safety timeout to ensure cleanup happens
+    setTimeout(function() {
+      cleanupSlideshow(slideshowId);
+    }, duration * 1000 + 1000); // Add 1 second buffer
   },
   
   // Show next message in the queue with scrolling effect
