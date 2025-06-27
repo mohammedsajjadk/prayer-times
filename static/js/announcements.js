@@ -707,20 +707,27 @@ var announcementModule = {
     }
     
     // Calculate which image cycle we're in and which image to show
-    var totalCycleDuration = imageData.images.length * duration; // Total time for all images
+    var gapDuration = 20; // 20-second gap between images
+    var slotDuration = duration + gapDuration; // Each image slot includes the image time + gap
+    var totalCycleDuration = imageData.images.length * slotDuration; // Total time for all images and gaps
     var currentMinute = Math.floor(currentTime % (24 * 60));
     var currentSecond = new Date().getSeconds();
-    
-    // Check if we're in a display window (every frequency minutes)
+      // Check if we're in a display window (every frequency minutes)
     if (currentMinute % frequency === 0) {
-      // Calculate which image should be showing based on seconds elapsed
-      var imageIndex = Math.floor(currentSecond / duration);
-      var secondsIntoCurrentImage = currentSecond % duration;
-        // Only show if we're within the total cycle duration and have a valid image
-      if (currentSecond < totalCycleDuration && imageIndex < imageData.images.length) {
-        // Show the specific image for the remaining time in its slot
-        var remainingTime = duration - secondsIntoCurrentImage;
-        this.displaySingleImage(imageData.images[imageIndex], remainingTime);
+      // Only proceed if we're within the total cycle duration
+      if (currentSecond < totalCycleDuration) {
+        // Calculate which slot we're in (image + gap)
+        var currentSlot = Math.floor(currentSecond / slotDuration);
+        var secondsIntoSlot = currentSecond % slotDuration;
+        
+        // Only show image if we're in the image part of the slot (not the gap)
+        // and we have a valid image for this slot
+        if (secondsIntoSlot < duration && currentSlot < imageData.images.length) {
+          // Show the specific image for the remaining time in its display period
+          var remainingTime = duration - secondsIntoSlot;
+          this.displaySingleImage(imageData.images[currentSlot], remainingTime);
+        }
+        // If secondsIntoSlot >= duration, we're in the gap period - show normal content
       }
     }
   },
