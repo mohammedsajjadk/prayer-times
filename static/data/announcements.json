@@ -65,8 +65,8 @@
     "endDate": "2025-06-27T22:25:00+01:00",
     "type": "image",
     "displayCondition": {
-      "frequency": 1,
-      "duration": 20,
+      "frequency": 2,
+      "duration": 30,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
@@ -82,8 +82,8 @@
     "endDate": "2025-06-28T20:30:00+01:00",
     "type": "image",
     "displayCondition": {
-      "frequency": 1,
-      "duration": 20,
+      "frequency": 2,
+      "duration": 30,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
