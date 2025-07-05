@@ -75,5 +75,33 @@
       "/static/images/Aashoorah.jpg"
     ],
     "isSpecial": true
+  },
+  {
+    "id": "tafseer_friday_recurring",
+    "type": "recurring_weekly",
+    "dayOfWeek": 5,
+    "seasonalTiming": {
+      "summer": {
+        "startReference": "fajrBeginning",
+        "endReference": "magribJamaah",
+        "endOffset": 15
+      },
+      "winter": {
+        "startReference": "fajrBeginning",
+        "endReference": "ishaJamaah",
+        "endOffset": 15
+      }
+    },
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 30,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Tafseer of the Quran.jpg"
+    ],
+    "isSpecial": true,
+    "hide": false
   }
 ]

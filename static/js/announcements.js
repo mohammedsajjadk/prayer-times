@@ -97,7 +97,7 @@ var announcementModule = {
     var currentTime = now.getTime();
     var activeAnnouncements = {
       textAnnouncement: null,
-      imageAnnouncement: null
+      imageAnnouncements: []
     };
     
     // Check all announcements
@@ -105,22 +105,33 @@ var announcementModule = {
       var announcement = dynamicAnnouncements[i];
       
       // Skip invalid announcements
-      if (!announcement || !announcement.startDate || !announcement.endDate) {
+      if (!announcement || !announcement.id) {
         continue;
       }
       
-      var startTime = new Date(announcement.startDate).getTime();
-      var endTime = new Date(announcement.endDate).getTime();
+      var isActive = false;
       
-      if (currentTime >= startTime && currentTime <= endTime) {
+      // Handle recurring weekly announcements
+      if (announcement.type === "recurring_weekly") {
+        isActive = this.isRecurringWeeklyActive(announcement, now);
+      } 
+      // Handle regular date-based announcements
+      else if (announcement.startDate && announcement.endDate) {
+        var startTime = new Date(announcement.startDate).getTime();
+        var endTime = new Date(announcement.endDate).getTime();
+        isActive = (currentTime >= startTime && currentTime <= endTime);
+      }
+      
+      if (isActive) {
         // Handle both text messages and image announcements
-        if (announcement.type === "image") {
-          activeAnnouncements.imageAnnouncement = {
+        if (announcement.type === "image" || (announcement.type === "recurring_weekly" && announcement.images)) {
+          activeAnnouncements.imageAnnouncements.push({
+            id: announcement.id,
             isImage: true,
             images: announcement.images || [],
             displayCondition: announcement.displayCondition || {},
             isSpecial: announcement.isSpecial || false
-          };
+          });
         } else if (announcement.message) {
           activeAnnouncements.textAnnouncement = {
             message: announcement.message || "",
@@ -130,8 +141,134 @@ var announcementModule = {
       }
     }
     
-    return (activeAnnouncements.textAnnouncement || activeAnnouncements.imageAnnouncement) ? 
-      activeAnnouncements : null;
+    // Combine image announcements if multiple are active
+    if (activeAnnouncements.imageAnnouncements.length > 0) {
+      var combinedImages = this.combineImageAnnouncements(activeAnnouncements.imageAnnouncements);
+      return {
+        textAnnouncement: activeAnnouncements.textAnnouncement,
+        imageAnnouncement: combinedImages
+      };
+    }
+    
+    return activeAnnouncements.textAnnouncement ? { textAnnouncement: activeAnnouncements.textAnnouncement } : null;
+  },
+  
+  // Check if a recurring weekly announcement is currently active
+  isRecurringWeeklyActive: function(announcement, now) {
+    // Check if announcement is hidden
+    if (announcement.hide === true) {
+      return false;
+    }
+    
+    // Check day of week
+    var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+    if (!testMode.enabled) {
+      var isIrishSummerTime = dateUtils.isIrelandDST(now);
+      var irishOffset = isIrishSummerTime ? 1 : 0;
+      var irishHours = now.getUTCHours() + irishOffset;
+      if (irishHours < now.getUTCHours()) {
+        currentDay = (currentDay + 1) % 7;
+      }
+    }
+    
+    if (currentDay !== announcement.dayOfWeek) {
+      return false;
+    }
+    
+    // Get current time in minutes
+    var currentTime;
+    if (testMode.enabled) {
+      currentTime = testMode.getCurrentTimeMinutes();
+    } else {
+      var isIrishSummerTime = dateUtils.isIrelandDST(now);
+      var irishOffset = isIrishSummerTime ? 1 : 0;
+      var irishHours = now.getUTCHours() + irishOffset;
+      irishHours = irishHours >= 24 ? irishHours - 24 : irishHours;
+      currentTime = irishHours * 60 + now.getUTCMinutes();
+    }
+    
+    // Determine season and get timing
+    var isIrishSummerTime = dateUtils.isIrelandDST(now);
+    var seasonKey = isIrishSummerTime ? 'summer' : 'winter';
+    var timing = announcement.seasonalTiming[seasonKey];
+    
+    if (!timing) {
+      return false;
+    }
+    
+    // Get prayer time references
+    var startTime = this.getPrayerTimeMinutes(timing.startReference);
+    var endTime = this.getPrayerTimeMinutes(timing.endReference) + (timing.endOffset || 0);
+    
+    return currentTime >= startTime && currentTime <= endTime;
+  },
+  
+  // Get prayer time in minutes from prayer time reference
+  getPrayerTimeMinutes: function(reference) {
+    var selectorMap = {
+      'fajrBeginning': selectors.prayerTimes.fajrBeginning,
+      'zohrBeginning': selectors.prayerTimes.zohrBeginning,
+      'asrBeginning': selectors.prayerTimes.asrBeginning,
+      'magribBeginning': selectors.prayerTimes.magribBeginning,
+      'ishaBeginning': selectors.prayerTimes.ishaBeginning,
+      'fajrJamaah': selectors.prayerTimes.fajrJamaah,
+      'zohrJamaah': selectors.prayerTimes.zohrJamaah,
+      'asrJamaah': selectors.prayerTimes.asrJamaah,
+      'magribJamaah': selectors.prayerTimes.magribJamaah,
+      'ishaJamaah': selectors.prayerTimes.ishaJamaah
+    };
+    
+    var selector = selectorMap[reference];
+    if (!selector) {
+      return 0;
+    }
+    
+    var element = document.querySelector(selector);
+    if (!element) {
+      return 0;
+    }
+    
+    var timeStr = element.getAttribute('data-time');
+    return timeUtils.timeToMinutes(timeStr);
+  },
+  
+  // Combine multiple image announcements into one with adjusted frequency
+  combineImageAnnouncements: function(imageAnnouncements) {
+    var allImages = [];
+    var isSpecial = false;
+    var baseDisplayCondition = {
+      frequency: 2,
+      duration: 30,
+      avoidJamaahTime: true,
+      rotateImages: true
+    };
+    
+    // Collect all images from all announcements
+    for (var i = 0; i < imageAnnouncements.length; i++) {
+      var announcement = imageAnnouncements[i];
+      if (announcement.images && announcement.images.length > 0) {
+        allImages = allImages.concat(announcement.images);
+      }
+      if (announcement.isSpecial) {
+        isSpecial = true;
+      }
+    }
+    
+    // Calculate dynamic frequency based on total images
+    var totalImages = allImages.length;
+    var dynamicFrequency = Math.max(2, totalImages);
+    
+    return {
+      isImage: true,
+      images: allImages,
+      displayCondition: {
+        frequency: dynamicFrequency,
+        duration: baseDisplayCondition.duration,
+        avoidJamaahTime: baseDisplayCondition.avoidJamaahTime,
+        rotateImages: baseDisplayCondition.rotateImages
+      },
+      isSpecial: isSpecial
+    };
   },
   
   // Update the announcement message based on current time and special events
@@ -326,48 +463,9 @@ var announcementModule = {
     // If Adhkar is already active, don't check again
     if (displayState.adhkarActive) {
       return result;
-    }    // Special case: Friday Tafseer image display - ONLY if no dynamic announcements are active
-    // Check if there are any active dynamic image announcements first
-    var now = testMode.enabled ? testMode.getMockDate() : new Date();
-    var activeDynamic = announcementModule.getActiveDynamicAnnouncement(now);
-    var hasDynamicImageAnnouncement = activeDynamic && activeDynamic.imageAnnouncement;
-    
-    if (dayOfWeek === 5 && !hasDynamicImageAnnouncement) { // Friday and no dynamic image announcements
-      var fajrTime = timeUtils.timeToMinutes(document.querySelector(selectors.prayerTimes.fajrBeginning).getAttribute('data-time'));
-      var endTime;
-      
-      if (isIrishSummerTime) {
-        // Summer: From Fajr beginning till Magrib jamaah + 15 mins
-        endTime = jamaahTimes.magribJamaah + 15;
-      } else {
-        // Winter: From Fajr beginning till Isha jamaah + 15 mins
-        endTime = jamaahTimes.ishaJamaah + 15;
-      }
-      
-      // Check if current time is within the Friday display window
-      if (currentTime >= fajrTime && currentTime < endTime) {
-        // For Friday Tafseer, display every 2 minutes for 30 seconds
-        var currentMinute = Math.floor(currentTime);
-        var currentSecond = new Date().getSeconds();
-        
-        if (currentMinute % 2 === 0 && currentSecond < 30) {
-          // Avoid displaying during jamaah times (2 minutes before/after)
-          var isJamaahTime = false;
-          for (var jamaahType in jamaahTimes) {
-            if (Math.abs(currentTime - jamaahTimes[jamaahType]) <= 2) {
-              isJamaahTime = true;
-              break;
-            }
-          }
-          
-          if (!isJamaahTime) {
-            this.displayTafseerImage(30); // Display for 30 seconds
-            result.shouldDisplay = true;
-            return result;
-          }
-        }
-      }
     }
+    
+    // Remove the hardcoded Friday Tafseer logic - it's now handled by recurring announcements
     
     // Special case: Friday Zohr continuous display
     if (dayOfWeek === 5) { // Friday
