@@ -136,14 +136,11 @@ var announcementModule = {
   
   // Update the announcement message based on current time and special events
   updateAnnouncement: function() {
-    var now = testMode.enabled ? testMode.getMockDate() : new Date();
-
-    // Get current time in minutes from midnight
+    var now = testMode.enabled ? testMode.getMockDate() : new Date();    // Get current time in minutes from midnight
     var currentTime;
     if (testMode.enabled) {
-      // In test mode, use exactly what was set
-      const parts = testMode.time.split(":");
-      currentTime = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+      // In test mode, use progressing test time
+      currentTime = testMode.getCurrentTimeMinutes();
     } else {
       // Normal mode: apply Irish time offset
       var isIrishSummerTime = dateUtils.isIrelandDST(now);

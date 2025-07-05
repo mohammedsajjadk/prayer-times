@@ -4,9 +4,13 @@
  */
 
 // Main application object
-var app = {
-  // Initialize the application
+var app = {  // Initialize the application
   initialize: function() {
+    // Initialize test mode if enabled
+    if (testMode.enabled) {
+      testMode.start();
+    }
+    
     // Initial updates
     timeModule.updateTime();
     prayerModule.updateNextPrayer();

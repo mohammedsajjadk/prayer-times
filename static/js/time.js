@@ -6,17 +6,15 @@
 var timeModule = {
   // Updates the digital clock display
   updateTime: function() {
-    var now = testMode.enabled ? testMode.getMockDate() : new Date();
-
-    // Get time components, applying Irish offset only when NOT in test mode
+    var now = testMode.enabled ? testMode.getMockDate() : new Date();    // Get time components, applying Irish offset only when NOT in test mode
     var hours, minutes, seconds;
 
     if (testMode.enabled) {
-      // In test mode: use exactly what was set in testMode.time
-      const parts = testMode.time.split(":");
-      hours = parseInt(parts[0]);
-      minutes = parseInt(parts[1]);
-      seconds = now.getUTCSeconds(); // Keep seconds updating
+      // In test mode: use progressing test time
+      const testTime = testMode.getCurrentTestTime();
+      hours = testTime.hours;
+      minutes = testTime.minutes;
+      seconds = testTime.seconds;
     } else {
       // Normal mode: apply Irish time offset
       var isIrishSummerTime = dateUtils.isIrelandDST(now);
