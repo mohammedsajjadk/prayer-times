@@ -103,5 +103,21 @@
     ],
     "isSpecial": true,
     "hide": false
+  },
+  {
+    "id": "monthly_bayaan",
+    "startDate": "2025-07-12T00:00:00+01:00",
+    "endDate": "2025-07-12T20:15:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 2,
+      "duration": 30,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/monthly-bayaan.jpg"
+    ],
+    "isSpecial": true
   }
 ]
