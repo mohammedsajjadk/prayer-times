@@ -1,3 +1,42 @@
+"""
+PRAYER TIME PARSER
+==================
+
+This script converts prayer time data from Imam Sahab's "Salah Template.xlsx" 
+into CSV format for easy processing.
+
+HOW TO USE:
+-----------
+1. Open Imam Sahab's "Salah Template.xlsx" file
+2. Select the entire prayer time table (including headers and month name)
+3. Copy the table as-is (Ctrl+C) - DO NOT modify anything
+4. In your terminal, run this script: "py prayer_time_parser.py"
+5. Paste the copied data when prompted
+6. Press Enter twice to process
+7. Copy the CSV output and paste into your target CSV file
+
+IMPORTANT NOTES:
+---------------
+- Copy the ENTIRE table including the month name at the top
+- Do NOT change anything in the original table
+- Double quotes (") in jamaat times are handled automatically
+- Times with dots (e.g., 5.15, 2.00) are converted to 24-hour format
+- All output times are in 24-hour format (HH:MM)
+
+EXAMPLE INPUT FORMAT:
+--------------------
+AUGUST		ISLAMIC 	BEGINNING TIMES							JAMAAT TIMES				
+DATE	DAY	HIJRI	FAJR	SUNRISE	ZOHR	ASAR	MAGRIB	ISHA		FAJR	ZOHR	ASAR	MAGRIB	ISHA
+1	Fri	7 Safar	03:23	05:59	13:46	19:03	21:32	22:52		5.15	2.00	8.00	9.37	11.00
+2	Sat	8	03:23	06:01	13:46	19:02	21:30	22:50		"	"	"	9.35	"
+
+EXAMPLE OUTPUT:
+--------------
+MONTH,DATE,FAJR BEGINNING,SUNRISE BEGINNING,ZOHR BEGINNING,ASAR BEGINNING,MAGRIB BEGINNING,ISHA BEGINNING,FAJR JAMAAH,ZOHR JAMAAH,ASAR JAMAAH,MAGRIB JAMAAH,ISHA JAMAAH
+8,1,03:23,05:59,13:46,19:03,21:32,22:52,05:15,14:00,20:00,21:37,23:00
+8,2,03:23,06:01,13:46,19:02,21:30,22:50,05:15,14:00,20:00,21:35,23:00
+"""
+
 import re
 from typing import List, Dict, Optional
 
@@ -129,7 +168,7 @@ if __name__ == "__main__":
     # You can paste your input here and run the script
     sample_input = """Your prayer time data here"""
     
-    print("Paste your prayer time data and press Enter twice:")
+    print("Copy and paste the entire prayer time table (including headers and month name) from Imam Sahab's \"Salah Template.xlsx\" file. - DO NOT modify anything. Double quotes (\") in jamaat times are handled automatically:")
     lines = []
     while True:
         try:
