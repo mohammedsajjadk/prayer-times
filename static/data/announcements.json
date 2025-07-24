@@ -118,7 +118,7 @@
       "/static/images/Tafseer of the Quran.jpg"
     ],
     "isSpecial": true,
-    "hide": false
+    "hide": true
   },
   {
     "id": "monthly_bayaan",
