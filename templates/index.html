@@ -138,7 +138,16 @@
   <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
   <script src="{{ url_for('static', filename='js/time.js') }}"></script>
   <script src="{{ url_for('static', filename='js/prayers.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/announcements.js') }}"></script>
+  
+  <!-- Announcement Modules (in dependency order) -->
+  <script src="{{ url_for('static', filename='js/modules/announcement-data.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modules/display-state.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modules/dynamic-announcements.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modules/adhkar-display.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modules/image-display.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modules/message-display.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/announcements-main.js') }}"></script>
+  
   <script src="{{ url_for('static', filename='js/themes.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
