@@ -245,7 +245,7 @@ body, html {
     display: flex;
     justify-content: space-between;
     width: 98%;
-    font-size: 2.35vw; /* Increased from 3.0vw to 3.5vw */
+    font-size: 2.2vw; /* Increased from 3.0vw to 3.5vw */
     text-align: center;
     margin-top: -2vh;
     margin-bottom: 0.5vw;
