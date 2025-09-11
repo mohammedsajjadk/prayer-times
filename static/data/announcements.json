@@ -28,78 +28,13 @@
     "isSpecial": true
   },
   {
-    "id": "hot_weather_dua",
-    "startDate": "2025-07-13T00:00:00+01:00",
-    "endDate": "2025-07-15T00:00:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 30,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/hot_weather_dua.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "friday_prayer_limited_wednesday",
-    "startDate": "2025-07-02T00:00:00+01:00",
-    "endDate": "2025-07-02T23:59:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 30,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/1.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "friday_prayer_limited_thursday_friday_noon",
-    "startDate": "2025-07-03T00:00:00+01:00",
-    "endDate": "2025-07-04T13:59:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 30,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/1.jpg",
-      "/static/images/Aashoorah.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "aashoorah",
-    "startDate": "2025-07-04T14:45:00+01:00",
-    "endDate": "2025-07-04T23:59:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 30,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/Aashoorah.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
     "id": "tafseer_friday_recurring",
     "type": "recurring_weekly",
     "dayOfWeek": 5,
     "seasonalTiming": {
       "summer": {
         "startReference": "fajrBeginning",
-        "endReference": "magribJamaah",
+        "endReference": "ishaJamaah",
         "endOffset": 15
       },
       "winter": {
