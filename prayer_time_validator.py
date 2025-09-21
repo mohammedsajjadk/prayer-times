@@ -1,6 +1,41 @@
+"""
+PRAYER TIME VALIDATOR
+=====================
+
+HOW TO USE (simple):
+-------------------
+1. Run `prayer_time_parser.py` and paste the data output into
+    `data/prayer_times.csv`).
+2. Run this validator: `py prayer_time_validator.py` and press
+    Enter at the CSV prompt to use the default `data/prayer_times.csv`.
+3. Enter the month number (1-12) when asked — the script will
+    print the validation report for that month.
+
+OUTPUT:
+-------
+The script prints a human-friendly validation report that
+includes date continuity checks, per-prayer time-pattern
+violations (with example diffs), and jamaah specific checks.
+
+IMPORTANT NOTES:
+---------------
+- The validator expects times in 24-hour HH:MM format.
+- If a time cannot be parsed it is treated as 00:00 for
+    comparison purposes and will likely show up as a violation.
+- Zohr jamaah validation uses a simplified Irish daylight
+    saving heuristic; adjust `_is_after_clock_forward` if you
+    need exact last-Sunday detection.
+
+EXAMPLE:
+-------
+Run the script and enter the month number to get a report similar
+to the one produced by the command-line interface in this file.
+"""
+
 import csv
 from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
+
 
 class PrayerTimeValidator:
     def __init__(self, csv_file_path: str):
@@ -276,9 +311,13 @@ class PrayerTimeValidator:
                         print(f"     ... and {len(field_val['violations']) - 5} more violations")
 
 def main():
-    csv_file = input("Enter path to prayer_times.csv (or press Enter for default): ").strip()
+    csv_file = input("Enter path to prayer_times.csv (or press Enter for data\\prayer_times.csv): ").strip()
     if not csv_file:
-        csv_file = "c:\\Sajjad\\prayer_times_project_2\\data\\prayer_times.csv"
+        # Use a path relative to this script so the default works when
+        # running the script from the repository root or other locations.
+        from pathlib import Path
+        script_dir = Path(__file__).resolve().parent
+        csv_file = str((script_dir / 'data' / 'prayer_times.csv').resolve())
     
     try:
         validator = PrayerTimeValidator(csv_file)
