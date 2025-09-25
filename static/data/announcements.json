@@ -53,10 +53,10 @@
       "/static/images/Tafseer of the Quran.jpg"
     ],
     "isSpecial": true,
-    "hide": false
+    "hide": true
   },
   {
-    "id": "monthly_bayaan",
+    "id": "<template_id>",
     "startDate": "2025-07-12T00:00:00+01:00",
     "endDate": "2025-07-12T20:15:00+01:00",
     "type": "image",
@@ -76,38 +76,6 @@
     "startDate": "2025-07-26T00:00:00+01:00",
     "endDate": "2025-07-27T14:15:00+01:00",
     "message": "🕌 TRALEE MASJID - Mens gathering 📖 Qur'an Recitation Gathering for the deceased 🗓️ Sunday 27th July after Zohr 2pm",
-    "isSpecial": true
-  },
-  {
-    "id": "annual_madrasah_prize_giving",
-    "startDate": "2025-09-06T00:00:00+01:00",
-    "endDate": "2025-09-08T21:50:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 30,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/madrasah_prize_giving.jpeg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "annual_madrasah_prize_giving",
-    "startDate": "2025-09-12T00:00:00+01:00",
-    "endDate": "2025-09-14T14:00:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 30,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/madrasah_prize_giving.jpeg"
-    ],
     "isSpecial": true
   }
 ]
