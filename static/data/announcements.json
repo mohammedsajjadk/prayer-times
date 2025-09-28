@@ -56,9 +56,26 @@
     "hide": true
   },
   {
-    "id": "<template_id>",
-    "startDate": "2025-07-12T00:00:00+01:00",
-    "endDate": "2025-07-12T20:15:00+01:00",
+    "id": "monthly-bayaan",
+    "startDate": "2025-09-29T00:00:00+01:00",
+    "endDate": "2025-09-30T22:15:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 2,
+      "duration": 30,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/monthly-bayaan.jpg"
+    ],
+    "isSpecial": true
+  },
+  
+  {
+    "id": "monthly-bayaan-2",
+    "startDate": "2025-10-03T10:00:00+01:00",
+    "endDate": "2025-10-05T19:45:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 2,
