@@ -1,3 +1,5 @@
 .idea
 data/program_schedule.csv
 prayer_times_output.txt
+__pycache__/*
+tests/__pycache__/*

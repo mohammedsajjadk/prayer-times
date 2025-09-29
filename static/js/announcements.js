@@ -58,9 +58,8 @@ var announcements = {
 // Dynamic announcements loaded from external source
 var dynamicAnnouncements = []; // Initialize as empty array to avoid undefined errors
 
-// Track adhkar and announcement display states
+// Track announcement display states
 var displayState = {
-  adhkarActive: false,
   pausedAnnouncement: null,
   resumeTimeout: null,
 };
@@ -381,25 +380,7 @@ var announcementModule = {
     var isSpecialAnnouncement = false;
     var imageData = null;
 
-    // First check if Adhkar should be displayed - this takes precedence over dynamic announcements
-    var adhkarDisplay = this.handleAdhkarDisplay(
-      currentTime,
-      dayOfWeek,
-      isIrishSummerTime,
-      {
-        fajrJamaah: fajrJamaahTime,
-        zohrJamaah: zohrJamaahTime,
-        asrJamaah: asrJamaahTime,
-        magribJamaah: magribJamaahTime,
-        ishaJamaah: ishaJamaahTime,
-      }
-    );
 
-    if (adhkarDisplay.shouldDisplay) {
-      // If Adhkar should be displayed, it takes priority
-      // Don't process other announcements now
-      return;
-    }
 
     // Check for any dynamic announcements
     var activeDynamicAnnouncement = this.getActiveDynamicAnnouncement(now);
@@ -537,250 +518,13 @@ var announcementModule = {
     }
   },
 
-  // Handle Adhkar image display after jamaah times and during Friday Zohr
-  handleAdhkarDisplay: function (
-    currentTime,
-    dayOfWeek,
-    isIrishSummerTime,
-    jamaahTimes
-  ) {
-    var result = {
-      shouldDisplay: false,
-    };
 
-    // If Adhkar is already active, don't check again
-    if (displayState.adhkarActive) {
-      return result;
-    }
 
-    // Remove the hardcoded Friday Tafseer logic - it's now handled by recurring announcements
 
-    // Special case: Friday Zohr continuous display
-    if (dayOfWeek === 5) {
-      // Friday
-      // Define the time range based on Irish time (summer/winter)
-      var startTime, endTime;
-      if (isIrishSummerTime) {
-        // Irish Summer Time: 2:00 PM to 2:30 PM
-        startTime = 14 * 60; // 2:00 PM
-        endTime = 14 * 60 + 30; // 2:30 PM
-      } else {
-        // Irish Winter Time: 1:30 PM to 2:00 PM
-        startTime = 13 * 60 + 30; // 1:30 PM
-        endTime = 14 * 60; // 2:00 PM
-      }
 
-      // Check if current time is within the Friday Zohr Adhkar display window
-      if (currentTime >= startTime && currentTime < endTime) {
-        // For Friday Zohr special case, display Adhkar only for the first 5 minutes
-        // Then allow other announcements for remaining time
-        if (currentTime < startTime + 5) {
-          this.displayAdhkarImage(5 * 60); // Display for 5 minutes (300 seconds)
-          result.shouldDisplay = true;
-          return result;
-        } else {
-          // After the first 5 minutes, continue with regular announcements
-          return result;
-        }
-      }
-    }
 
-    // Regular jamaah-based Adhkar display for all days
-    var jamaahTypes = [
-      "fajrJamaah",
-      "zohrJamaah",
-      "asrJamaah",
-      "magribJamaah",
-      "ishaJamaah",
-    ];
 
-    for (var i = 0; i < jamaahTypes.length; i++) {
-      var jamaahType = jamaahTypes[i];
-      var jamaahTime = jamaahTimes[jamaahType];
 
-      // Skip if jamaah time is invalid or missing
-      if (!jamaahTime || isNaN(jamaahTime)) continue;
-
-      // Adhkar starts 7 minutes after jamaah and lasts for 5 minutes
-      var adhkarStartTime = jamaahTime + 7;
-      var adhkarEndTime = adhkarStartTime + 5;
-
-      // Check if current time is within the adhkar display window
-      if (currentTime >= adhkarStartTime && currentTime < adhkarEndTime) {
-        // Pause any ongoing announcement display
-        this.pauseOngoingAnnouncements();
-
-        // Calculate remaining display time in seconds
-        var remainingSeconds = (adhkarEndTime - currentTime) * 60;
-
-        // Display the Adhkar image
-        this.displayAdhkarImage(remainingSeconds);
-
-        result.shouldDisplay = true;
-        return result;
-      }
-    }
-
-    return result;
-  },
-
-  // Pause ongoing announcements to show Adhkar
-  pauseOngoingAnnouncements: function () {
-    // Set the adhkar active flag
-    displayState.adhkarActive = true;
-
-    // Find and store any existing slideshow
-    var existingSlideshow = document.querySelector(
-      ".image-slideshow-container"
-    );
-    if (existingSlideshow) {
-      // Save the current state of the slideshow
-      displayState.pausedAnnouncement = {
-        element: existingSlideshow,
-        parent: existingSlideshow.parentNode,
-      };
-
-      // Remove it temporarily
-      if (existingSlideshow.parentNode) {
-        existingSlideshow.parentNode.removeChild(existingSlideshow);
-      }
-    }
-
-    // Clear any existing resume timeout
-    if (displayState.resumeTimeout) {
-      clearTimeout(displayState.resumeTimeout);
-    }
-  },
-
-  // Resume paused announcements after Adhkar display
-  resumeAnnouncements: function () {
-    // Reset the adhkar active flag
-    displayState.adhkarActive = false;
-
-    // If there was a paused announcement, restore it
-    if (displayState.pausedAnnouncement) {
-      var paused = displayState.pausedAnnouncement;
-
-      if (paused.element && paused.parent) {
-        paused.parent.appendChild(paused.element);
-      }
-
-      // Clear the paused state
-      displayState.pausedAnnouncement = null;
-    }
-  },
-
-  // Display the Adhkar image for a specified duration
-  displayAdhkarImage: function (durationSeconds) {
-    // Get both the prayer-times and important-times elements that we'll hide
-    var prayerTimesElement = document.querySelector(".prayer-times");
-    var importantTimesElement = document.querySelector(".important-times");
-
-    // Save original state of prayer-times
-    var originalPrayerTimesState = null;
-    if (prayerTimesElement) {
-      originalPrayerTimesState = {
-        display: prayerTimesElement.style.display,
-        html: prayerTimesElement.innerHTML,
-        className: prayerTimesElement.className,
-      };
-
-      // Hide the prayer-times element
-      prayerTimesElement.style.display = "none";
-    }
-
-    // Save original state of important-times
-    var originalImportantTimesState = null;
-    if (importantTimesElement) {
-      originalImportantTimesState = {
-        display: importantTimesElement.style.display,
-        html: importantTimesElement.innerHTML,
-        className: importantTimesElement.className,
-      };
-
-      // Hide the important-times element
-      importantTimesElement.style.display = "none";
-    }
-
-    // Create adhkar container
-    var adhkarContainer = document.createElement("div");
-    adhkarContainer.className = "adhkar-container image-slideshow-container";
-    adhkarContainer.style.width = "100%";
-    adhkarContainer.style.height = "132vh"; // Set container height to 60% of viewport height
-    adhkarContainer.style.display = "flex";
-    adhkarContainer.style.justifyContent = "center";
-    adhkarContainer.style.alignItems = "center";
-    adhkarContainer.style.marginTop = "1.0vw"; // Reduced margin to give more space for image
-    adhkarContainer.style.padding = "0"; // Remove padding to maximize space
-
-    // Insert the adhkar container where prayer-times would normally be
-    if (prayerTimesElement && prayerTimesElement.parentNode) {
-      prayerTimesElement.parentNode.insertBefore(
-        adhkarContainer,
-        prayerTimesElement
-      );
-    } else {
-      // Fallback: add after date-container's divider
-      var dateContainer = document.querySelector(".date-container");
-      var insertAfterElement = dateContainer
-        ? dateContainer.nextElementSibling
-        : document.body;
-      if (insertAfterElement) {
-        insertAfterElement.parentNode.insertBefore(
-          adhkarContainer,
-          insertAfterElement.nextSibling
-        );
-      } else {
-        document.body.appendChild(adhkarContainer);
-      }
-    }
-
-    // Create the image element
-    var imgElement = document.createElement("img");
-    imgElement.src = "/static/images/english-adhkar.jpg";
-    imgElement.style.maxWidth = "100%"; // Increased from 90%
-    imgElement.style.maxHeight = "100%"; // Added maxHeight to fill container height
-    imgElement.style.height = "auto";
-    imgElement.style.width = "auto";
-    imgElement.style.objectFit = "contain"; // Ensure image maintains aspect ratio while filling space
-    imgElement.style.transition = "opacity 0.5s ease-in-out";
-    imgElement.style.opacity = "0";
-    imgElement.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)"; // Add subtle shadow for better visibility
-
-    // Add the image to container
-    adhkarContainer.appendChild(imgElement);
-
-    // Fade in the image
-    setTimeout(function () {
-      imgElement.style.opacity = "1";
-    }, 100);
-
-    // Set up cleanup and resumption of original content
-    displayState.resumeTimeout = setTimeout(function () {
-      // Remove adhkar container
-      if (adhkarContainer.parentNode) {
-        adhkarContainer.parentNode.removeChild(adhkarContainer);
-      }
-
-      // Restore prayer-times element
-      if (prayerTimesElement && originalPrayerTimesState) {
-        prayerTimesElement.style.display =
-          originalPrayerTimesState.display || "";
-        prayerTimesElement.className = originalPrayerTimesState.className || "";
-      }
-
-      // Restore important-times element
-      if (importantTimesElement && originalImportantTimesState) {
-        importantTimesElement.style.display =
-          originalImportantTimesState.display || "";
-        importantTimesElement.className =
-          originalImportantTimesState.className || "";
-      }
-
-      // Resume any paused announcements
-      announcementModule.resumeAnnouncements();
-    }, durationSeconds * 1000);
-  },
 
   // Display the Tafseer image for Friday
   displayTafseerImage: function (durationSeconds) {
@@ -888,21 +632,14 @@ var announcementModule = {
         importantTimesElement.className =
           originalImportantTimesState.className || "";
       }
-
-      // Resume any paused announcements
-      announcementModule.resumeAnnouncements();
     }, durationSeconds * 1000);
 
-    // Set the adhkar active flag to prevent other announcements during display
-    displayState.adhkarActive = true;
+
   },
 
   // Handle image announcements with display conditions
   handleImageAnnouncement: function (imageData, currentTime, jamaahTimes) {
-    // Don't process if Adhkar is active
-    if (displayState.adhkarActive) {
-      return;
-    }
+
 
     var displayCondition = imageData.displayCondition;
     var frequency = displayCondition.frequency || 5; // Default: every 5 minutes
