@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adhkar Test</title>
+</head>
+<body>
+    <h1>Testing Adhkar Functionality</h1>
+    <p>Current time: <span id="current-time"></span></p>
+    <p>Adhkar should trigger at 21:56 Irish time</p>
+    <div id="test-container"></div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const irishOffset = 1; // Summer time
+            const irishTime = new Date(now.getTime() + (irishOffset * 60 * 60 * 1000));
+            document.getElementById('current-time').textContent = irishTime.toLocaleTimeString();
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Test timeToMinutes function
+        function timeToMinutes(timeStr) {
+            const parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        const testTime = "21:56";
+        const testMinutes = timeToMinutes(testTime);
+        console.log("Test time", testTime, "converts to", testMinutes, "minutes");
+    </script>
+</body>
+</html>

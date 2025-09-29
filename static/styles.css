@@ -89,6 +89,106 @@ body, html {
     font-size: 4vw; /* Reduced from 5vw to 4vw */
 }
 
+/* Adhkar Display Styles - Match image slideshow containers */
+.adhkar-text-container {
+    width: 100%;
+    height: 132vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 1.0vw;
+    padding: 2vw;
+    background: var(--bg-color);
+    color: var(--text-color);
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.adhkar-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    min-height: 100%;
+    padding: 1vw;
+    box-sizing: border-box;
+    /* Dynamic font size will be set by JavaScript */
+}
+
+.adhkar-text .adhkar-title {
+    font-size: var(--dynamic-title-size, 3.2vw);
+    margin-bottom: 1vw;
+    margin-top: 1.5vw;
+    text-decoration: underline;
+    text-decoration-color: var(--border-color);
+}
+
+.adhkar-text .adhkar-section {
+    margin: 0.3vw 0;
+    padding: 0.2vw 0;
+}
+
+.adhkar-text .adhkar-divider {
+    width: 70%;
+    height: 0.2vw;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 1vw auto;
+    border-radius: 0.1vw;
+}
+
+.adhkar-text .adhkar-border-separator {
+    width: 90%;
+    height: 0;
+    border-bottom: 0.15vw solid var(--border-color);
+    margin: 0.8vw auto;
+    opacity: 0.8;
+}
+
+.adhkar-text .arabic-text {
+    font-size: var(--dynamic-arabic-size, 2.8vw);
+    line-height: 1.5;
+    margin: 0.4vw 0;
+    color: var(--text-color);
+    font-family: 'Arial Unicode MS', Arial, sans-serif;
+}
+
+.adhkar-text .english-text {
+    font-size: var(--dynamic-english-size, 2vw);
+    line-height: 1.4;
+    color: #999;
+    font-style: italic;
+    margin: 0.2vw 0;
+}
+
+.adhkar-text .repetition {
+    font-weight: bold;
+}
+
+.adhkar-text .special-section {
+    font-size: var(--dynamic-title-size, 1vw);
+    margin: 1vw 0 0.8vw 0;
+    text-decoration: underline;
+    text-decoration-color: var(--border-color);
+    text-transform: uppercase;
+}
+
+.adhkar-countdown {
+    position: absolute;
+    top: 0vw;
+    right: 0vw;
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--text-color);
+    padding: 1vw 2vw;
+    border-radius: 1vw;
+    font-weight: bold;
+    border: 0.2vw solid var(--border-color);
+    box-shadow: 0 0 1vw rgba(0, 0, 0, 0.5);
+}
+
+
 @keyframes warningPulse {
     0% { 
         transform: scale(1);

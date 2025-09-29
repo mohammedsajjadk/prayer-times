@@ -94,5 +94,101 @@
     "endDate": "2025-07-27T14:15:00+01:00",
     "message": "🕌 TRALEE MASJID - Mens gathering 📖 Qur'an Recitation Gathering for the deceased 🗓️ Sunday 27th July after Zohr 2pm",
     "isSpecial": true
+  },
+  {
+    "id": "post_jamaah_adhkar",
+    "type": "adhkar_text",
+    "rank": 1,
+    "enabled": true,
+    "trigger": {
+      "type": "post_jamaah",
+      "delayMinutes": 1,
+      "applyToAllJamaah": true,
+      "jamaahTypes": ["fajrJamaah", "zohrJamaah", "asrJamaah", "magribJamaah", "ishaJamaah"]
+    },
+    "textFile": "/static/data/adhkar.txt",
+    "display": {
+      "totalDurationMinutes": 5,
+      "pageCount": 3,
+      "pageDistribution": [35, 35, 30],
+      "showCountdown": true,
+      "takesOverImages": true,
+      "takesOverAnnouncements": true
+    },
+    "styling": {
+      "matchTheme": true,
+      "fontSize": "2.8vw",
+      "lineHeight": "1",
+      "textAlign": "center",
+      "padding": "2vw"
+    }
+  },
+  {
+    "id": "irish_dst_forward_adhkar",
+    "type": "adhkar_text",
+    "rank": 2,
+    "enabled": true,
+    "trigger": {
+      "type": "dst_schedule",
+      "dstType": "forward",
+      "startTime": "14:10",
+      "durationMinutes": 20
+    },
+    "textFile": "/static/data/adhkar.txt",
+    "display": {
+      "totalDurationMinutes": 20,
+      "pageCount": 3,
+      "pageDistribution": [40, 35, 25],
+      "showCountdown": true,
+      "takesOverImages": true,
+      "takesOverAnnouncements": false
+    },
+    "styling": {
+      "matchTheme": true,
+      "fontSize": "1.8vw",
+      "lineHeight": "1.6",
+      "textAlign": "center",
+      "padding": "2vw"
+    },
+    "seasonalTiming": {
+      "summer": {
+        "enabled": true,
+        "startTime": "14:10"
+      }
+    }
+  },
+  {
+    "id": "irish_dst_backward_adhkar",
+    "type": "adhkar_text",
+    "rank": 2,
+    "enabled": true,
+    "trigger": {
+      "type": "dst_schedule",
+      "dstType": "backward",
+      "startTime": "13:45",
+      "durationMinutes": 15
+    },
+    "textFile": "/static/data/adhkar.txt",
+    "display": {
+      "totalDurationMinutes": 15,
+      "pageCount": 2,
+      "pageDistribution": [50, 50],
+      "showCountdown": true,
+      "takesOverImages": true,
+      "takesOverAnnouncements": false
+    },
+    "styling": {
+      "matchTheme": true,
+      "fontSize": "1.8vw",
+      "lineHeight": "1.6",
+      "textAlign": "center",
+      "padding": "2vw"
+    },
+    "seasonalTiming": {
+      "winter": {
+        "enabled": true,
+        "startTime": "13:45"
+      }
+    }
   }
 ]
