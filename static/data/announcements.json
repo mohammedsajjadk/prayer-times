@@ -102,15 +102,15 @@
     "enabled": true,
     "trigger": {
       "type": "post_jamaah",
-      "delayMinutes": 1,
+      "delayMinutes": 8,
       "applyToAllJamaah": true,
       "jamaahTypes": ["fajrJamaah", "zohrJamaah", "asrJamaah", "magribJamaah", "ishaJamaah"]
     },
     "textFile": "/static/data/adhkar.txt",
     "display": {
       "totalDurationMinutes": 5,
-      "pageCount": 3,
-      "pageDistribution": [35, 35, 30],
+      "pageCount": 2,
+      "pageDistribution": [30, 70],
       "showCountdown": true,
       "takesOverImages": true,
       "takesOverAnnouncements": true
@@ -126,19 +126,19 @@
   {
     "id": "irish_dst_forward_adhkar",
     "type": "adhkar_text",
-    "rank": 2,
+    "rank": 1,
     "enabled": true,
     "trigger": {
       "type": "dst_schedule",
       "dstType": "forward",
       "startTime": "14:10",
-      "durationMinutes": 20
+      "durationMinutes": 5
     },
     "textFile": "/static/data/adhkar.txt",
     "display": {
-      "totalDurationMinutes": 20,
-      "pageCount": 3,
-      "pageDistribution": [40, 35, 25],
+      "totalDurationMinutes": 5,
+      "pageCount": 2,
+      "pageDistribution": [30, 70],
       "showCountdown": true,
       "takesOverImages": true,
       "takesOverAnnouncements": false
@@ -160,19 +160,19 @@
   {
     "id": "irish_dst_backward_adhkar",
     "type": "adhkar_text",
-    "rank": 2,
+    "rank": 1,
     "enabled": true,
     "trigger": {
       "type": "dst_schedule",
       "dstType": "backward",
       "startTime": "13:45",
-      "durationMinutes": 15
+      "durationMinutes": 5
     },
     "textFile": "/static/data/adhkar.txt",
     "display": {
-      "totalDurationMinutes": 15,
+      "totalDurationMinutes": 5,
       "pageCount": 2,
-      "pageDistribution": [50, 50],
+      "pageDistribution": [30, 70],
       "showCountdown": true,
       "takesOverImages": true,
       "takesOverAnnouncements": false

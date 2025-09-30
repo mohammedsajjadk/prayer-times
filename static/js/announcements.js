@@ -538,6 +538,43 @@ var announcementModule = {
         ]);
       }
     }
+
+    // Safety check: Ensure prayer-times and important-times are visible when nothing is active
+    this.ensureElementsVisible();
+  },
+
+  // Ensure prayer-times and important-times are visible when no overlays are active
+  ensureElementsVisible: function () {
+    // Check if Adhkar is active
+    if (displayState.adhkarActive) {
+      return; // Adhkar should be showing, elements should be hidden
+    }
+
+    // Check if any image slideshow is active
+    var activeSlideshow = document.querySelector(".image-slideshow-container");
+    if (activeSlideshow) {
+      return; // Image is showing, elements should be hidden
+    }
+
+    // No overlays active - ensure elements are visible
+    var prayerTimesElement = document.querySelector(".prayer-times");
+    var importantTimesElement = document.querySelector(".important-times");
+
+    if (prayerTimesElement) {
+      // Only fix if it's explicitly hidden with inline style
+      if (prayerTimesElement.style.display === "none") {
+        console.warn("Prayer-times was hidden when nothing active - restoring visibility");
+        prayerTimesElement.style.removeProperty('display');
+      }
+    }
+
+    if (importantTimesElement) {
+      // Only fix if it's explicitly hidden with inline style
+      if (importantTimesElement.style.display === "none") {
+        console.warn("Important-times was hidden when nothing active - restoring visibility");
+        importantTimesElement.style.removeProperty('display');
+      }
+    }
   },
 
 
@@ -642,15 +679,15 @@ var announcementModule = {
 
       // Restore prayer-times element
       if (prayerTimesElement && originalPrayerTimesState) {
-        prayerTimesElement.style.display =
-          originalPrayerTimesState.display || "";
+        // Remove inline display style to let CSS rules take over
+        prayerTimesElement.style.removeProperty('display');
         prayerTimesElement.className = originalPrayerTimesState.className || "";
       }
 
       // Restore important-times element
       if (importantTimesElement && originalImportantTimesState) {
-        importantTimesElement.style.display =
-          originalImportantTimesState.display || "";
+        // Remove inline display style to let CSS rules take over
+        importantTimesElement.style.removeProperty('display');
         importantTimesElement.className =
           originalImportantTimesState.className || "";
       }
@@ -823,15 +860,16 @@ var announcementModule = {
 
       // Restore the prayer-times element
       if (prayerTimesElement && originalPrayerTimesState) {
-        prayerTimesElement.style.display = originalPrayerTimesState.display;
+        // Remove inline display style to let CSS rules take over
+        prayerTimesElement.style.removeProperty('display');
         prayerTimesElement.innerHTML = originalPrayerTimesState.html;
         prayerTimesElement.className = originalPrayerTimesState.className;
       }
 
       // Restore the important-times element
       if (importantTimesElement && originalImportantTimesState) {
-        importantTimesElement.style.display =
-          originalImportantTimesState.display;
+        // Remove inline display style to let CSS rules take over
+        importantTimesElement.style.removeProperty('display');
         importantTimesElement.innerHTML = originalImportantTimesState.html;
         importantTimesElement.className = originalImportantTimesState.className;
       }
@@ -1002,7 +1040,8 @@ var announcementModule = {
           var el = savedState.prayerTimesElement;
           var state = savedState.prayerTimesState;
 
-          el.style.display = state.display || "";
+          // Remove inline display style to let CSS rules take over
+          el.style.removeProperty('display');
           el.className = state.className || "";
         }
 
@@ -1014,7 +1053,8 @@ var announcementModule = {
           var el = savedState.importantTimesElement;
           var state = savedState.importantTimesState;
 
-          el.style.display = state.display || "";
+          // Remove inline display style to let CSS rules take over
+          el.style.removeProperty('display');
           el.className = state.className || "";
         }
       }
@@ -1262,6 +1302,40 @@ var announcementModule = {
     }
   },
 
+  // Distribute verses across pages based on percentage, respecting verse boundaries
+  distributeVersesAcrossPages: function(verses, pageDistribution) {
+    var totalVerses = verses.length;
+    var pages = [];
+    var currentVerseIndex = 0;
+    
+    for (var i = 0; i < pageDistribution.length; i++) {
+      var percentage = pageDistribution[i];
+      var targetVerseCount = Math.round((percentage / 100) * totalVerses);
+      
+      // Ensure we at least get 1 verse if there are verses left
+      if (targetVerseCount === 0 && currentVerseIndex < totalVerses) {
+        targetVerseCount = 1;
+      }
+      
+      // Calculate end index, but don't exceed total verses
+      var endIndex = Math.min(currentVerseIndex + targetVerseCount, totalVerses);
+      
+      // For last page, include all remaining verses
+      if (i === pageDistribution.length - 1) {
+        endIndex = totalVerses;
+      }
+      
+      // Extract verses for this page
+      var pageVerses = verses.slice(currentVerseIndex, endIndex);
+      pages.push(pageVerses);
+      
+      // Move to next starting point
+      currentVerseIndex = endIndex;
+    }
+    
+    return pages;
+  },
+
   // Show a specific page of Adhkar text
   showAdhkarPage: function (config) {
     var display = config.display;
@@ -1269,30 +1343,18 @@ var announcementModule = {
     var pageDistribution = display.pageDistribution || [100];
     var currentPage = displayState.adhkarCurrentPage;
 
-    // Calculate text for current page
+    // Split text into verses using <br> as separator
     var fullText = displayState.adhkarText;
-    var lines = fullText.split('\n').filter(function(line) {
-      return line.trim().length > 0;
+    var verses = fullText.split('<br>').filter(function(verse) {
+      return verse.trim().length > 0;
     });
 
-    // Calculate which lines belong to this page
-    var totalLines = lines.length;
-    var startIndex = 0;
-    var endIndex = 0;
+    // Distribute verses across pages based on percentage, respecting verse boundaries
+    var pageVerses = this.distributeVersesAcrossPages(verses, pageDistribution);
     
-    for (var i = 0; i <= currentPage; i++) {
-      var percentage = pageDistribution[i] || (100 / pageCount);
-      var linesForThisPage = Math.floor((percentage / 100) * totalLines);
-      
-      if (i === currentPage) {
-        endIndex = startIndex + linesForThisPage;
-        break;
-      }
-      startIndex += linesForThisPage;
-    }
-
-    var pageLines = lines.slice(startIndex, endIndex);
-    var pageText = pageLines.join('\n');
+    // Get verses for current page
+    var currentPageVerses = pageVerses[currentPage] || [];
+    var pageText = currentPageVerses.join('<br>');
 
     // Create and show the display
     this.renderAdhkarDisplay(pageText, config, currentPage, pageCount);
@@ -1513,25 +1575,28 @@ var announcementModule = {
     return formattedHtml;
   },
 
-  // Calculate dynamic font size based on content length and page percentage
+  // Calculate dynamic font size based on content length to fill the page
   calculateDynamicFontSize: function(contentLength, pagePercentage, config) {
-    // Base calculation: smaller percentage = larger font, more content = smaller font
-    var percentageFactor = pagePercentage / 100; // 0.6 for 60%, 0.4 for 40%
-    var contentFactor = Math.max(0.4, Math.min(1.0, 600 / contentLength)); // More conservative scaling
+    // Simple approach: calculate font size purely based on content length
+    // The goal is to fill the entire page regardless of percentage allocation
     
-    // Calculate base size - more conservative to prevent overflow
-    var baseFontSize = (1.5 + (1.0 - percentageFactor) * 1.5) * contentFactor;
+    // Base calculation: less content = larger font, more content = smaller font
+    // This ensures each page fills its available space optimally
+    var contentFactor = Math.max(0.6, Math.min(1.5, 500 / contentLength));
     
-    // Ensure conservative size range to prevent overflow
-    baseFontSize = Math.max(1.2, Math.min(2.8, baseFontSize));
+    // Base font size calculation
+    var baseFontSize = 2.8 * contentFactor;
+    
+    // Ensure reasonable size range to prevent overflow or undersized text
+    baseFontSize = Math.max(1.8, Math.min(3.2, baseFontSize));
     
     return {
       main: baseFontSize,
-      title: baseFontSize * 1.2,
-      arabic: baseFontSize * 1.20,
+      title: baseFontSize * 0.9,
+      arabic: baseFontSize * 1.3,
       english: baseFontSize * 0.85,
       repetition: baseFontSize * 0.75,
-      lineHeight: Math.max(1.3, 1.8 - (baseFontSize * 0.05))
+      lineHeight: Math.max(0.9, 1.2 - (baseFontSize * 0.05))
     };
   },
 

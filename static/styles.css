@@ -96,8 +96,8 @@ body, html {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    margin-top: 1.0vw;
-    padding: 2vw;
+    margin-top: 0vw;
+    padding-top: 2vw;
     background: var(--bg-color);
     color: var(--text-color);
     position: relative;
