@@ -53,7 +53,7 @@
       "/static/images/Tafseer of the Quran.jpg"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "monthly-bayaan",
@@ -74,7 +74,7 @@
   
   {
     "id": "monthly-bayaan-2",
-    "startDate": "2025-10-03T10:00:00+01:00",
+    "startDate": "2025-10-03T00:00:00+01:00",
     "endDate": "2025-10-05T19:45:00+01:00",
     "type": "image",
     "displayCondition": {
@@ -104,13 +104,14 @@
       "type": "post_jamaah",
       "delayMinutes": 8,
       "applyToAllJamaah": true,
-      "jamaahTypes": ["fajrJamaah", "zohrJamaah", "asrJamaah", "magribJamaah", "ishaJamaah"]
+      "jamaahTypes": ["fajrJamaah", "zohrJamaah", "asrJamaah", "magribJamaah", "ishaJamaah"],
+      "excludeFridayZohr": true
     },
     "textFile": "/static/data/adhkar.txt",
     "display": {
-      "totalDurationMinutes": 5,
       "pageCount": 2,
       "pageDistribution": [30, 70],
+      "pageTimings": ["1:30", "2:30"],
       "showCountdown": true,
       "takesOverImages": true,
       "takesOverAnnouncements": true
@@ -131,14 +132,16 @@
     "trigger": {
       "type": "dst_schedule",
       "dstType": "forward",
-      "startTime": "14:10",
-      "durationMinutes": 5
+      "startTime": "14:08",
+      "durationMinutes": 4
     },
     "textFile": "/static/data/adhkar.txt",
     "display": {
-      "totalDurationMinutes": 5,
       "pageCount": 2,
       "pageDistribution": [30, 70],
+      "pageTimings": ["1:30", "2:30"],
+      "repeatCycles": 1,
+      "showImagesBetweenCycles": false,
       "showCountdown": true,
       "takesOverImages": true,
       "takesOverAnnouncements": false
@@ -165,14 +168,16 @@
     "trigger": {
       "type": "dst_schedule",
       "dstType": "backward",
-      "startTime": "13:45",
+      "startTime": "13:43",
       "durationMinutes": 5
     },
     "textFile": "/static/data/adhkar.txt",
     "display": {
-      "totalDurationMinutes": 5,
-      "pageCount": 2,
+      "pageCount": 4,
       "pageDistribution": [30, 70],
+      "pageTimings": ["1:30", "2:30"],
+      "repeatCycles": 1,
+      "showImagesBetweenCycles": false,
       "showCountdown": true,
       "takesOverImages": true,
       "takesOverAnnouncements": false

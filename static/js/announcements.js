@@ -66,7 +66,10 @@ var displayState = {
   adhkarText: null,
   adhkarConfig: null,
   adhkarCurrentPage: 0,
+  adhkarCurrentCycle: 0,
   adhkarPageTimeout: null,
+  adhkarTotalPages: 0,
+  adhkarTotalCycles: 0,
 };
 
 var announcementModule = {
@@ -438,14 +441,14 @@ var announcementModule = {
           // Thursday
           message = announcements.thursday_darood();
         }
-        // else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
-        //   // Thursday After Magrib
-        //   message = announcements.friday_tafseer();
-        // }
-        // else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
-        //   // Friday
-        //   message = announcements.friday_tafseer();
-        // }
+        else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+          // Thursday After Magrib
+          message = announcements.friday_tafseer();
+        }
+        else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
+          // Friday
+          message = announcements.friday_tafseer();
+        }
       } else {
         // Winter time rules
         if (
@@ -556,24 +559,40 @@ var announcementModule = {
       return; // Image is showing, elements should be hidden
     }
 
-    // No overlays active - ensure elements are visible
-    var prayerTimesElement = document.querySelector(".prayer-times");
-    var importantTimesElement = document.querySelector(".important-times");
-
-    if (prayerTimesElement) {
-      // Only fix if it's explicitly hidden with inline style
-      if (prayerTimesElement.style.display === "none") {
-        console.warn("Prayer-times was hidden when nothing active - restoring visibility");
-        prayerTimesElement.style.removeProperty('display');
-      }
+    // Check if any adhkar interleave image is active
+    var activeAdhkarImage = document.querySelector(".adhkar-interleave-image-container");
+    if (activeAdhkarImage) {
+      return; // Adhkar image is showing, elements should be hidden
     }
 
+    // No overlays active - ensure both elements are visible together
+    this.showPrayerElements();
+  },
+
+  // Helper function to hide both prayer-times and important-times together
+  hidePrayerElements: function() {
+    var prayerTimesElement = document.querySelector(".prayer-times");
+    var importantTimesElement = document.querySelector(".important-times");
+    
+    if (prayerTimesElement) {
+      prayerTimesElement.style.display = "none";
+    }
     if (importantTimesElement) {
-      // Only fix if it's explicitly hidden with inline style
-      if (importantTimesElement.style.display === "none") {
-        console.warn("Important-times was hidden when nothing active - restoring visibility");
-        importantTimesElement.style.removeProperty('display');
-      }
+      importantTimesElement.style.display = "none";
+    }
+  },
+
+  // Helper function to show both prayer-times and important-times together
+  showPrayerElements: function() {
+    var prayerTimesElement = document.querySelector(".prayer-times");
+    var importantTimesElement = document.querySelector(".important-times");
+    
+    if (prayerTimesElement && prayerTimesElement.style.display === "none") {
+      prayerTimesElement.style.removeProperty('display');
+    }
+    
+    if (importantTimesElement && importantTimesElement.style.display === "none") {
+      importantTimesElement.style.removeProperty('display');
     }
   },
 
@@ -599,9 +618,6 @@ var announcementModule = {
         html: prayerTimesElement.innerHTML,
         className: prayerTimesElement.className,
       };
-
-      // Hide the prayer-times element
-      prayerTimesElement.style.display = "none";
     }
 
     // Save original state of important-times
@@ -612,10 +628,10 @@ var announcementModule = {
         html: importantTimesElement.innerHTML,
         className: importantTimesElement.className,
       };
-
-      // Hide the important-times element
-      importantTimesElement.style.display = "none";
     }
+
+    // Hide both elements together using helper function
+    this.hidePrayerElements();
 
     // Create tafseer container
     var tafseerContainer = document.createElement("div");
@@ -679,18 +695,17 @@ var announcementModule = {
 
       // Restore prayer-times element
       if (prayerTimesElement && originalPrayerTimesState) {
-        // Remove inline display style to let CSS rules take over
-        prayerTimesElement.style.removeProperty('display');
         prayerTimesElement.className = originalPrayerTimesState.className || "";
       }
 
       // Restore important-times element
       if (importantTimesElement && originalImportantTimesState) {
-        // Remove inline display style to let CSS rules take over
-        importantTimesElement.style.removeProperty('display');
         importantTimesElement.className =
           originalImportantTimesState.className || "";
       }
+
+      // Show both elements together using helper function
+      announcementModule.showPrayerElements();
     }, durationSeconds * 1000);
 
 
@@ -779,9 +794,6 @@ var announcementModule = {
         html: prayerTimesElement.innerHTML,
         className: prayerTimesElement.className,
       };
-
-      // Hide the prayer-times element
-      prayerTimesElement.style.display = "none";
     }
 
     // Save original state of important-times
@@ -792,10 +804,10 @@ var announcementModule = {
         html: importantTimesElement.innerHTML,
         className: importantTimesElement.className,
       };
-
-      // Hide the important-times element
-      importantTimesElement.style.display = "none";
     }
+
+    // Hide both elements together using helper function
+    this.hidePrayerElements();
 
     // Create image container that will be placed in the same location as prayer-times
     var imageContainer = document.createElement("div");
@@ -860,19 +872,18 @@ var announcementModule = {
 
       // Restore the prayer-times element
       if (prayerTimesElement && originalPrayerTimesState) {
-        // Remove inline display style to let CSS rules take over
-        prayerTimesElement.style.removeProperty('display');
         prayerTimesElement.innerHTML = originalPrayerTimesState.html;
         prayerTimesElement.className = originalPrayerTimesState.className;
       }
 
       // Restore the important-times element
       if (importantTimesElement && originalImportantTimesState) {
-        // Remove inline display style to let CSS rules take over
-        importantTimesElement.style.removeProperty('display');
         importantTimesElement.innerHTML = originalImportantTimesState.html;
         importantTimesElement.className = originalImportantTimesState.className;
       }
+
+      // Show both elements together using helper function
+      announcementModule.showPrayerElements();
     };
 
     // Set up cleanup after the specified duration
@@ -1154,7 +1165,7 @@ var announcementModule = {
 
       // Check trigger conditions
       if (adhkarConfig.trigger.type === "post_jamaah") {
-        shouldShow = this.checkPostJamaahTrigger(adhkarConfig, currentTime, jamaahTimes);
+        shouldShow = this.checkPostJamaahTrigger(adhkarConfig, currentTime, jamaahTimes, dayOfWeek);
       } else if (adhkarConfig.trigger.type === "dst_schedule") {
         shouldShow = this.checkDSTScheduleTrigger(adhkarConfig, currentTime, dayOfWeek, isIrishSummerTime);
       }
@@ -1185,42 +1196,55 @@ var announcementModule = {
   },
 
   // Check if post-jamaah trigger conditions are met
-  checkPostJamaahTrigger: function (config, currentTime, jamaahTimes) {
-    console.log("Post Jamaah Debug - Config:", config.id, "Enabled:", config.enabled);
-    
+  checkPostJamaahTrigger: function (config, currentTime, jamaahTimes, dayOfWeek) {
     if (!config.trigger.applyToAllJamaah) {
-      console.log("Post Jamaah Debug - applyToAllJamaah is false");
       return false;
     }
 
     var delayMinutes = config.trigger.delayMinutes !== undefined ? config.trigger.delayMinutes : 8;
     var jamaahTypes = config.trigger.jamaahTypes || [];
-    
-    console.log("Post Jamaah Debug - Delay minutes:", delayMinutes, "Jamaah types:", jamaahTypes);
+    var excludeFridayZohr = config.trigger.excludeFridayZohr || false;
 
     for (var i = 0; i < jamaahTypes.length; i++) {
       var jamaahType = jamaahTypes[i];
       var jamaahTime = jamaahTimes[jamaahType];
 
-      console.log("Post Jamaah Debug - Checking", jamaahType, "time:", jamaahTime);
-
-      if (!jamaahTime || isNaN(jamaahTime)) {
-        console.log("Post Jamaah Debug - Invalid jamaah time for", jamaahType);
+      // Check for Friday Zohr exclusion
+      if (excludeFridayZohr && jamaahType === "zohrJamaah" && dayOfWeek === 5) {
         continue;
       }
 
-      var adhkarStartTime = jamaahTime + delayMinutes;
-      var adhkarEndTime = adhkarStartTime + (config.display.totalDurationMinutes || 5);
+      if (!jamaahTime || isNaN(jamaahTime)) {
+        continue;
+      }
 
-      console.log("Post Jamaah Debug - Adhkar window:", adhkarStartTime, "to", adhkarEndTime, "Current:", currentTime);
+      // Calculate duration - use pageTimings if available, otherwise fallback to totalDurationMinutes
+      var totalDuration = 5; // default fallback
+      if (config.display.pageTimings && Array.isArray(config.display.pageTimings)) {
+        // Sum up all page timings
+        totalDuration = 0;
+        for (var j = 0; j < config.display.pageTimings.length; j++) {
+          var timing = config.display.pageTimings[j];
+          // Parse timing - could be "1:30" (minutes:seconds) or just "2" (minutes)
+          if (typeof timing === 'string' && timing.includes(':')) {
+            var parts = timing.split(':');
+            totalDuration += parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+          } else {
+            totalDuration += parseFloat(timing);
+          }
+        }
+      } else if (config.display.totalDurationMinutes) {
+        totalDuration = config.display.totalDurationMinutes;
+      }
+
+      var adhkarStartTime = jamaahTime + delayMinutes;
+      var adhkarEndTime = adhkarStartTime + totalDuration;
 
       if (currentTime >= adhkarStartTime && currentTime < adhkarEndTime) {
-        console.log("Post Jamaah Debug - SHOULD TRIGGER for", jamaahType);
         return true;
       }
     }
 
-    console.log("Post Jamaah Debug - No trigger conditions met");
     return false;
   },
 
@@ -1251,7 +1275,29 @@ var announcementModule = {
     }
 
     var startTimeMinutes = timeUtils.timeToMinutes(scheduledTime);
-    var endTimeMinutes = startTimeMinutes + (trigger.durationMinutes || config.display.totalDurationMinutes || 5);
+    
+    // Calculate total duration - use pageTimings if available, otherwise fallback to totalDurationMinutes or durationMinutes
+    var totalDuration = 5; // default fallback
+    if (config.display.pageTimings && Array.isArray(config.display.pageTimings)) {
+      // Sum up all page timings
+      totalDuration = 0;
+      for (var j = 0; j < config.display.pageTimings.length; j++) {
+        var timing = config.display.pageTimings[j];
+        // Parse timing - could be "1:30" (minutes:seconds) or just "2" (minutes)
+        if (typeof timing === 'string' && timing.includes(':')) {
+          var parts = timing.split(':');
+          totalDuration += parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+        } else {
+          totalDuration += parseFloat(timing);
+        }
+      }
+    } else if (trigger.durationMinutes) {
+      totalDuration = trigger.durationMinutes;
+    } else if (config.display.totalDurationMinutes) {
+      totalDuration = config.display.totalDurationMinutes;
+    }
+    
+    var endTimeMinutes = startTimeMinutes + totalDuration;
 
     console.log("DST Trigger Debug - Scheduled time:", scheduledTime, "Start minutes:", startTimeMinutes, "End minutes:", endTimeMinutes, "Current:", currentTime);
 
@@ -1279,6 +1325,12 @@ var announcementModule = {
     if (config.display.takesOverImages) {
       this.pauseOngoingAnnouncements();
     }
+
+    // Initialize cycle tracking
+    displayState.adhkarCurrentPage = 0;
+    displayState.adhkarCurrentCycle = 0;
+    displayState.adhkarTotalPages = config.display.pageCount || 1;
+    displayState.adhkarTotalCycles = config.display.repeatCycles || 1;
 
     // Load the text file if not already loaded
     if (!displayState.adhkarText) {
@@ -1357,26 +1409,165 @@ var announcementModule = {
     var pageText = currentPageVerses.join('<br>');
 
     // Create and show the display
-    this.renderAdhkarDisplay(pageText, config, currentPage, pageCount);
+    var totalCycles = displayState.adhkarTotalCycles;
+    var currentCycle = displayState.adhkarCurrentCycle;
+    this.renderAdhkarDisplay(pageText, config, currentPage, pageCount, currentCycle, totalCycles);
 
-    // Calculate time for this page
-    var totalDuration = display.totalDurationMinutes * 60 * 1000; // Convert to milliseconds
-    var timePerPage = totalDuration / pageCount;
+    // Calculate timing with new pageTimings system
+    var showImagesBetweenCycles = display.showImagesBetweenCycles !== false;
+    
+    // Calculate current page duration from pageTimings array
+    var currentPageDuration;
+    if (display.pageTimings && Array.isArray(display.pageTimings) && display.pageTimings[currentPage]) {
+      var timing = display.pageTimings[currentPage];
+      // Parse timing - could be "1:30" (minutes:seconds) or just "2" (minutes)
+      if (typeof timing === 'string' && timing.includes(':')) {
+        var parts = timing.split(':');
+        currentPageDuration = (parseInt(parts[0]) * 60 + parseInt(parts[1])) * 1000; // Convert to milliseconds
+      } else {
+        currentPageDuration = parseFloat(timing) * 60 * 1000; // Convert minutes to milliseconds
+      }
+    } else {
+      // Fallback to old system for backward compatibility
+      var totalDuration = (display.totalDurationMinutes || 5) * 60 * 1000; // Convert to milliseconds
+      var imageSlots = showImagesBetweenCycles ? (totalCycles - 1) : 0;
+      var totalSlots = (pageCount * totalCycles) + imageSlots;
+      currentPageDuration = totalDuration / totalSlots;
+    }
 
-    // Set timeout for next page or cleanup
+    var self = this;
+    
+    // Determine what to show next
     displayState.adhkarPageTimeout = setTimeout(function() {
       displayState.adhkarCurrentPage++;
       
-      if (displayState.adhkarCurrentPage < pageCount) {
-        announcementModule.showAdhkarPage(config);
-      } else {
-        announcementModule.cleanupAdhkarDisplay();
+      // Check if we finished current cycle
+      if (displayState.adhkarCurrentPage >= pageCount) {
+        displayState.adhkarCurrentPage = 0;
+        displayState.adhkarCurrentCycle++;
+        
+        // Check if we should show image between cycles
+        if (displayState.adhkarCurrentCycle < totalCycles && showImagesBetweenCycles) {
+          // For image duration, use a fixed 3 seconds or calculate from pageTimings average
+          var imageDuration = 3000; // 3 seconds default
+          if (display.pageTimings && Array.isArray(display.pageTimings)) {
+            // Use average of page timings for image display
+            var totalTime = 0;
+            for (var k = 0; k < display.pageTimings.length; k++) {
+              var timing = display.pageTimings[k];
+              if (typeof timing === 'string' && timing.includes(':')) {
+                var parts = timing.split(':');
+                totalTime += (parseInt(parts[0]) * 60 + parseInt(parts[1]));
+              } else {
+                totalTime += parseFloat(timing) * 60;
+              }
+            }
+            imageDuration = (totalTime / display.pageTimings.length) * 1000; // Convert average to milliseconds
+          }
+          // Show announcement image, then continue
+          self.showAdhkarInterleaveImage(config, imageDuration);
+          return;
+        }
       }
-    }, timePerPage);
+      
+      // Check if we finished all cycles
+      if (displayState.adhkarCurrentCycle >= totalCycles) {
+        announcementModule.cleanupAdhkarDisplay();
+      } else {
+        announcementModule.showAdhkarPage(config);
+      }
+    }, currentPageDuration);
+  },
+
+  // Show announcement image between Adhkar cycles
+  showAdhkarInterleaveImage: function(config, duration) {
+    var self = this;
+    
+    // Remove current adhkar display temporarily
+    var adhkarContainer = document.getElementById("adhkar-display-container");
+    if (adhkarContainer && adhkarContainer.parentNode) {
+      adhkarContainer.parentNode.removeChild(adhkarContainer);
+    }
+
+    // Get active announcement images
+    var activeDynamicAnnouncement = this.getActiveDynamicAnnouncement(new Date());
+    if (activeDynamicAnnouncement && activeDynamicAnnouncement.imageAnnouncement) {
+      var images = activeDynamicAnnouncement.imageAnnouncement.images;
+      if (images && images.length > 0) {
+        // Pick a random image
+        var randomImage = images[Math.floor(Math.random() * images.length)];
+        
+        // Show the image briefly (convert milliseconds to seconds)
+        this.displaySingleImage(randomImage, duration / 1000, function() {
+          // After image, continue with next Adhkar cycle
+          self.showAdhkarPage(config);
+        });
+        return;
+      }
+    }
+    
+    // No image available, continue immediately
+    this.showAdhkarPage(config);
+  },
+
+  // Display a single image for specified duration
+  displaySingleImage: function(imagePath, durationSeconds, callback) {
+    var prayerTimesElement = document.querySelector(".prayer-times");
+    var importantTimesElement = document.querySelector(".important-times");
+
+    // Hide both prayer elements together
+    this.hidePrayerElements();
+
+    // Create image container
+    var imageContainer = document.createElement("div");
+    imageContainer.className = "adhkar-interleave-image-container";
+    imageContainer.style.width = "100%";
+    imageContainer.style.height = "132vh";
+    imageContainer.style.display = "flex";
+    imageContainer.style.justifyContent = "center";
+    imageContainer.style.alignItems = "center";
+    imageContainer.style.marginTop = "1.0vw";
+
+    // Create image element
+    var imgElement = document.createElement("img");
+    imgElement.src = imagePath;
+    imgElement.style.maxWidth = "90%";
+    imgElement.style.height = "auto";
+    imgElement.style.opacity = "0";
+    imgElement.style.transition = "opacity 0.5s ease-in-out";
+
+    imageContainer.appendChild(imgElement);
+
+    // Insert container
+    if (prayerTimesElement && prayerTimesElement.parentNode) {
+      prayerTimesElement.parentNode.insertBefore(imageContainer, prayerTimesElement);
+    } else {
+      document.body.appendChild(imageContainer);
+    }
+
+    // Fade in
+    setTimeout(function() {
+      imgElement.style.opacity = "1";
+    }, 100);
+
+    // Cleanup after duration
+    setTimeout(function() {
+      if (imageContainer && imageContainer.parentNode) {
+        imageContainer.parentNode.removeChild(imageContainer);
+      }
+      
+      // Restore both prayer elements together
+      announcementModule.showPrayerElements();
+      
+      if (callback) callback();
+    }, durationSeconds * 1000);
   },
 
   // Render the Adhkar display on screen
-  renderAdhkarDisplay: function (text, config, currentPage, totalPages) {
+  renderAdhkarDisplay: function (text, config, currentPage, totalPages, currentCycle, totalCycles) {
+    currentCycle = currentCycle || 0;
+    totalCycles = totalCycles || 1;
+    
     // First, remove any existing adhkar container to prevent stacking
     var existingContainer = document.getElementById("adhkar-display-container");
     if (existingContainer && existingContainer.parentNode) {
@@ -1402,7 +1593,6 @@ var announcementModule = {
         display: originalDisplay,
         className: prayerTimesElement.className,
       };
-      prayerTimesElement.style.display = "none";
     }
 
     var originalImportantTimesState = null;
@@ -1419,8 +1609,10 @@ var announcementModule = {
         display: originalDisplay,
         className: importantTimesElement.className,
       };
-      importantTimesElement.style.display = "none";
     }
+
+    // Hide both elements together using helper function
+    this.hidePrayerElements();
 
     // Store original states for cleanup
     displayState.originalPrayerTimesState = originalPrayerTimesState;
@@ -1459,15 +1651,36 @@ var announcementModule = {
     adhkarContainer.appendChild(textElement);
 
     // Add countdown timer if configured
-    if (config.display.showCountdown && totalPages > 1) {
+    if (config.display.showCountdown) {
       var countdownElement = document.createElement("div");
       countdownElement.className = "adhkar-countdown";
       
-      // Calculate remaining time for this page
-      var totalDuration = config.display.totalDurationMinutes * 60 * 1000;
-      var timePerPage = totalDuration / totalPages;
+      // Calculate remaining time for this page using new pageTimings system
+      var currentPageDuration;
+      if (config.display.pageTimings && Array.isArray(config.display.pageTimings) && config.display.pageTimings[currentPage]) {
+        var timing = config.display.pageTimings[currentPage];
+        // Parse timing - could be "1:30" (minutes:seconds) or just "2" (minutes)
+        if (typeof timing === 'string' && timing.includes(':')) {
+          var parts = timing.split(':');
+          currentPageDuration = (parseInt(parts[0]) * 60 + parseInt(parts[1])) * 1000; // Convert to milliseconds
+        } else {
+          currentPageDuration = parseFloat(timing) * 60 * 1000; // Convert minutes to milliseconds
+        }
+      } else {
+        // Fallback to old system for backward compatibility
+        var totalDuration = (config.display.totalDurationMinutes || 5) * 60 * 1000;
+        var showImagesBetweenCycles = config.display.showImagesBetweenCycles !== false;
+        var imageSlots = showImagesBetweenCycles ? (totalCycles - 1) : 0;
+        var totalSlots = (totalPages * totalCycles) + imageSlots;
+        currentPageDuration = totalDuration / totalSlots;
+      }
       
-      this.startCountdown(countdownElement, timePerPage / 1000, currentPage + 1, totalPages);
+      // Show cycle info if multiple cycles
+      var displayText = totalCycles > 1 
+        ? "Page " + (currentPage + 1) + "/" + totalPages + " • Cycle " + (currentCycle + 1) + "/" + totalCycles
+        : "Page " + (currentPage + 1) + "/" + totalPages;
+      
+      this.startCountdown(countdownElement, currentPageDuration / 1000, displayText);
       
       // Add countdown to the adhkar container
       adhkarContainer.appendChild(countdownElement);
@@ -1498,14 +1711,14 @@ var announcementModule = {
   },
 
   // Start countdown timer
-  startCountdown: function (element, seconds, currentPage, totalPages) {
+  startCountdown: function (element, seconds, displayText) {
     var remainingSeconds = Math.floor(seconds);
     
     var updateCountdown = function() {
       var minutes = Math.floor(remainingSeconds / 60);
       var secs = remainingSeconds % 60;
       var timeString = (minutes < 10 ? "0" : "") + minutes + ":" + (secs < 10 ? "0" : "") + secs;
-      element.textContent = "Page " + currentPage + " of " + totalPages + " • Next page in: " + timeString;
+      element.textContent = displayText + " • Next in: " + timeString;
       
       if (remainingSeconds > 0) {
         remainingSeconds--;
@@ -1658,17 +1871,16 @@ var announcementModule = {
 
     // Restore prayer-times element
     if (displayState.prayerTimesElement && displayState.originalPrayerTimesState) {
-      // Always remove the inline display style to let CSS rules take over
-      displayState.prayerTimesElement.style.removeProperty('display');
       displayState.prayerTimesElement.className = displayState.originalPrayerTimesState.className || "";
     }
 
     // Restore important-times element
     if (displayState.importantTimesElement && displayState.originalImportantTimesState) {
-      // Always remove the inline display style to let CSS rules take over
-      displayState.importantTimesElement.style.removeProperty('display');
       displayState.importantTimesElement.className = displayState.originalImportantTimesState.className || "";
     }
+
+    // Show both elements together using helper function
+    this.showPrayerElements();
 
     // Resume any paused announcements/images
     this.resumePausedAnnouncements();
@@ -1677,6 +1889,9 @@ var announcementModule = {
     displayState.adhkarActive = false;
     displayState.adhkarConfig = null;
     displayState.adhkarCurrentPage = 0;
+    displayState.adhkarCurrentCycle = 0;
+    displayState.adhkarTotalPages = 0;
+    displayState.adhkarTotalCycles = 0;
     displayState.originalPrayerTimesState = null;
     displayState.originalImportantTimesState = null;
     displayState.prayerTimesElement = null;
