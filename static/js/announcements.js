@@ -1498,7 +1498,7 @@ var announcementModule = {
         var randomImage = images[Math.floor(Math.random() * images.length)];
         
         // Show the image briefly (convert milliseconds to seconds)
-        this.displaySingleImage(randomImage, duration / 1000, function() {
+        this.displayAdhkarInterleaveImage(randomImage, duration / 1000, function() {
           // After image, continue with next Adhkar cycle
           self.showAdhkarPage(config);
         });
@@ -1510,8 +1510,16 @@ var announcementModule = {
     this.showAdhkarPage(config);
   },
 
-  // Display a single image for specified duration
-  displaySingleImage: function(imagePath, durationSeconds, callback) {
+  // Display a single image for specified duration (used for Adhkar interleaving)
+  displayAdhkarInterleaveImage: function(imagePath, durationSeconds, callback) {
+    // Check if there's already an adhkar interleave image running
+    var existingAdhkarImage = document.querySelector(".adhkar-interleave-image-container");
+    if (existingAdhkarImage) {
+      // Already displaying an adhkar interleave image, don't start another
+      if (callback) callback();
+      return;
+    }
+
     var prayerTimesElement = document.querySelector(".prayer-times");
     var importantTimesElement = document.querySelector(".important-times");
 
