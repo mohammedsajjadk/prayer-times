@@ -11,7 +11,7 @@ var announcements = {
 
   // Regular recurring announcements
   thursday_darood: function () {
-    return "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER MAGRIB";
+    return "DUROOD/SALAT-ALA-NABI صلى الله عليه وسلم GATHERING • THURSDAY AFTER ISHA";
   },
 
   friday_tafseer: function () {
