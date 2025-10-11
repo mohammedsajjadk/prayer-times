@@ -92,17 +92,26 @@ body, html {
 /* Adhkar Display Styles - Match image slideshow containers */
 .adhkar-text-container {
     width: 100%;
-    height: 132vh;
+    height: 134vh;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     margin-top: 0vw;
-    padding-top: 2vw;
-    background: var(--bg-color);
+    padding-top: 0vw;
     color: var(--text-color);
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
+    animation: adhkar-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes adhkar-glow {
+    0% { 
+        box-shadow: inset 0 0 5vw rgba(0, 136, 255, 0.1);
+    }
+    100% { 
+        box-shadow: inset 0 0 8vw rgba(0, 136, 255, 0.2);
+    }
 }
 
 .adhkar-text {
@@ -113,66 +122,103 @@ body, html {
     text-align: center;
     width: 100%;
     min-height: 100%;
-    padding: 1vw;
+    padding: 0.5vw;
     box-sizing: border-box;
+    /* Prominent Islamic-inspired background */
+    background: 
+        radial-gradient(ellipse at center, rgba(0, 136, 255, 0.15) 0%, transparent 70%),
+        linear-gradient(45deg, 
+            rgba(0, 40, 80, 0.95) 0%, 
+            rgba(0, 60, 120, 0.9) 25%, 
+            rgba(0, 40, 80, 0.95) 50%,
+            rgba(0, 60, 120, 0.9) 75%, 
+            rgba(0, 40, 80, 0.95) 100%
+        ),
+        repeating-linear-gradient(
+            45deg,
+            transparent 0,
+            transparent 1.5vw,
+            rgba(102, 179, 255, 0.08) 1.5vw,
+            rgba(102, 179, 255, 0.08) 3vw
+        );
+    border: 0.3vw solid rgba(102, 179, 255, 0.6);
+    border-radius: 1.5vw;
+    box-shadow: 
+        0 0 4vw rgba(0, 136, 255, 0.4),
+        0 0 8vw rgba(102, 179, 255, 0.2),
+        inset 0 0 2vw rgba(0, 136, 255, 0.15),
+        inset 0 0 6vw rgba(255, 224, 102, 0.05);
     /* Dynamic font size will be set by JavaScript */
 }
 
 .adhkar-text .adhkar-title {
     font-size: var(--dynamic-title-size, 3.2vw);
-    margin-bottom: 1vw;
-    margin-top: 1.5vw;
+    margin-bottom: 0.4vw;
+    margin-top: 0.8vw;
     text-decoration: underline;
-    text-decoration-color: var(--border-color);
+    text-decoration-color: #66B3FF;
+    color: #FFFFFF;
+    font-weight: 600;
+    text-shadow: 0 0 0.5vw rgba(102, 179, 255, 0.6);
 }
 
 .adhkar-text .adhkar-section {
-    margin: 0.3vw 0;
-    padding: 0.2vw 0;
+    margin: 0.1vw 0;
+    padding: 0.05vw 0;
 }
 
 .adhkar-text .adhkar-divider {
     width: 70%;
     height: 0.2vw;
-    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
-    margin: 1vw auto;
+    background: linear-gradient(90deg, transparent, #66B3FF, transparent);
+    margin: 0.3vw auto;
     border-radius: 0.1vw;
 }
 
 .adhkar-text .adhkar-border-separator {
     width: 90%;
     height: 0;
-    border-bottom: 0.15vw solid var(--border-color);
-    margin: 0.8vw auto;
+    border-bottom: 0.15vw solid #66B3FF;
+    margin: 0.2vw auto;
     opacity: 0.8;
 }
 
 .adhkar-text .arabic-text {
     font-size: var(--dynamic-arabic-size, 2.8vw);
-    line-height: 1.5;
-    margin: 0.4vw 0;
-    color: var(--text-color);
+    line-height: 1.3;
+    margin: 0.15vw 0;
+    color: #FFFFFF;
     font-family: 'Arial Unicode MS', Arial, sans-serif;
+    font-weight: 500;
+    text-shadow: 0 0 0.4vw rgba(102, 179, 255, 0.5), 0 0 0.2vw rgba(0, 0, 0, 0.8);
 }
 
 .adhkar-text .english-text {
     font-size: var(--dynamic-english-size, 2vw);
-    line-height: 1.4;
-    color: #999;
+    line-height: 1.2;
+    color: #E6F3FF;
     font-style: italic;
-    margin: 0.2vw 0;
+    margin: 0.1vw 0;
+    text-shadow: 0 0 0.3vw rgba(0, 0, 0, 0.7);
 }
 
 .adhkar-text .repetition {
     font-weight: bold;
+    color: #FFE066;
+    text-shadow: 0 0 0.3vw rgba(0, 0, 0, 0.7);
+    font-size: 2.5vw;
+    padding: 1.3vw;
 }
 
 .adhkar-text .special-section {
     font-size: var(--dynamic-title-size, 1vw);
     margin: 1vw 0 0.8vw 0;
     text-decoration: underline;
-    text-decoration-color: var(--border-color);
+    text-decoration-color: #66B3FF;
     text-transform: uppercase;
+    color: #FFFFFF;
+    font-weight: 600;
+    text-shadow: 0 0 0.4vw rgba(102, 179, 255, 0.4);
 }
 
 .adhkar-countdown {

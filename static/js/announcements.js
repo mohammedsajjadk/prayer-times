@@ -1769,7 +1769,7 @@ var announcementModule = {
       
       // Check if it's the main title (first line)
       if (i === 0 || (line.includes('الأذكار بعد الصلاة') || line.includes('Adhkār After Salāh'))) {
-        formattedHtml += '<div class="adhkar-title">' + this.escapeHtml(line) + '</div>';
+        formattedHtml += '<div class="repetition">' + this.escapeHtml(line) + '</div>';
       }
       // Check if it's a special section like "Special Adhkār"
       else if (line === "Special Adhkār" || line === "Special Adhkar") {
@@ -1777,7 +1777,7 @@ var announcementModule = {
       }
       // Check if it's a repetition count (contains ×)
       else if (line.includes('×')) {
-        formattedHtml += '<div class="repetition">' + this.escapeHtml(line) + '</div>';
+        formattedHtml += '<div class="arabic-text">' + this.escapeHtml(line) + '</div>';
       }
       // Check if it's a section header (starts with English words like "After Fajr Prayer")
       else if (/^[A-Za-z]/.test(line) && !(/[\u0600-\u06FF\u0750-\u077F]/.test(line))) {
@@ -1813,8 +1813,8 @@ var announcementModule = {
     
     return {
       main: baseFontSize,
-      title: baseFontSize * 0.9,
-      arabic: baseFontSize * 1.7,
+      title: baseFontSize * 1.3,
+      arabic: baseFontSize * 1.80,
       english: baseFontSize * 0.85,
       repetition: baseFontSize * 0.75,
       lineHeight: Math.max(0.9, 1.2 - (baseFontSize * 0.05))
