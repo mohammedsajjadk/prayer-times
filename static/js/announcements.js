@@ -1814,7 +1814,7 @@ var announcementModule = {
     return {
       main: baseFontSize,
       title: baseFontSize * 0.9,
-      arabic: baseFontSize * 1.3,
+      arabic: baseFontSize * 1.7,
       english: baseFontSize * 0.85,
       repetition: baseFontSize * 0.75,
       lineHeight: Math.max(0.9, 1.2 - (baseFontSize * 0.05))
