@@ -55,6 +55,7 @@ var app = {  // Initialize the application
           (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
           (irishHours === 14 && irishMins === 12 && irishSecs <= 2) ||
           (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
+          (irishHours === 17 && irishMins === 30 && irishSecs <= 2) ||
           (irishHours === 19 && irishMins === 45 && irishSecs <= 2) ||
           (irishHours === 21 && irishMins === 15 && irishSecs <= 2)) {
         timeModule.persistentRefresh();
