@@ -88,6 +88,38 @@
     "isSpecial": true
   },
   {
+    "id": "monthly_bayaan_1",
+    "startDate": "2025-10-19T00:00:00+01:00",
+    "endDate": "2025-10-20T22:45:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 30,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Monthly Bayaan.jpg"
+    ],
+    "isSpecial": true
+  }, 
+  {
+    "id": "monthly_bayaan_2",
+    "startDate": "2025-10-24T00:00:00+01:00",
+    "endDate": "2025-10-26T19:18:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 2,                             
+      "duration": 30,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Monthly Bayaan.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
     "id": "quran_recitation",
     "startDate": "2025-07-26T00:00:00+01:00",
     "endDate": "2025-07-27T14:15:00+01:00",
