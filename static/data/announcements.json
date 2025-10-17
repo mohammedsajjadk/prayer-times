@@ -93,8 +93,8 @@
     "endDate": "2025-10-20T22:45:00+01:00",
     "type": "image",
     "displayCondition": {
-      "frequency": 1,
-      "duration": 30,
+      "frequency": 2,
+      "duration": 40,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
@@ -110,7 +110,7 @@
     "type": "image",
     "displayCondition": {
       "frequency": 2,                             
-      "duration": 30,
+      "duration": 40,
       "avoidJamaahTime": true,
       "rotateImages": true
     },

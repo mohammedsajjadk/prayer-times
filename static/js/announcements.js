@@ -641,7 +641,7 @@ var announcementModule = {
     tafseerContainer.style.display = "flex";
     tafseerContainer.style.justifyContent = "center";
     tafseerContainer.style.alignItems = "center";
-    tafseerContainer.style.marginTop = "1.0vw"; // Reduced margin to give more space for image
+    tafseerContainer.style.marginTop = "0"; // Reduced margin to give more space for image
     tafseerContainer.style.padding = "0"; // Remove padding to maximize space
 
     // Insert the tafseer container where prayer-times would normally be
