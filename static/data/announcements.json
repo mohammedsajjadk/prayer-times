@@ -115,7 +115,24 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/Monthly Bayaan.jpg"
+      "/static/images/Monthly Bayaan.jpg",
+      "/static/images/Clock.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "monthly_bayaan_3",
+    "startDate": "2025-10-26T19:19:00+01:00",
+    "endDate": "2025-10-26T23:18:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 2,                             
+      "duration": 40,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Clock.jpg"
     ],
     "isSpecial": true
   },
