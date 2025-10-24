@@ -144,6 +144,7 @@ var announcementModule = {
       // Handle recurring weekly announcements
       if (announcement.type === "recurring_weekly") {
         isActive = this.isRecurringWeeklyActive(announcement, now);
+        console.log("DEBUG: Recurring weekly check for", announcement.id, "- Active:", isActive, "Day:", now.getDay(), "Required:", announcement.dayOfWeek);
       }
       // Handle regular date-based announcements
       else if (announcement.startDate && announcement.endDate) {
@@ -153,11 +154,13 @@ var announcementModule = {
       }
 
       if (isActive) {
+        console.log("DEBUG: Found active announcement:", announcement.id, "Type:", announcement.type);
         // Handle both text messages and image announcements
         if (
           announcement.type === "image" ||
           (announcement.type === "recurring_weekly" && announcement.images)
         ) {
+          console.log("DEBUG: Adding image announcement:", announcement.id, "Images:", announcement.images);
           activeAnnouncements.imageAnnouncements.push({
             id: announcement.id,
             isImage: true,
@@ -166,6 +169,7 @@ var announcementModule = {
             isSpecial: announcement.isSpecial || false,
           });
         } else if (announcement.message) {
+          console.log("DEBUG: Adding text announcement:", announcement.id);
           activeAnnouncements.textAnnouncement = {
             message: announcement.message || "",
             isSpecial: announcement.isSpecial || false,
@@ -174,14 +178,14 @@ var announcementModule = {
       }
     }
 
-    // Combine image announcements if multiple are active
+    // Create rotation schedule if multiple are active
     if (activeAnnouncements.imageAnnouncements.length > 0) {
-      var combinedImages = this.combineImageAnnouncements(
+      var imageSchedule = this.createImageRotationSchedule(
         activeAnnouncements.imageAnnouncements
       );
       return {
         textAnnouncement: activeAnnouncements.textAnnouncement,
-        imageAnnouncement: combinedImages,
+        imageAnnouncement: imageSchedule,
       };
     }
 
@@ -270,47 +274,71 @@ var announcementModule = {
     return timeUtils.timeToMinutes(timeStr);
   },
 
-  // Combine multiple image announcements into one with adjusted frequency
-  combineImageAnnouncements: function (imageAnnouncements) {
-    var allImages = [];
+  // Create sequential display schedule for multiple image announcements
+  createImageRotationSchedule: function (imageAnnouncements) {
+    var schedule = [];
     var isSpecial = false;
-    var baseDisplayCondition = {
-      frequency: 2,
-      duration: 30,
-      avoidJamaahTime: true,
-      rotateImages: true,
-    };
+    var maxFrequency = 0;
 
-    // Collect all images from all announcements
+    // Build sequential schedule from all active announcements
     for (var i = 0; i < imageAnnouncements.length; i++) {
       var announcement = imageAnnouncements[i];
       if (announcement.images && announcement.images.length > 0) {
-        allImages = allImages.concat(announcement.images);
+        var frequency = announcement.displayCondition.frequency || 1;
+        var duration = announcement.displayCondition.duration || 10;
+        
+        // Track maximum frequency to determine cycle wait time
+        if (frequency > maxFrequency) {
+          maxFrequency = frequency;
+        }
+        
+        // Add each image from this announcement to the sequential schedule
+        for (var j = 0; j < announcement.images.length; j++) {
+          schedule.push({
+            imagePath: announcement.images[j],
+            frequency: frequency,
+            duration: duration,
+            avoidJamaahTime: announcement.displayCondition.avoidJamaahTime !== false,
+            announcementId: announcement.id
+          });
+        }
       }
       if (announcement.isSpecial) {
         isSpecial = true;
       }
     }
 
-    // Calculate dynamic frequency based on total images
-    var totalImages = allImages.length;
-    var dynamicFrequency = Math.max(2, totalImages);
-
+    // Calculate total cycle time: sum of all durations + gaps + max frequency wait
+    var gapDuration = 20; // 20 seconds gap between images
+    var totalActiveDuration = 0;
+    for (var k = 0; k < schedule.length; k++) {
+      totalActiveDuration += schedule[k].duration;
+    }
+    var totalGapTime = (schedule.length - 1) * gapDuration; // gaps between images
+    var totalActiveTime = totalActiveDuration + totalGapTime;
+    var cycleWaitTime = maxFrequency * 60; // Convert max frequency (minutes) to seconds
+    var totalCycleTime = totalActiveTime + cycleWaitTime;
+    
     return {
       isImage: true,
-      images: allImages,
-      displayCondition: {
-        frequency: dynamicFrequency,
-        duration: baseDisplayCondition.duration,
-        avoidJamaahTime: baseDisplayCondition.avoidJamaahTime,
-        rotateImages: baseDisplayCondition.rotateImages,
+      images: schedule.map(function(item) { return item.imagePath; }), // For compatibility
+      displayCondition: { // For compatibility
+        frequency: maxFrequency,
+        duration: schedule.length > 0 ? schedule[0].duration : 10,
+        avoidJamaahTime: schedule.length > 0 ? schedule[0].avoidJamaahTime : true
       },
+      schedule: schedule,
       isSpecial: isSpecial,
+      maxFrequency: maxFrequency,
+      gapDuration: gapDuration,
+      totalActiveTime: totalActiveTime,
+      totalCycleTime: totalCycleTime
     };
   },
 
   // Update the announcement message based on current time and special events
   updateAnnouncement: function () {
+    console.log("DEBUG: updateAnnouncement called");
     var now = testMode.enabled ? testMode.getMockDate() : new Date(); // Get current time in minutes from midnight
     var currentTime;
     if (testMode.enabled) {
@@ -409,6 +437,7 @@ var announcementModule = {
 
     // Check for any dynamic announcements
     var activeDynamicAnnouncement = this.getActiveDynamicAnnouncement(now);
+    console.log("DEBUG: Active dynamic announcement:", activeDynamicAnnouncement);
     if (activeDynamicAnnouncement) {
       // Handle text announcement
       if (activeDynamicAnnouncement.textAnnouncement) {
@@ -421,12 +450,18 @@ var announcementModule = {
 
       // Handle image announcement separately (can exist alongside text)
       if (activeDynamicAnnouncement.imageAnnouncement) {
+        console.log("DEBUG: Found imageAnnouncement:", activeDynamicAnnouncement.imageAnnouncement);
         imageData = {
           images: activeDynamicAnnouncement.imageAnnouncement.images,
           displayCondition:
             activeDynamicAnnouncement.imageAnnouncement.displayCondition,
           isSpecial: activeDynamicAnnouncement.imageAnnouncement.isSpecial,
+          schedule: activeDynamicAnnouncement.imageAnnouncement.schedule,
+          gapDuration: activeDynamicAnnouncement.imageAnnouncement.gapDuration,
+          totalActiveTime: activeDynamicAnnouncement.imageAnnouncement.totalActiveTime,
+          totalCycleTime: activeDynamicAnnouncement.imageAnnouncement.totalCycleTime,
         };
+        console.log("DEBUG: Created imageData with schedule:", imageData.schedule ? imageData.schedule.length : 'undefined', "items");
       }
     }
     // If no dynamic announcement, use standard recurring announcements
@@ -531,7 +566,9 @@ var announcementModule = {
       }
 
       // Process image announcement separately - even if there's a text announcement
+      console.log("DEBUG: Image processing decision - imageData exists:", !!imageData, "isWarning:", isWarning);
       if (imageData && !isWarning) {
+        console.log("DEBUG: Calling handleImageAnnouncement with schedule:", imageData.schedule ? imageData.schedule.length : 'undefined');
         this.handleImageAnnouncement(imageData, currentTime, [
           fajrJamaahTime,
           zohrJamaahTime,
@@ -539,6 +576,10 @@ var announcementModule = {
           magribJamaahTime,
           ishaJamaahTime,
         ]);
+      } else if (imageData && isWarning) {
+        console.log("DEBUG: Image announcement blocked by warning");
+      } else if (!imageData) {
+        console.log("DEBUG: No image data found");
       }
     }
 
@@ -711,59 +752,92 @@ var announcementModule = {
 
   },
 
-  // Handle image announcements with display conditions
+  // Handle sequential image announcements with gaps and cycle timing
   handleImageAnnouncement: function (imageData, currentTime, jamaahTimes) {
+    console.log("DEBUG: handleImageAnnouncement started - displayState.adhkarActive:", displayState.adhkarActive);
     // Don't process if Adhkar is active
     if (displayState.adhkarActive) {
+      console.log("DEBUG: Exiting handleImageAnnouncement because Adhkar is active");
       return;
     }
 
-    var displayCondition = imageData.displayCondition;
-    var frequency = displayCondition.frequency || 5; // Default: every 5 minutes
-    var duration = displayCondition.duration || 10; // Default: 10 seconds
-    var avoidJamaahTime = displayCondition.avoidJamaahTime !== false; // Default: true
+    // Check if we have a rotation schedule
+    console.log("DEBUG: Checking schedule - exists:", !!imageData.schedule, "isArray:", Array.isArray(imageData.schedule), "length:", imageData.schedule ? imageData.schedule.length : 'N/A');
+    if (!imageData.schedule || !Array.isArray(imageData.schedule) || imageData.schedule.length === 0) {
+      console.log("DEBUG: Exiting - invalid schedule");
+      return;
+    }
+
+    // Check if any images should avoid jamaah time
+    var shouldAvoidJamaah = false;
+    for (var i = 0; i < imageData.schedule.length; i++) {
+      if (imageData.schedule[i].avoidJamaahTime) {
+        shouldAvoidJamaah = true;
+        break;
+      }
+    }
+    console.log("DEBUG: shouldAvoidJamaah:", shouldAvoidJamaah, "currentTime:", currentTime);
 
     // Check if we're within 2 minutes of any jamaah time
-    if (avoidJamaahTime && jamaahTimes) {
-      for (var i = 0; i < jamaahTimes.length; i++) {
-        var jamaahTime = jamaahTimes[i];
-        // Check if jamaahTime is valid before comparing
-        if (
-          jamaahTime &&
-          !isNaN(jamaahTime) &&
-          Math.abs(currentTime - jamaahTime) <= 2
-        ) {
-          // We're within 2 minutes of jamaah time, don't show images
-          return;
+    if (shouldAvoidJamaah && jamaahTimes) {
+      console.log("DEBUG: Checking jamaah times proximity - jamaahTimes:", jamaahTimes);
+      for (var j = 0; j < jamaahTimes.length; j++) {
+        var jamaahTime = jamaahTimes[j];
+        var timeDiff = Math.abs(currentTime - jamaahTime);
+        console.log("DEBUG: Jamaah", j, "time:", jamaahTime, "diff:", timeDiff);
+        if (jamaahTime && !isNaN(jamaahTime) && timeDiff <= 2) {
+          console.log("DEBUG: Exiting - too close to jamaah time", jamaahTime);
+          return; // Too close to jamaah time, don't show any images
         }
       }
     }
 
-    // Calculate which image cycle we're in and which image to show
-    var gapDuration = 20; // 20-second gap between images
-    var slotDuration = duration + gapDuration; // Each image slot includes the image time + gap
-    var totalCycleDuration = imageData.images.length * slotDuration; // Total time for all images and gaps
-    var currentMinute = Math.floor(currentTime % (24 * 60));
-    var currentSecond = new Date().getSeconds();
-    // Check if we're in a display window (every frequency minutes)
-    if (currentMinute % frequency === 0) {
-      // Only proceed if we're within the total cycle duration
-      if (currentSecond < totalCycleDuration) {
-        // Calculate which slot we're in (image + gap)
-        var currentSlot = Math.floor(currentSecond / slotDuration);
-        var secondsIntoSlot = currentSecond % slotDuration;
+    var now = new Date();
+    var totalSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
+    var cyclePosition = totalSeconds % imageData.totalCycleTime;
 
-        // Only show image if we're in the image part of the slot (not the gap)
-        // and we have a valid image for this slot
-        if (
-          secondsIntoSlot < duration &&
-          currentSlot < imageData.images.length
-        ) {
-          // Show the specific image for the remaining time in its display period
-          var remainingTime = duration - secondsIntoSlot;
-          this.displaySingleImage(imageData.images[currentSlot], remainingTime);
+    console.log("DEBUG: Cycle calculation - totalSeconds:", totalSeconds, "totalCycleTime:", imageData.totalCycleTime, "cyclePosition:", cyclePosition, "totalActiveTime:", imageData.totalActiveTime);
+
+    // Check if we're in the active display period or the wait period
+    if (cyclePosition >= imageData.totalActiveTime) {
+      // We're in the wait period (no posters should be displayed)
+      console.log("DEBUG: In wait period - no posters displayed");
+      return;
+    }
+
+    // We're in the active period - determine which image to show
+    console.log("DEBUG: In active period - determining which image to show");
+    var currentPosition = 0;
+    var gapDuration = imageData.gapDuration;
+
+    for (var k = 0; k < imageData.schedule.length; k++) {
+      var scheduleItem = imageData.schedule[k];
+      var itemDuration = scheduleItem.duration;
+
+      console.log("DEBUG: Checking schedule item", k, "- imagePath:", scheduleItem.imagePath, "duration:", itemDuration, "currentPosition:", currentPosition, "cyclePosition:", cyclePosition);
+
+      // Check if we're in this item's display window
+      if (cyclePosition >= currentPosition && cyclePosition < (currentPosition + itemDuration)) {
+        var remainingTime = (currentPosition + itemDuration) - cyclePosition;
+        console.log("DEBUG: Showing image:", scheduleItem.imagePath, "for", remainingTime, "seconds (position", cyclePosition, "of", imageData.totalCycleTime, ")");
+        this.displaySingleImage(scheduleItem.imagePath, remainingTime);
+        return;
+      }
+
+      // Move to next position (item duration + gap)
+      currentPosition += itemDuration;
+      console.log("DEBUG: After item", k, "currentPosition now:", currentPosition);
+      
+      // Add gap time if not the last item
+      if (k < imageData.schedule.length - 1) {
+        // Check if we're in the gap period after this item
+        console.log("DEBUG: Checking gap after item", k, "- gap start:", currentPosition, "gap end:", currentPosition + gapDuration);
+        if (cyclePosition >= currentPosition && cyclePosition < (currentPosition + gapDuration)) {
+          console.log("DEBUG: In gap period after", scheduleItem.imagePath);
+          return; // In gap, don't show anything
         }
-        // If secondsIntoSlot >= duration, we're in the gap period - show normal content
+        currentPosition += gapDuration;
+        console.log("DEBUG: After gap", k, "currentPosition now:", currentPosition);
       }
     }
   },

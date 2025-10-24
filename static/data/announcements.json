@@ -56,38 +56,6 @@
     "hide": false
   },
   {
-    "id": "youth_1",
-    "startDate": "2025-10-13T00:00:00+01:00",
-    "endDate": "2025-10-14T22:45:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 40,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/Youth Programme.jpg"
-    ],
-    "isSpecial": true
-  }, 
-  {
-    "id": "youth_2",
-    "startDate": "2025-10-17T00:00:00+01:00",
-    "endDate": "2025-10-18T22:45:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,                             
-      "duration": 40,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/Youth Programme.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
     "id": "monthly_bayaan_1",
     "startDate": "2025-10-19T00:00:00+01:00",
     "endDate": "2025-10-20T22:45:00+01:00",
