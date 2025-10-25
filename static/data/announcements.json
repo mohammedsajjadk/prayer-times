@@ -45,7 +45,7 @@
     },
     "displayCondition": {
       "frequency": 2,
-      "duration": 40,
+      "duration": 60,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
@@ -62,7 +62,7 @@
     "type": "image",
     "displayCondition": {
       "frequency": 2,
-      "duration": 40,
+      "duration": 60,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
@@ -78,7 +78,7 @@
     "type": "image",
     "displayCondition": {
       "frequency": 2,                             
-      "duration": 40,
+      "duration": 60,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
@@ -94,8 +94,8 @@
     "endDate": "2025-10-26T23:18:00+01:00",
     "type": "image",
     "displayCondition": {
-      "frequency": 2,                             
-      "duration": 40,
+      "frequency": 2,
+      "duration": 60,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
