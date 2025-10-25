@@ -206,7 +206,7 @@ var prayerModule = {
     var jumuahTime;
     if (isIrishSummerTime) {
       // Summer Time
-      jumuahTime = "13:45";
+      jumuahTime = "13:20";
     } else {
       // Winter Time
       jumuahTime = "13:20";
