@@ -90,8 +90,7 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/Monthly Bayaan.jpg",
-      "/static/images/Clock.jpg"
+      "/static/images/Monthly Bayaan.jpg"
     ],
     "isSpecial": true
   },
