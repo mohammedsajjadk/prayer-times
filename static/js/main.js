@@ -50,14 +50,60 @@ var app = {  // Initialize the application
       var irishMins = now.getUTCMinutes();
       var irishSecs = now.getUTCSeconds();
 
-      if ((irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
-          (irishHours === 3 && irishMins === 30 && irishSecs <= 2) ||
-          (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
-          (irishHours === 14 && irishMins === 12 && irishSecs <= 2) ||
-          (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
-          (irishHours === 17 && irishMins === 30 && irishSecs <= 2) ||
-          (irishHours === 19 && irishMins === 45 && irishSecs <= 2) ||
-          (irishHours === 21 && irishMins === 15 && irishSecs <= 2)) {
+      // Check for fixed scheduled refreshes
+      var shouldRefresh = (irishHours === 0 && irishMins === 0 && irishSecs <= 2) ||
+                         (irishHours === 3 && irishMins === 30 && irishSecs <= 2) ||
+                         (irishHours === 12 && irishMins === 30 && irishSecs <= 2) ||
+                         (irishHours === 14 && irishMins === 12 && irishSecs <= 2) ||
+                         (irishHours === 16 && irishMins === 30 && irishSecs <= 2) ||
+                         (irishHours === 17 && irishMins === 30 && irishSecs <= 2) ||
+                         (irishHours === 19 && irishMins === 45 && irishSecs <= 2) ||
+                         (irishHours === 21 && irishMins === 15 && irishSecs <= 2);
+
+      // Check for dynamic refreshes 30 minutes before each Jamaah time
+      if (!shouldRefresh && irishSecs <= 2) {
+        // Get current Jamaah times
+        var jamaahTimes = [
+          document.querySelector(".jamaah .prayer-time-value:nth-child(2)"), // Fajr
+          document.querySelector(".jamaah .prayer-time-value:nth-child(3)"), // Zohr
+          document.querySelector(".jamaah .prayer-time-value:nth-child(4)"), // Asr
+          document.querySelector(".jamaah .prayer-time-value:nth-child(5)"), // Maghrib
+          document.querySelector(".jamaah .prayer-time-value:nth-child(6)"), // Isha
+          document.querySelector(".jamaah .prayer-time-value:nth-child(7)")  // Jumuah
+        ];
+
+        for (var i = 0; i < jamaahTimes.length; i++) {
+          if (jamaahTimes[i]) {
+            var jamaahTimeStr = jamaahTimes[i].getAttribute('data-time');
+            if (jamaahTimeStr) {
+              var jamaahParts = jamaahTimeStr.split(':');
+              if (jamaahParts.length === 2) {
+                var jamaahHour = parseInt(jamaahParts[0]);
+                var jamaahMin = parseInt(jamaahParts[1]);
+                
+                // Calculate 30 minutes before
+                var refreshMin = jamaahMin - 30;
+                var refreshHour = jamaahHour;
+                if (refreshMin < 0) {
+                  refreshMin += 60;
+                  refreshHour -= 1;
+                  if (refreshHour < 0) {
+                    refreshHour += 24;
+                  }
+                }
+                
+                // Check if current time matches refresh time (30 min before Jamaah)
+                if (irishHours === refreshHour && irishMins === refreshMin) {
+                  shouldRefresh = true;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (shouldRefresh) {
         timeModule.persistentRefresh();
       }
 
