@@ -606,8 +606,8 @@ var announcementModule = {
       return; // Adhkar image is showing, elements should be hidden
     }
 
-    // No overlays active - ensure both elements are visible together
-    this.showPrayerElements();
+    // No overlays active - ensure clean state and both elements visible
+    this.cleanupAllPosterElements();
   },
 
   // Helper function to hide both prayer-times and important-times together
@@ -617,9 +617,11 @@ var announcementModule = {
     
     if (prayerTimesElement) {
       prayerTimesElement.style.display = "none";
+      prayerTimesElement.style.zIndex = "1";
     }
     if (importantTimesElement) {
       importantTimesElement.style.display = "none";
+      importantTimesElement.style.zIndex = "1";
     }
   },
 
@@ -630,19 +632,50 @@ var announcementModule = {
     
     if (prayerTimesElement && prayerTimesElement.style.display === "none") {
       prayerTimesElement.style.removeProperty('display');
+      prayerTimesElement.style.zIndex = "1";
     }
     
     if (importantTimesElement && importantTimesElement.style.display === "none") {
       importantTimesElement.style.removeProperty('display');
+      importantTimesElement.style.zIndex = "1";
     }
   },
 
+  // Comprehensive cleanup function to remove ALL poster elements
+  cleanupAllPosterElements: function() {
+    // Remove all possible poster container types
+    var containerSelectors = [
+      '.image-slideshow-container',
+      '.adhkar-interleave-image-container', 
+      '.tafseer-display-container',
+      '[id^="single-image-"]',
+      '[class*="image-container"]',
+      '[class*="poster"]'
+    ];
 
+    containerSelectors.forEach(function(selector) {
+      var elements = document.querySelectorAll(selector);
+      elements.forEach(function(element) {
+        if (element && element.parentNode) {
+          element.parentNode.removeChild(element);
+        }
+      });
+    });
 
+    // Also clean up any stray image elements that might have high z-index
+    var allImages = document.querySelectorAll('img[style*="z-index"]');
+    allImages.forEach(function(img) {
+      var zIndex = parseInt(window.getComputedStyle(img).zIndex);
+      if (zIndex > 100) { // Remove images with high z-index that might be poster remnants
+        if (img.parentNode) {
+          img.parentNode.removeChild(img);
+        }
+      }
+    });
 
-
-
-
+    // Show prayer elements after cleanup
+    this.showPrayerElements();
+  },
 
 
   // Display the Tafseer image for Friday
@@ -745,8 +778,8 @@ var announcementModule = {
           originalImportantTimesState.className || "";
       }
 
-      // Show both elements together using helper function
-      announcementModule.showPrayerElements();
+      // Comprehensive cleanup to ensure no poster remnants
+      announcementModule.cleanupAllPosterElements();
     }, durationSeconds * 1000);
 
 
@@ -894,6 +927,10 @@ var announcementModule = {
     imageContainer.style.alignItems = "center";
     imageContainer.style.marginTop = "1.0vw";
     imageContainer.style.padding = "0";
+    // Ensure poster always appears on top
+    imageContainer.style.position = "relative";
+    imageContainer.style.zIndex = "1000";
+    imageContainer.style.backgroundColor = "transparent";
 
     // Insert the image container where prayer-times would normally be
     if (prayerTimesElement && prayerTimesElement.parentNode) {
@@ -956,8 +993,8 @@ var announcementModule = {
         importantTimesElement.className = originalImportantTimesState.className;
       }
 
-      // Show both elements together using helper function
-      announcementModule.showPrayerElements();
+      // Comprehensive cleanup to ensure no poster remnants
+      announcementModule.cleanupAllPosterElements();
     };
 
     // Set up cleanup after the specified duration
@@ -1638,8 +1675,8 @@ var announcementModule = {
         imageContainer.parentNode.removeChild(imageContainer);
       }
       
-      // Restore both prayer elements together
-      announcementModule.showPrayerElements();
+      // Comprehensive cleanup to ensure no poster remnants
+      announcementModule.cleanupAllPosterElements();
       
       if (callback) callback();
     }, durationSeconds * 1000);
@@ -1986,4 +2023,28 @@ var announcementModule = {
 // Initialize announcements when the DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
   announcementModule.init();
+  
+  // Set up periodic cleanup to prevent ghost poster elements
+  setInterval(function() {
+    // Only run cleanup if no active announcements are supposed to be showing
+    var activeSlideshow = document.querySelector(".image-slideshow-container");
+    var activeAdhkarImage = document.querySelector(".adhkar-interleave-image-container");
+    var activeTafseer = document.querySelector(".tafseer-display-container");
+    
+    if (!activeSlideshow && !activeAdhkarImage && !activeTafseer) {
+      // Check if prayer elements are visible, if not, there might be ghost elements
+      var prayerTimesElement = document.querySelector(".prayer-times");
+      var importantTimesElement = document.querySelector(".important-times");
+      
+      if (prayerTimesElement && importantTimesElement) {
+        var prayerVisible = window.getComputedStyle(prayerTimesElement).display !== 'none';
+        var importantVisible = window.getComputedStyle(importantTimesElement).display !== 'none';
+        
+        // If both should be visible but aren't, run cleanup
+        if (!prayerVisible || !importantVisible) {
+          announcementModule.cleanupAllPosterElements();
+        }
+      }
+    }
+  }, 10000); // Check every 10 seconds
 });
