@@ -606,6 +606,12 @@ var announcementModule = {
       return; // Adhkar image is showing, elements should be hidden
     }
 
+    // Check if any adhkar text display is active
+    var activeAdhkarText = document.getElementById("adhkar-display-container");
+    if (activeAdhkarText) {
+      return; // Adhkar text is showing, elements should be hidden
+    }
+
     // No overlays active - ensure clean state and both elements visible
     this.cleanupAllPosterElements();
   },
@@ -648,6 +654,7 @@ var announcementModule = {
       '.image-slideshow-container',
       '.adhkar-interleave-image-container', 
       '.tafseer-display-container',
+      '#adhkar-display-container',
       '[id^="single-image-"]',
       '[class*="image-container"]',
       '[class*="poster"]'
@@ -2030,8 +2037,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var activeSlideshow = document.querySelector(".image-slideshow-container");
     var activeAdhkarImage = document.querySelector(".adhkar-interleave-image-container");
     var activeTafseer = document.querySelector(".tafseer-display-container");
+    var activeAdhkarText = document.getElementById("adhkar-display-container");
     
-    if (!activeSlideshow && !activeAdhkarImage && !activeTafseer) {
+    if (!activeSlideshow && !activeAdhkarImage && !activeTafseer && !activeAdhkarText) {
       // Check if prayer elements are visible, if not, there might be ghost elements
       var prayerTimesElement = document.querySelector(".prayer-times");
       var importantTimesElement = document.querySelector(".important-times");
