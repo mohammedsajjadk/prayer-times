@@ -476,14 +476,14 @@ var announcementModule = {
           // Thursday
           message = announcements.thursday_darood();
         }
-        else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
-          // Thursday After Magrib
-          message = announcements.friday_tafseer();
-        }
-        else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
-          // Friday
-          message = announcements.friday_tafseer();
-        }
+        // else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+        //   // Thursday After Magrib
+        //   message = announcements.friday_tafseer();
+        // }
+        // else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
+        //   // Friday
+        //   message = announcements.friday_tafseer();
+        // }
       } else {
         // Winter time rules
         if (
@@ -493,21 +493,22 @@ var announcementModule = {
         ) {
           // Thursday
           message = announcements.thursday_darood();
-        } else if (
-          dayOfWeek === 4 &&
-          currentTime >= ishaJamaahTime + 6 &&
-          currentTime < 23 * 60 + 59
-        ) {
-          // Thursday After Isha
-          message = announcements.friday_tafseer();
-        } else if (
-          dayOfWeek === 5 &&
-          currentTime > 0 * 60 + 1 &&
-          currentTime < ishaJamaahTime + 10
-        ) {
-          // Friday
-          message = announcements.friday_tafseer();
-        }
+        } 
+        // else if (
+        //   dayOfWeek === 4 &&
+        //   currentTime >= ishaJamaahTime + 6 &&
+        //   currentTime < 23 * 60 + 59
+        // ) {
+        //   // Thursday After Isha
+        //   message = announcements.friday_tafseer();
+        // } else if (
+        //   dayOfWeek === 5 &&
+        //   currentTime > 0 * 60 + 1 &&
+        //   currentTime < ishaJamaahTime + 10
+        // ) {
+        //   // Friday
+        //   message = announcements.friday_tafseer();
+        // }
       }
     }
 
