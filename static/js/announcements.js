@@ -481,7 +481,7 @@ var announcementModule = {
     else {
       // Regular announcements logic
       if (isIrishSummerTime) {
-        if (
+        if (!this.isControlHidden("thursday_darood_control") &&
           dayOfWeek === 4 &&
           currentTime >= fajrTime &&
           currentTime < magribJamaahTime + 5
@@ -499,7 +499,7 @@ var announcementModule = {
         }
       } else {
         // Winter time rules
-        if (
+        if (!this.isControlHidden("thursday_darood_control") &&
           dayOfWeek === 4 &&
           currentTime >= fajrTime &&
           currentTime < ishaJamaahTime + 5
