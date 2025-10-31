@@ -1,5 +1,11 @@
 [
   {
+    "id": "friday_tafseer_control",
+    "type": "control",
+    "description": "Controls whether Friday Tafseer announcements are shown",
+    "hide": true
+  },
+  {
     "id": "eid_ul_adha_2025",
     "startDate": "2025-06-04T01:00:00+01:00",
     "endDate": "2025-06-04T20:30:00+01:00",

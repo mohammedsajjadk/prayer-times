@@ -73,6 +73,19 @@ var displayState = {
 };
 
 var announcementModule = {
+  // Helper function to check if a control entry is hidden
+  isControlHidden: function(controlId) {
+    if (!dynamicAnnouncements || !Array.isArray(dynamicAnnouncements)) {
+      return false; // Default to showing if JSON not loaded
+    }
+    
+    var controlEntry = dynamicAnnouncements.find(function(announcement) {
+      return announcement.id === controlId && announcement.type === "control";
+    });
+    
+    return controlEntry ? (controlEntry.hide === true) : false;
+  },
+
   init: function () {
     // Load dynamic announcements when the page loads
     this.loadDynamicAnnouncements();
@@ -476,14 +489,14 @@ var announcementModule = {
           // Thursday
           message = announcements.thursday_darood();
         }
-        // else if (dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
-        //   // Thursday After Magrib
-        //   message = announcements.friday_tafseer();
-        // }
-        // else if (dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
-        //   // Friday
-        //   message = announcements.friday_tafseer();
-        // }
+        else if (!this.isControlHidden("friday_tafseer_control") && dayOfWeek === 4 && currentTime >= magribJamaahTime + 6 && currentTime < (23 * 60 + 59)) {
+          // Thursday After Magrib
+          message = announcements.friday_tafseer();
+        }
+        else if (!this.isControlHidden("friday_tafseer_control") && dayOfWeek === 5 && currentTime > (0 * 60 + 1) && currentTime < magribJamaahTime + 10) {
+          // Friday
+          message = announcements.friday_tafseer();
+        }
       } else {
         // Winter time rules
         if (
@@ -494,21 +507,21 @@ var announcementModule = {
           // Thursday
           message = announcements.thursday_darood();
         } 
-        // else if (
-        //   dayOfWeek === 4 &&
-        //   currentTime >= ishaJamaahTime + 6 &&
-        //   currentTime < 23 * 60 + 59
-        // ) {
-        //   // Thursday After Isha
-        //   message = announcements.friday_tafseer();
-        // } else if (
-        //   dayOfWeek === 5 &&
-        //   currentTime > 0 * 60 + 1 &&
-        //   currentTime < ishaJamaahTime + 10
-        // ) {
-        //   // Friday
-        //   message = announcements.friday_tafseer();
-        // }
+        else if (!this.isControlHidden("friday_tafseer_control") &&
+          dayOfWeek === 4 &&
+          currentTime >= ishaJamaahTime + 6 &&
+          currentTime < 23 * 60 + 59
+        ) {
+          // Thursday After Isha
+          message = announcements.friday_tafseer();
+        } else if (!this.isControlHidden("friday_tafseer_control") &&
+          dayOfWeek === 5 &&
+          currentTime > 0 * 60 + 1 &&
+          currentTime < ishaJamaahTime + 10
+        ) {
+          // Friday
+          message = announcements.friday_tafseer();
+        }
       }
     }
 
