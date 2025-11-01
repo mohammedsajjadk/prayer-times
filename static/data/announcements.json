@@ -3,7 +3,7 @@
     "id": "friday_tafseer_control",
     "type": "control",
     "description": "Controls whether Friday Tafseer announcements are shown",
-    "hide": true
+    "hide": false
   },
   {
     "id": "thursday_darood_control",
@@ -72,7 +72,7 @@
       "/static/images/Tafseer of the Quran.jpg"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "winter_jumuah_schedule_1",
