@@ -75,9 +75,9 @@
     "hide": false
   },
   {
-    "id": "winter_jumuah_schedule_1",
-    "startDate": "2025-10-27T00:00:00+01:00",
-    "endDate": "2025-10-28T23:00:00+01:00",
+    "id": "mens_1_programme",
+    "startDate": "2025-11-09T00:00:00+01:00",
+    "endDate": "2025-11-10T23:00:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 2,
@@ -86,14 +86,14 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/Winter Friday Jumuah Schedule.jpeg"
+      "/static/images/Mens Programme.png"
     ],
     "isSpecial": true
   },
   {
-    "id": "winter_jumuah_schedule_2",
-    "startDate": "2025-10-30T00:00:00+01:00",
-    "endDate": "2025-10-31T15:00:00+01:00",
+    "id": "mens_2_programme",
+    "startDate": "2025-11-14T00:00:00+01:00",
+    "endDate": "2025-11-15T16:59:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 2,
@@ -102,7 +102,7 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/Winter Friday Jumuah Schedule.jpeg"
+      "/static/images/Mens Programme.png"
     ],
     "isSpecial": true
   },
