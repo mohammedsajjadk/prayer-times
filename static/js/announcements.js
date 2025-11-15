@@ -603,31 +603,49 @@ var announcementModule = {
 
   // Ensure prayer-times and important-times are visible when no overlays are active
   ensureElementsVisible: function () {
+    console.log("DEBUG: ensureElementsVisible called - checking for active overlays");
+    
     // Check if Adhkar is active
     if (displayState.adhkarActive) {
+      console.log("DEBUG: Adhkar is active, elements should be hidden");
       return; // Adhkar should be showing, elements should be hidden
     }
 
     // Check if any image slideshow is active
     var activeSlideshow = document.querySelector(".image-slideshow-container");
     if (activeSlideshow) {
+      console.log("DEBUG: Image slideshow is active, elements should be hidden");
       return; // Image is showing, elements should be hidden
     }
 
     // Check if any adhkar interleave image is active
     var activeAdhkarImage = document.querySelector(".adhkar-interleave-image-container");
     if (activeAdhkarImage) {
+      console.log("DEBUG: Adhkar interleave image is active, elements should be hidden");
       return; // Adhkar image is showing, elements should be hidden
     }
 
     // Check if any adhkar text display is active
     var activeAdhkarText = document.getElementById("adhkar-display-container");
     if (activeAdhkarText) {
+      console.log("DEBUG: Adhkar text display is active, elements should be hidden");
       return; // Adhkar text is showing, elements should be hidden
     }
 
     // No overlays active - ensure clean state and both elements visible
-    this.cleanupAllPosterElements();
+    console.log("DEBUG: No active overlays found, ensuring elements are visible");
+    
+    // Double-check that prayer elements are actually visible
+    var prayerTimesElement = document.querySelector(".prayer-times");
+    var importantTimesElement = document.querySelector(".important-times");
+    
+    var prayerVisible = prayerTimesElement && window.getComputedStyle(prayerTimesElement).display !== 'none';
+    var importantVisible = importantTimesElement && window.getComputedStyle(importantTimesElement).display !== 'none';
+    
+    if (!prayerVisible || !importantVisible) {
+      console.log("DEBUG: Prayer elements not visible, forcing cleanup", "prayer:", prayerVisible, "important:", importantVisible);
+      this.cleanupAllPosterElements();
+    }
   },
 
   // Helper function to hide both prayer-times and important-times together
@@ -904,8 +922,12 @@ var announcementModule = {
     );
     if (existingSlideshow) {
       // Already displaying images, don't start another slideshow
+      console.log("DEBUG: Slideshow already running, skipping new image display");
       return;
     }
+
+    // Clean up any existing poster elements first to ensure clean state
+    this.cleanupAllPosterElements();
 
     // Create ID for this slideshow session to avoid conflicts
     var slideshowId = "slideshow-" + new Date().getTime();
@@ -997,6 +1019,8 @@ var announcementModule = {
 
     // Function to clean up slideshow and restore original elements
     var cleanupSlideshow = function () {
+      console.log("DEBUG: Cleaning up slideshow for image:", imagePath);
+      
       // Remove the slideshow container
       if (imageContainer && imageContainer.parentNode) {
         imageContainer.parentNode.removeChild(imageContainer);
@@ -1016,6 +1040,8 @@ var announcementModule = {
 
       // Comprehensive cleanup to ensure no poster remnants
       announcementModule.cleanupAllPosterElements();
+      
+      console.log("DEBUG: Slideshow cleanup completed");
     };
 
     // Set up cleanup after the specified duration
