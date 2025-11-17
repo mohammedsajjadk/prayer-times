@@ -75,6 +75,36 @@
     "hide": false
   },
   {
+    "id": "womens_weekly_recurring",
+    "type": "recurring_weekly",
+    "dayOfWeek": 2,
+    "seasonalTiming": {
+      "summer": {
+        "startReference": "magribJamaah",
+        "startOffset": 12,
+        "endReference": "nextDay",
+        "endTime": "12:00"
+      },
+      "winter": {
+        "startReference": "magribJamaah",
+        "startOffset": 12,
+        "endReference": "nextDay",
+        "endTime": "12:00"
+      }
+    },
+    "displayCondition": {
+      "frequency": 2,
+      "duration": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Womens Weekly.png"
+    ],
+    "isSpecial": true,
+    "hide": false
+  },
+  {
     "id": "youth_programme",
     "startDate": "2025-11-23T11:00:00+01:00",
     "endDate": "2025-11-24T23:00:00+01:00",
