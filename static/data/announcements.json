@@ -75,21 +75,49 @@
     "hide": false
   },
   {
-    "id": "womens_weekly_recurring",
+    "id": "womens_weekly_tuesday",
     "type": "recurring_weekly",
     "dayOfWeek": 2,
     "seasonalTiming": {
       "summer": {
         "startReference": "magribJamaah",
         "startOffset": 12,
-        "endReference": "nextDay",
-        "endTime": "12:00"
+        "endReference": "ishaJamaah",
+        "endOffset": 60
       },
       "winter": {
         "startReference": "magribJamaah",
         "startOffset": 12,
-        "endReference": "nextDay",
-        "endTime": "12:00"
+        "endReference": "ishaJamaah",
+        "endOffset": 60
+      }
+    },
+    "displayCondition": {
+      "frequency": 2,
+      "duration": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Womens Weekly.png"
+    ],
+    "isSpecial": true,
+    "hide": false
+  },
+  {
+    "id": "womens_weekly_wednesday",
+    "type": "recurring_weekly",
+    "dayOfWeek": 3,
+    "seasonalTiming": {
+      "summer": {
+        "startReference": "fajrBeginning",
+        "endReference": "zohrBeginning",
+        "endOffset": 0
+      },
+      "winter": {
+        "startReference": "fajrBeginning",
+        "endReference": "zohrBeginning",
+        "endOffset": 0
       }
     },
     "displayCondition": {
