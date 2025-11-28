@@ -60,6 +60,26 @@ var app = {  // Initialize the application
                          (irishHours === 19 && irishMins === 45 && irishSecs <= 2) ||
                          (irishHours === 21 && irishMins === 15 && irishSecs <= 2);
 
+      // Check for Friday 5-minute refresh between 13:48 and 15:45
+      var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+      if (!testMode.enabled && irishHours < now.getUTCHours()) {
+        currentDay = (currentDay + 1) % 7;
+      }
+      
+      if (currentDay === 5 && irishSecs <= 2) { // Friday
+        var currentTimeMinutes = irishHours * 60 + irishMins;
+        var startTime = 13 * 60 + 48; // 13:48
+        var endTime = 15 * 60 + 45;   // 15:45
+        
+        if (currentTimeMinutes >= startTime && currentTimeMinutes <= endTime) {
+          // Check if current minute is a multiple of 5 from start time
+          var minutesFromStart = currentTimeMinutes - startTime;
+          if (minutesFromStart % 5 === 0) {
+            shouldRefresh = true;
+          }
+        }
+      }
+
       // Check for dynamic refreshes 30 minutes before each Jamaah time
       if (!shouldRefresh && irishSecs <= 2) {
         // Get current Jamaah times
