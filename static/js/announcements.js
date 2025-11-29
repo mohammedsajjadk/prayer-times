@@ -970,9 +970,9 @@ var announcementModule = {
     imageContainer.style.alignItems = "center";
     imageContainer.style.marginTop = "1.0vw";
     imageContainer.style.padding = "0";
-    // Ensure poster always appears on top
+    // Keep poster at normal z-index to prevent layering issues
     imageContainer.style.position = "relative";
-    imageContainer.style.zIndex = "1000";
+    imageContainer.style.zIndex = "1";
     imageContainer.style.backgroundColor = "transparent";
 
     // Insert the image container where prayer-times would normally be
@@ -1362,6 +1362,12 @@ var announcementModule = {
     var delayMinutes = config.trigger.delayMinutes !== undefined ? config.trigger.delayMinutes : 8;
     var jamaahTypes = config.trigger.jamaahTypes || [];
     var excludeFridayZohr = config.trigger.excludeFridayZohr || false;
+    var excludeFriday = config.trigger.excludeFriday || false;
+
+    // Check for complete Friday exclusion
+    if (excludeFriday && dayOfWeek === 5) {
+      return { shouldDisplay: false };
+    }
 
     for (var i = 0; i < jamaahTypes.length; i++) {
       var jamaahType = jamaahTypes[i];

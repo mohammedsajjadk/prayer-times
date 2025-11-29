@@ -206,7 +206,8 @@
       "delayMinutes": 8,
       "applyToAllJamaah": true,
       "jamaahTypes": ["fajrJamaah", "zohrJamaah", "asrJamaah", "magribJamaah", "ishaJamaah"],
-      "excludeFridayZohr": true
+      "excludeFridayZohr": true,
+      "excludeFriday": true
     },
     "textFile": "/static/data/adhkar.txt",
     "display": {
