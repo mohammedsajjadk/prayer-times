@@ -581,7 +581,12 @@ var announcementModule = {
 
       // Process image announcement separately - even if there's a text announcement
       console.log("DEBUG: Image processing decision - imageData exists:", !!imageData, "isWarning:", isWarning);
-      if (imageData && !isWarning) {
+      
+      // Check if slideshow is already active to prevent constant recreation
+      var existingSlideshow = document.querySelector(".image-slideshow-container");
+      if (existingSlideshow) {
+        console.log("DEBUG: Slideshow already active, skipping image processing to prevent blinking");
+      } else if (imageData && !isWarning) {
         console.log("DEBUG: Calling handleImageAnnouncement with schedule:", imageData.schedule ? imageData.schedule.length : 'undefined');
         this.handleImageAnnouncement(imageData, currentTime, [
           fajrJamaahTime,
@@ -947,8 +952,13 @@ var announcementModule = {
     );
     if (existingSlideshow) {
       var existingImg = existingSlideshow.querySelector('img');
-      if (existingImg && existingImg.src.includes(imagePath.split('/').pop())) {
-        console.log("DEBUG: Same image already displaying, skipping");
+      var currentImageName = imagePath.split('/').pop();
+      var existingImageName = existingImg ? existingImg.src.split('/').pop() : '';
+      
+      console.log("DEBUG: Comparing images - current:", currentImageName, "existing:", existingImageName);
+      
+      if (existingImg && existingImageName === currentImageName) {
+        console.log("DEBUG: Same image already displaying, skipping recreation");
         return;
       } else {
         console.log("DEBUG: Different image requested, replacing existing slideshow");
@@ -956,6 +966,7 @@ var announcementModule = {
         this.cleanupAllPosterElements();
       }
     } else {
+      console.log("DEBUG: No existing slideshow, creating new one");
       // Clean up any existing poster elements first to ensure clean state
       this.cleanupAllPosterElements();
     }
