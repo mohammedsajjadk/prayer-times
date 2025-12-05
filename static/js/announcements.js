@@ -612,6 +612,26 @@ var announcementModule = {
     
     // Check if Adhkar is active
     if (displayState.adhkarActive) {
+      // Special check for Friday - force clear stuck Adhkar
+      var now = testMode.enabled ? testMode.getMockDate() : new Date();
+      var currentDay = testMode.enabled ? testMode.dayOfWeek : now.getUTCDay();
+      if (!testMode.enabled) {
+        var isIrishSummerTime = dateUtils.isIrelandDST(now);
+        var irishOffset = isIrishSummerTime ? 1 : 0;
+        var irishHours = now.getUTCHours() + irishOffset;
+        if (irishHours < now.getUTCHours()) {
+          currentDay = (currentDay + 1) % 7;
+        }
+      }
+      
+      if (currentDay === 5) { // Friday
+        console.log("WARNING: Adhkar is active on Friday but should be excluded - force clearing");
+        this.cleanupAdhkarDisplay();
+        displayState.adhkarActive = false;
+        this.cleanupAllPosterElements();
+        return;
+      }
+      
       console.log("DEBUG: Adhkar is active, elements should be hidden");
       return; // Adhkar should be showing, elements should be hidden
     }
@@ -1417,7 +1437,8 @@ var announcementModule = {
 
     // Check for complete Friday exclusion
     if (excludeFriday && dayOfWeek === 5) {
-      return { shouldDisplay: false };
+      console.log("DEBUG: Friday exclusion applied - no Adhkar on Friday");
+      return false;
     }
 
     for (var i = 0; i < jamaahTypes.length; i++) {
