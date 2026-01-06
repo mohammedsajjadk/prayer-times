@@ -3,7 +3,7 @@
     "id": "friday_tafseer_control",
     "type": "control",
     "description": "Controls whether Friday Tafseer announcements are shown",
-    "hide": true
+    "hide": false
   },
   {
     "id": "thursday_darood_control",
@@ -72,7 +72,7 @@
       "/static/images/Tafseer of the Quran.jpg"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "womens_weekly_tuesday",
@@ -102,7 +102,7 @@
       "/static/images/Womens Weekly.png"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "womens_weekly_wednesday",
@@ -130,7 +130,7 @@
       "/static/images/Womens Weekly.png"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "monthly",
