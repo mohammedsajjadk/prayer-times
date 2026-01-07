@@ -15,7 +15,7 @@ var announcements = {
   },
 
   friday_tafseer: function () {
-    return "TAFSEER OF THE QUR'AN • SURAH DHARIYAAT • FRIDAY AFTER ISHA";
+    return "TAFSEER OF THE QUR'AN • SURAH TUR • FRIDAY AFTER ISHA";
   },
 
   clock_go_forward: function () {
