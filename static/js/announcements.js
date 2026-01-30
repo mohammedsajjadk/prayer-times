@@ -297,6 +297,7 @@ var announcementModule = {
     var schedule = [];
     var isSpecial = false;
     var maxFrequency = 0;
+    var gapBetweenImages = 40; // Default 20 seconds gap between images
 
     // Build sequential schedule from all active announcements
     for (var i = 0; i < imageAnnouncements.length; i++) {
@@ -304,6 +305,12 @@ var announcementModule = {
       if (announcement.images && announcement.images.length > 0) {
         var frequency = announcement.displayCondition.frequency || 1;
         var duration = announcement.displayCondition.duration || 10;
+        var announcementGap = announcement.displayCondition.gapBetweenImages;
+        
+        // Use the gap from first announcement that specifies it, or default
+        if (announcementGap !== undefined && schedule.length === 0) {
+          gapBetweenImages = announcementGap;
+        }
         
         // Track maximum frequency to determine cycle wait time
         if (frequency > maxFrequency) {
@@ -327,7 +334,7 @@ var announcementModule = {
     }
 
     // Calculate total cycle time: sum of all durations + gaps + max frequency wait
-    var gapDuration = 20; // 20 seconds gap between images
+    var gapDuration = gapBetweenImages;
     var totalActiveDuration = 0;
     for (var k = 0; k < schedule.length; k++) {
       totalActiveDuration += schedule[k].duration;

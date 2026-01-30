@@ -63,8 +63,9 @@
       }
     },
     "displayCondition": {
-      "frequency": 2,
+      "frequency": 1,
       "duration": 60,
+      "gapBetweenImages": 60,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
@@ -140,22 +141,7 @@
     "displayCondition": {
       "frequency": 1,
       "duration": 60,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/special_bayaan.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "special_bayaan",
-    "startDate": "2026-01-26T00:00:00+01:00",
-    "endDate": "2026-01-27T14:10:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 2,
-      "duration": 60,
+      "gapBetweenImages": 60,
       "avoidJamaahTime": true,
       "rotateImages": true
     },
