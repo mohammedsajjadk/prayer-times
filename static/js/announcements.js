@@ -164,6 +164,11 @@ var announcementModule = {
         var startTime = new Date(announcement.startDate).getTime();
         var endTime = new Date(announcement.endDate).getTime();
         isActive = currentTime >= startTime && currentTime <= endTime;
+        console.log("DEBUG: Date-based check for", announcement.id, 
+                    "- Current:", new Date(currentTime).toISOString(),
+                    "Start:", new Date(startTime).toISOString(), 
+                    "End:", new Date(endTime).toISOString(),
+                    "Active:", isActive);
       }
 
       if (isActive) {
