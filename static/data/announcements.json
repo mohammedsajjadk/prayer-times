@@ -3,13 +3,13 @@
     "id": "friday_tafseer_control",
     "type": "control",
     "description": "Controls whether Friday Tafseer announcements are shown",
-    "hide": false
+    "hide": true
   },
   {
     "id": "thursday_darood_control",
     "type": "control",
     "description": "Controls whether Thursday Darood announcements are shown",
-    "hide": false
+    "hide": true
   },
   {
     "id": "eid_ul_adha_2025",
@@ -73,6 +73,64 @@
       "/static/images/Tafseer of the Quran.jpg"
     ],
     "isSpecial": true,
+    "hide": true
+  },
+  {
+    "id": "tafseer_saturday_for_ramadhan_recurring",
+    "type": "recurring_weekly",
+    "dayOfWeek": 6,
+    "seasonalTiming": {
+      "summer": {
+        "startReference": "fajrBeginning",
+        "endReference": "ishaJamaah",
+        "endOffset": 120
+      },
+      "winter": {
+        "startReference": "fajrBeginning",
+        "endReference": "ishaJamaah",
+        "endOffset": 120
+      }
+    },
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Tafseer of the Quran Ramadhan.jpg"
+    ],
+    "isSpecial": true,
+    "hide": true
+  },
+  {
+    "id": "tafseer_sunday_for_ramadhan_recurring",
+    "type": "recurring_weekly",
+    "dayOfWeek": 0,
+    "seasonalTiming": {
+      "summer": {
+        "startReference": "fajrBeginning",
+        "endReference": "asrJamaah",
+        "endOffset": 15
+      },
+      "winter": {
+        "startReference": "fajrBeginning",
+        "endReference": "asrJamaah",
+        "endOffset": 15
+      }
+    },
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Tafseer of the Quran Ramadhan.jpg"
+    ],
+    "isSpecial": true,
     "hide": false
   },
   {
@@ -103,7 +161,7 @@
       "/static/images/Womens Weekly.png"
     ],
     "isSpecial": true,
-    "hide": false
+    "hide": true
   },
   {
     "id": "womens_weekly_wednesday",
@@ -131,12 +189,12 @@
       "/static/images/Womens Weekly.png"
     ],
     "isSpecial": true,
-    "hide": false
+    "hide": true
   },
   {
-    "id": "special_bayaan_1",
-    "startDate": "2026-02-08T00:00:00+01:00",
-    "endDate": "2026-02-09T14:00:00+01:00",
+    "id": "ramadhan_fiqh_of_tahaarah",
+    "startDate": "2026-02-20T00:00:00+01:00",
+    "endDate": "2026-02-20T17:15:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 1,
@@ -146,7 +204,126 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/ramadhan.jpeg"
+      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "ramadhan_fiqh_of_tahaarah_2",
+    "startDate": "2026-02-27T00:00:00+01:00",
+    "endDate": "2026-02-27T17:30:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "ramadhan_fiqh_of_tahaarah_3",
+    "startDate": "2026-03-06T00:00:00+01:00",
+    "endDate": "2026-03-06T17:45:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "ramadhan_fiqh_of_tahaarah_4",
+    "startDate": "2026-03-13T00:00:00+01:00",
+    "endDate": "2026-03-13T18:00:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "ramadhan_youth_saturday_programme_1",
+    "startDate": "2026-02-21T13:00:00+01:00",
+    "endDate": "2026-02-21T22:00:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Ramadhan Youth Night.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "ramadhan_youth_saturday_programme_2",
+    "startDate": "2026-02-28T13:00:00+01:00",
+    "endDate": "2026-02-28T22:00:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Ramadhan Youth Night.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "ramadhan_youth_saturday_programme_3",
+    "startDate": "2026-03-07T13:00:00+01:00",
+    "endDate": "2026-03-07T22:00:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Ramadhan Youth Night.jpg"
+    ],
+    "isSpecial": true
+  },
+  {
+    "id": "ramadhan_youth_saturday_programme_4",
+    "startDate": "2026-03-14T13:00:00+01:00",
+    "endDate": "2026-03-14T22:00:00+01:00",
+    "type": "image",
+    "displayCondition": {
+      "frequency": 1,
+      "duration": 60,
+      "gapBetweenImages": 60,
+      "avoidJamaahTime": true,
+      "rotateImages": true
+    },
+    "images": [
+      "/static/images/Ramadhan Youth Night.jpg"
     ],
     "isSpecial": true
   },
