@@ -102,7 +102,7 @@
       "/static/images/Tafseer of the Quran Ramadhan.jpg"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "tafseer_sunday_for_ramadhan_recurring",
@@ -131,7 +131,7 @@
       "/static/images/Tafseer of the Quran Ramadhan.jpg"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "womens_weekly_tuesday",
