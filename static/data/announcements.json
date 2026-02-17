@@ -328,9 +328,9 @@
     "isSpecial": true
   },
   {
-    "id": "special_bayaan_2",
-    "startDate": "2026-02-13T00:00:00+01:00",
-    "endDate": "2026-02-15T17:54:00+01:00",
+    "id": "ramadhan_mubarak_2026",
+    "startDate": "2026-02-17T00:00:00+01:00",
+    "endDate": "2026-02-17T20:54:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 1,
@@ -340,7 +340,7 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/ramadhan.jpeg"
+      "/static/images/Ramadhan Mubarak 2026.jpg"
     ],
     "isSpecial": true
   },
