@@ -70,6 +70,7 @@ var displayState = {
   adhkarPageTimeout: null,
   adhkarTotalPages: 0,
   adhkarTotalCycles: 0,
+  triggeredJamaahTimes: [], // Track which jamaah times have already triggered adhkar
 };
 
 var announcementModule = {
@@ -92,6 +93,22 @@ var announcementModule = {
 
     // Set up periodic refresh of dynamic announcements (e.g., every hour)
     setInterval(this.loadDynamicAnnouncements.bind(this), 60 * 60 * 1000);
+    
+    // Reset triggered jamaah times at midnight each day
+    this.scheduleTriggeredTimesReset();
+  },
+  
+  scheduleTriggeredTimesReset: function() {
+    var now = new Date();
+    var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+    var timeUntilMidnight = tomorrow - now;
+    
+    setTimeout(function() {
+      displayState.triggeredJamaahTimes = [];
+      console.log("DEBUG: Reset triggered Jamaah times at midnight");
+      // Schedule next reset
+      announcementModule.scheduleTriggeredTimesReset();
+    }, timeUntilMidnight);
   },
 
   // Load dynamic announcements from external file
@@ -1466,6 +1483,15 @@ var announcementModule = {
         continue;
       }
 
+      var adhkarStartTime = jamaahTime + delayMinutes;
+      
+      // Check if we've already triggered for this jamaah time today
+      var triggerKey = jamaahType + "_" + Math.floor(adhkarStartTime);
+      if (displayState.triggeredJamaahTimes.indexOf(triggerKey) !== -1) {
+        // Already triggered for this jamaah time, skip
+        continue;
+      }
+
       // Calculate duration - use pageTimings if available, otherwise fallback to totalDurationMinutes
       var totalDuration = 5; // default fallback
       if (config.display.pageTimings && Array.isArray(config.display.pageTimings)) {
@@ -1485,10 +1511,12 @@ var announcementModule = {
         totalDuration = config.display.totalDurationMinutes;
       }
 
-      var adhkarStartTime = jamaahTime + delayMinutes;
       var adhkarEndTime = adhkarStartTime + totalDuration;
 
       if (currentTime >= adhkarStartTime && currentTime < adhkarEndTime) {
+        // Mark this jamaah time as triggered
+        displayState.triggeredJamaahTimes.push(triggerKey);
+        console.log("DEBUG: Adhkar triggered for", jamaahType, "at", adhkarStartTime, "- marked as shown");
         return true;
       }
     }
@@ -1906,41 +1934,8 @@ var announcementModule = {
 
     adhkarContainer.appendChild(textElement);
 
-    // Add countdown timer if configured
-    if (config.display.showCountdown) {
-      var countdownElement = document.createElement("div");
-      countdownElement.className = "adhkar-countdown";
-      
-      // Calculate remaining time for this page using new pageTimings system
-      var currentPageDuration;
-      if (config.display.pageTimings && Array.isArray(config.display.pageTimings) && config.display.pageTimings[currentPage]) {
-        var timing = config.display.pageTimings[currentPage];
-        // Parse timing - could be "1:30" (minutes:seconds) or just "2" (minutes)
-        if (typeof timing === 'string' && timing.includes(':')) {
-          var parts = timing.split(':');
-          currentPageDuration = (parseInt(parts[0]) * 60 + parseInt(parts[1])) * 1000; // Convert to milliseconds
-        } else {
-          currentPageDuration = parseFloat(timing) * 60 * 1000; // Convert minutes to milliseconds
-        }
-      } else {
-        // Fallback to old system for backward compatibility
-        var totalDuration = (config.display.totalDurationMinutes || 5) * 60 * 1000;
-        var showImagesBetweenCycles = config.display.showImagesBetweenCycles !== false;
-        var imageSlots = showImagesBetweenCycles ? (totalCycles - 1) : 0;
-        var totalSlots = (totalPages * totalCycles) + imageSlots;
-        currentPageDuration = totalDuration / totalSlots;
-      }
-      
-      // Show cycle info if multiple cycles
-      var displayText = totalCycles > 1 
-        ? "Page " + (currentPage + 1) + "/" + totalPages + " • Cycle " + (currentCycle + 1) + "/" + totalCycles
-        : "Page " + (currentPage + 1) + "/" + totalPages;
-      
-      this.startCountdown(countdownElement, currentPageDuration / 1000, displayText);
-      
-      // Add countdown to the adhkar container
-      adhkarContainer.appendChild(countdownElement);
-    }
+    // Countdown timer disabled per user request
+    // Users don't need to see "next page in X minutes Y seconds"
 
     // Page indicator removed per user request
 
