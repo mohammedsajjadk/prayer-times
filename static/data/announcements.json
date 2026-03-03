@@ -102,7 +102,7 @@
       "/static/images/Tafseer of the Quran Ramadhan.jpg"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "tafseer_sunday_for_ramadhan_recurring",
@@ -131,7 +131,7 @@
       "/static/images/Tafseer of the Quran Ramadhan.jpg"
     ],
     "isSpecial": true,
-    "hide": true
+    "hide": false
   },
   {
     "id": "womens_weekly_tuesday",
@@ -192,42 +192,8 @@
     "hide": true
   },
   {
-    "id": "ramadhan_fiqh_of_tahaarah",
-    "startDate": "2026-02-20T00:00:00+01:00",
-    "endDate": "2026-02-20T17:15:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 1,
-      "duration": 60,
-      "gapBetweenImages": 60,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "ramadhan_fiqh_of_tahaarah_2",
-    "startDate": "2026-02-27T00:00:00+01:00",
-    "endDate": "2026-02-27T17:30:00+01:00",
-    "type": "image",
-    "displayCondition": {
-      "frequency": 1,
-      "duration": 60,
-      "gapBetweenImages": 60,
-      "avoidJamaahTime": true,
-      "rotateImages": true
-    },
-    "images": [
-      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
-    ],
-    "isSpecial": true
-  },
-  {
-    "id": "ramadhan_fiqh_of_tahaarah_3",
-    "startDate": "2026-03-06T00:00:00+01:00",
+    "id": "ramadhan_zakat",
+    "startDate": "2026-03-05T18:00:00+01:00",
     "endDate": "2026-03-06T17:45:00+01:00",
     "type": "image",
     "displayCondition": {
@@ -238,14 +204,14 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
+      "/static/images/zakat.jpg"
     ],
     "isSpecial": true
   },
   {
-    "id": "ramadhan_fiqh_of_tahaarah_4",
-    "startDate": "2026-03-13T00:00:00+01:00",
-    "endDate": "2026-03-13T18:00:00+01:00",
+    "id": "ramadhan_zakat_2",
+    "startDate": "2026-03-12T18:00:00+01:00",
+    "endDate": "2026-03-13T18:10:00+01:00",
     "type": "image",
     "displayCondition": {
       "frequency": 1,
@@ -255,7 +221,7 @@
       "rotateImages": true
     },
     "images": [
-      "/static/images/Ramadhan Fiqh of Tahaarah.jpg"
+      "/static/images/zakat.jpg"
     ],
     "isSpecial": true
   },
